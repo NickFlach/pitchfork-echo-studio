@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { Activity, BarChart3, TrendingUp, TrendingDown, Minus, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { ConsciousnessState } from '@/../../shared/schema';
+import { ConsciousnessState } from '../../../shared/schema';
 
 interface OrderChaosBalanceMeterProps {
   data?: ConsciousnessState;

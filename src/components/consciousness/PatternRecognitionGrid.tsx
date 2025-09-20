@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Grid3x3, TrendingUp, Repeat, Waves, Zap, Eye } from 'lucide-react';
 import { useState } from 'react';
-import { ConsciousnessState } from '@/../../shared/schema';
+import { ConsciousnessState } from '../../../shared/schema';
 
 interface PatternRecognitionGridProps {
   data?: ConsciousnessState[];

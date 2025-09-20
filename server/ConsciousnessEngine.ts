@@ -77,7 +77,7 @@ export class ConsciousnessEngine {
     const evolution = await this.evolveConsciousnessUnderstanding(integration, metaInsights);
     
     // Update consciousness state
-    await this.updateConsciousnessState(consciousness, integration, metaInsights, evolution);
+    await this.updateConsciousnessState(consciousnessState, integration, metaInsights, evolution);
     
     // Recursive self-observation of the entire process
     const selfObservation = await this.recursiveSelfObservation(processingResult, integration, metaInsights);

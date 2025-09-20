@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { Eye, HelpCircle, Layers, Lightbulb, Infinity, CheckCircle, AlertCircle } from 'lucide-react';
-import { ReflectionLog } from '@/../../shared/schema';
+import { ReflectionLog } from '../../../shared/schema';
 
 interface ReflectionObservatoryProps {
   data?: ReflectionLog[];

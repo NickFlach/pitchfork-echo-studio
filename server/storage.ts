@@ -20,7 +20,13 @@ import {
   LearningCycle,
   InsertLearningCycle,
   ReflectionLog,
-  InsertReflectionLog
+  InsertReflectionLog,
+  DecisionSynthesis,
+  InsertDecisionSynthesis,
+  DecisionArchetype,
+  InsertDecisionArchetype,
+  DecisionEvolution,
+  InsertDecisionEvolution
 } from '../shared/schema';
 
 export interface IStorage {
@@ -85,6 +91,24 @@ export interface IStorage {
   getReflectionLogs(agentId: string): Promise<ReflectionLog[]>;
   getReflectionLog(id: string): Promise<ReflectionLog | null>;
   updateReflectionLog(id: string, updates: Partial<ReflectionLog>): Promise<ReflectionLog>;
+  
+  // Decision Synthesis operations
+  createDecisionSynthesis(synthesis: InsertDecisionSynthesis): Promise<DecisionSynthesis>;
+  getDecisionSyntheses(agentId: string): Promise<DecisionSynthesis[]>;
+  getDecisionSynthesis(id: string): Promise<DecisionSynthesis | null>;
+  updateDecisionSynthesis(id: string, updates: Partial<DecisionSynthesis>): Promise<DecisionSynthesis>;
+  
+  // Decision Archetype operations
+  createDecisionArchetype(archetype: InsertDecisionArchetype): Promise<DecisionArchetype>;
+  getDecisionArchetypes(): Promise<DecisionArchetype[]>;
+  getDecisionArchetype(id: string): Promise<DecisionArchetype | null>;
+  updateDecisionArchetype(id: string, updates: Partial<DecisionArchetype>): Promise<DecisionArchetype>;
+  
+  // Decision Evolution operations
+  createDecisionEvolution(evolution: InsertDecisionEvolution): Promise<DecisionEvolution>;
+  getDecisionEvolutions(originalDecisionId: string): Promise<DecisionEvolution[]>;
+  getDecisionEvolution(id: string): Promise<DecisionEvolution | null>;
+  updateDecisionEvolution(id: string, updates: Partial<DecisionEvolution>): Promise<DecisionEvolution>;
 }
 
 export class MemStorage implements IStorage {
@@ -99,6 +123,9 @@ export class MemStorage implements IStorage {
   private complexityMaps: ComplexityMap[] = [];
   private learningCycles: LearningCycle[] = [];
   private reflectionLogs: ReflectionLog[] = [];
+  private decisionSyntheses: DecisionSynthesis[] = [];
+  private decisionArchetypes: DecisionArchetype[] = [];
+  private decisionEvolutions: DecisionEvolution[] = [];
 
   // Identity operations
   async createIdentity(identity: InsertIdentity): Promise<Identity> {
@@ -425,6 +452,92 @@ export class MemStorage implements IStorage {
     
     this.reflectionLogs[index] = { ...this.reflectionLogs[index], ...updates };
     return this.reflectionLogs[index];
+  }
+
+  // Decision Synthesis operations
+  async createDecisionSynthesis(synthesis: InsertDecisionSynthesis): Promise<DecisionSynthesis> {
+    const newSynthesis: DecisionSynthesis = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...synthesis,
+    };
+    this.decisionSyntheses.push(newSynthesis);
+    return newSynthesis;
+  }
+
+  async getDecisionSyntheses(agentId: string): Promise<DecisionSynthesis[]> {
+    return this.decisionSyntheses.filter(synthesis => synthesis.agentId === agentId);
+  }
+
+  async getDecisionSynthesis(id: string): Promise<DecisionSynthesis | null> {
+    return this.decisionSyntheses.find(synthesis => synthesis.id === id) || null;
+  }
+
+  async updateDecisionSynthesis(id: string, updates: Partial<DecisionSynthesis>): Promise<DecisionSynthesis> {
+    const index = this.decisionSyntheses.findIndex(synthesis => synthesis.id === id);
+    if (index === -1) throw new Error('Decision synthesis not found');
+    
+    this.decisionSyntheses[index] = { ...this.decisionSyntheses[index], ...updates };
+    return this.decisionSyntheses[index];
+  }
+
+  // Decision Archetype operations
+  async createDecisionArchetype(archetype: InsertDecisionArchetype): Promise<DecisionArchetype> {
+    const newArchetype: DecisionArchetype = {
+      id: Math.random().toString(36).substring(7),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ...archetype,
+    };
+    this.decisionArchetypes.push(newArchetype);
+    return newArchetype;
+  }
+
+  async getDecisionArchetypes(): Promise<DecisionArchetype[]> {
+    return this.decisionArchetypes;
+  }
+
+  async getDecisionArchetype(id: string): Promise<DecisionArchetype | null> {
+    return this.decisionArchetypes.find(archetype => archetype.id === id) || null;
+  }
+
+  async updateDecisionArchetype(id: string, updates: Partial<DecisionArchetype>): Promise<DecisionArchetype> {
+    const index = this.decisionArchetypes.findIndex(archetype => archetype.id === id);
+    if (index === -1) throw new Error('Decision archetype not found');
+    
+    this.decisionArchetypes[index] = { 
+      ...this.decisionArchetypes[index], 
+      ...updates, 
+      updatedAt: new Date().toISOString() 
+    };
+    return this.decisionArchetypes[index];
+  }
+
+  // Decision Evolution operations
+  async createDecisionEvolution(evolution: InsertDecisionEvolution): Promise<DecisionEvolution> {
+    const newEvolution: DecisionEvolution = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...evolution,
+    };
+    this.decisionEvolutions.push(newEvolution);
+    return newEvolution;
+  }
+
+  async getDecisionEvolutions(originalDecisionId: string): Promise<DecisionEvolution[]> {
+    return this.decisionEvolutions.filter(evolution => evolution.originalDecisionId === originalDecisionId);
+  }
+
+  async getDecisionEvolution(id: string): Promise<DecisionEvolution | null> {
+    return this.decisionEvolutions.find(evolution => evolution.id === id) || null;
+  }
+
+  async updateDecisionEvolution(id: string, updates: Partial<DecisionEvolution>): Promise<DecisionEvolution> {
+    const index = this.decisionEvolutions.findIndex(evolution => evolution.id === id);
+    if (index === -1) throw new Error('Decision evolution not found');
+    
+    this.decisionEvolutions[index] = { ...this.decisionEvolutions[index], ...updates };
+    return this.decisionEvolutions[index];
   }
 }
 

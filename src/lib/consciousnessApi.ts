@@ -101,4 +101,53 @@ export const consciousnessApi = {
       body: JSON.stringify({ crisis }),
     });
   },
+
+  // Multiscale Decision Framework APIs
+  async processMultiscaleDecision(context: string, options: any[], urgency: string = 'medium'): Promise<any> {
+    return apiRequest('/api/multiscale-decision', {
+      method: 'POST',
+      body: JSON.stringify({ context, options, urgency }),
+    });
+  },
+
+  async getDecisionSyntheses(agentId: string): Promise<any[]> {
+    return apiRequest(`/api/decision-syntheses/${agentId}`);
+  },
+
+  async createDecisionSynthesis(data: any): Promise<any> {
+    return apiRequest('/api/decision-syntheses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async getDecisionArchetypes(): Promise<any[]> {
+    return apiRequest('/api/decision-archetypes');
+  },
+
+  async createDecisionArchetype(data: any): Promise<any> {
+    return apiRequest('/api/decision-archetypes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async getDecisionEvolutions(originalDecisionId: string): Promise<any[]> {
+    return apiRequest(`/api/decision-evolutions/${originalDecisionId}`);
+  },
+
+  async createDecisionEvolution(data: any): Promise<any> {
+    return apiRequest('/api/decision-evolutions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Demo API
+  async runMultiscaleDemo(): Promise<any> {
+    return apiRequest('/api/demo/multiscale-decision-demo', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
+  },
 };

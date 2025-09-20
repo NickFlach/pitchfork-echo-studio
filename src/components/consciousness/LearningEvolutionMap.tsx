@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TreePine, TrendingUp, RotateCcw, CheckCircle, AlertCircle, Lightbulb, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
-import { LearningCycle } from '@/../../shared/schema';
+import { LearningCycle } from '../../../shared/schema';
 
 interface LearningEvolutionMapProps {
   data?: LearningCycle[];
