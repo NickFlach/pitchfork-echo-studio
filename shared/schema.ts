@@ -113,3 +113,36 @@ export const membershipSchema = z.object({
 export const insertMembershipSchema = membershipSchema.omit({ id: true, joinedAt: true });
 export type Membership = z.infer<typeof membershipSchema>;
 export type InsertMembership = z.infer<typeof insertMembershipSchema>;
+
+// Secure Messaging Models
+export const messageSchema = z.object({
+  id: z.string(),
+  conversationId: z.string(),
+  senderAddress: z.string(),
+  encryptedContent: z.string(), // Encrypted message content
+  contentHash: z.string(), // Hash for integrity verification
+  timestamp: z.string(),
+  messageType: z.enum(['text', 'file', 'image']),
+  isDeleted: z.boolean().default(false),
+});
+
+export const insertMessageSchema = messageSchema.omit({ id: true, timestamp: true });
+export type Message = z.infer<typeof messageSchema>;
+export type InsertMessage = z.infer<typeof insertMessageSchema>;
+
+export const conversationSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  movementId: z.string().optional(), // Link to movement for organization
+  participants: z.array(z.string()), // Array of wallet addresses
+  encryptionKey: z.string(), // Shared encryption key for conversation
+  conversationType: z.enum(['direct', 'group', 'movement']),
+  isArchived: z.boolean().default(false),
+  createdAt: z.string(),
+  lastActivity: z.string(),
+});
+
+export const insertConversationSchema = conversationSchema.omit({ id: true, createdAt: true, lastActivity: true });
+export type Conversation = z.infer<typeof conversationSchema>;
+export type InsertConversation = z.infer<typeof insertConversationSchema>;
