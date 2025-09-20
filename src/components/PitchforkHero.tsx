@@ -1,15 +1,15 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Volume2, VolumeX, Wallet, LogOut, Copy, ExternalLink } from 'lucide-react';
+import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { formatAddress, getNetworkName } from '@/hooks/useWeb3';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import neoTokenLogo from '@/assets/neo-token-logo.png';
 
 export const PitchforkHero = () => {
-  const [musicEnabled, setMusicEnabled] = useState(false);
   const { isConnected, account, chainId, connectWallet, disconnectWallet, isConnecting } = useWeb3();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleWalletAction = () => {
     if (isConnected) {
@@ -58,10 +58,6 @@ export const PitchforkHero = () => {
     }
   };
 
-  const toggleMusic = () => {
-    setMusicEnabled(!musicEnabled);
-    console.log('Music toggled:', !musicEnabled);
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
@@ -80,8 +76,11 @@ export const PitchforkHero = () => {
           <h1 className="text-6xl md:text-7xl font-bold text-gradient-cosmic tracking-tight">
             Pitchfork Protocol
           </h1>
-          <p className="text-xl text-muted-foreground">
-            A tool for humanity
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Decentralized tools for peaceful resistance against corruption and injustice
+          </p>
+          <p className="text-sm text-muted-foreground/80 max-w-xl mx-auto mt-2">
+            Organize. Verify. Fund. Fight back legally and safely.
           </p>
         </div>
         
@@ -148,26 +147,70 @@ export const PitchforkHero = () => {
             </div>
           )}
           
-          <div className="pt-4">
-            <Button 
-              variant="cosmicOutline" 
-              size="default"
-              onClick={toggleMusic}
-              className="min-w-[160px]"
-            >
-              {musicEnabled ? (
-                <>
-                  <VolumeX className="w-4 h-4 mr-2" />
-                  Turn Music Off
-                </>
-              ) : (
-                <>
-                  <Volume2 className="w-4 h-4 mr-2" />
-                  Turn Music On
-                </>
-              )}
-            </Button>
-          </div>
+          {/* Core Platform Features */}
+          {isConnected && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 max-w-2xl mx-auto">
+              <Button 
+                variant="cosmicOutline" 
+                className="flex items-center justify-between p-4 h-auto"
+                onClick={() => navigate('/identity')}
+              >
+                <div className="flex items-center">
+                  <Shield className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Secure Identity</div>
+                    <div className="text-xs text-muted-foreground">Privacy-first verification</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              
+              <Button 
+                variant="cosmicOutline" 
+                className="flex items-center justify-between p-4 h-auto"
+                onClick={() => navigate('/organize')}
+              >
+                <div className="flex items-center">
+                  <Users className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Organize</div>
+                    <div className="text-xs text-muted-foreground">Coordinate resistance</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              
+              <Button 
+                variant="cosmicOutline" 
+                className="flex items-center justify-between p-4 h-auto"
+                onClick={() => navigate('/verify')}
+              >
+                <div className="flex items-center">
+                  <FileCheck className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Verify</div>
+                    <div className="text-xs text-muted-foreground">Document truth</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              
+              <Button 
+                variant="cosmicOutline" 
+                className="flex items-center justify-between p-4 h-auto"
+                onClick={() => navigate('/support')}
+              >
+                <div className="flex items-center">
+                  <Heart className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Support</div>
+                    <div className="text-xs text-muted-foreground">Fund justice</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       
