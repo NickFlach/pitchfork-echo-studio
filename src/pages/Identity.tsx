@@ -4,25 +4,81 @@ import { Shield, Eye, EyeOff, Check, AlertTriangle } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { identityApi } from '@/lib/api';
 
 export const Identity = () => {
   const { isConnected, account } = useWeb3();
-  const [verificationLevel, setVerificationLevel] = useState<'none' | 'basic' | 'verified'>('none');
   const [isVerifying, setIsVerifying] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch existing identity
+  const { data: identity, isLoading } = useQuery({
+    queryKey: ['identity', account],
+    queryFn: async () => {
+      if (!account) return null;
+      return await identityApi.getByWallet(account);
+    },
+    enabled: !!account,
+  });
+
+  // Show loading state during initial fetch
+  if (isLoading && isConnected) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex items-center justify-center p-8">
+            <div className="text-center space-y-4">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <p className="text-muted-foreground">Loading identity status...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Verification mutation using unified flow
+  const verifyMutation = useMutation({
+    mutationFn: async (level: 'basic' | 'verified') => {
+      if (!account) throw new Error('No account connected');
+      return await identityApi.verifyLevel(account, level);
+    },
+    onSuccess: (result, level) => {
+      // Only invalidate and show success if verification actually succeeded
+      if (result.verificationLevel === level) {
+        queryClient.invalidateQueries({ queryKey: ['identity'] });
+        toast({
+          title: "Verification Complete",
+          description: `You are now ${level} verified. Your privacy is protected.`,
+        });
+      } else {
+        throw new Error('Verification level mismatch');
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: "Verification Failed",
+        description: error.message || "Please try again",
+        variant: "destructive"
+      });
+    },
+  });
+
+  const currentLevel = identity?.verificationLevel || 'none';
 
   const handleVerification = async (level: 'basic' | 'verified') => {
     setIsVerifying(true);
     
-    // Simulate verification process
-    setTimeout(() => {
-      setVerificationLevel(level);
+    try {
+      await verifyMutation.mutateAsync(level);
+      // Success handling is now in verifyMutation.onSuccess
+    } catch (error) {
+      // Error handling is now in verifyMutation.onError
+    } finally {
       setIsVerifying(false);
-      toast({
-        title: "Verification Complete",
-        description: `You are now ${level} verified. Your privacy is protected.`,
-      });
-    }, 2000);
+    }
   };
 
   if (!isConnected) {
@@ -62,23 +118,23 @@ export const Identity = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg" data-testid="status-wallet-connected">
                 <span>Wallet Connected</span>
                 <Check className="w-5 h-5 text-green-500" />
               </div>
               
-              <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg" data-testid="status-basic-verification">
                 <span>Basic Verification</span>
-                {verificationLevel === 'none' ? (
+                {currentLevel === 'none' ? (
                   <Eye className="w-5 h-5 text-muted-foreground" />
                 ) : (
                   <Check className="w-5 h-5 text-green-500" />
                 )}
               </div>
               
-              <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg" data-testid="status-full-verification">
                 <span>Full Verification</span>
-                {verificationLevel === 'verified' ? (
+                {currentLevel === 'verified' ? (
                   <Check className="w-5 h-5 text-green-500" />
                 ) : (
                   <EyeOff className="w-5 h-5 text-muted-foreground" />
@@ -106,11 +162,12 @@ export const Identity = () => {
                 </p>
                 <Button 
                   onClick={() => handleVerification('basic')}
-                  disabled={isVerifying || verificationLevel !== 'none'}
+                  disabled={isVerifying || currentLevel !== 'none'}
                   className="w-full"
-                  variant={verificationLevel === 'basic' ? 'cosmicOutline' : 'cosmic'}
+                  variant={currentLevel === 'basic' ? 'cosmicOutline' : 'cosmic'}
+                  data-testid="button-verify-basic"
                 >
-                  {verificationLevel === 'basic' ? 'Verified' : 'Verify Basic'}
+                  {currentLevel === 'basic' ? 'Verified' : 'Verify Basic'}
                 </Button>
               </div>
 
@@ -124,11 +181,12 @@ export const Identity = () => {
                 </p>
                 <Button 
                   onClick={() => handleVerification('verified')}
-                  disabled={isVerifying || verificationLevel !== 'basic'}
+                  disabled={isVerifying || currentLevel !== 'basic'}
                   className="w-full"
-                  variant={verificationLevel === 'verified' ? 'cosmicOutline' : 'cosmic'}
+                  variant={currentLevel === 'verified' ? 'cosmicOutline' : 'cosmic'}
+                  data-testid="button-verify-full"
                 >
-                  {verificationLevel === 'verified' ? 'Fully Verified' : 'Full Verification'}
+                  {currentLevel === 'verified' ? 'Fully Verified' : 'Full Verification'}
                 </Button>
               </div>
             </CardContent>
