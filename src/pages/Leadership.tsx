@@ -9,7 +9,8 @@ import { PatternRecognitionGrid } from '@/components/consciousness/PatternRecogn
 import { LearningEvolutionMap } from '@/components/consciousness/LearningEvolutionMap';
 import { ComplexityWeb } from '@/components/consciousness/ComplexityWeb';
 import { OrderChaosBalanceMeter } from '@/components/consciousness/OrderChaosBalanceMeter';
-import { Brain, Lightbulb, Activity, Network, TreePine, Target, BarChart3 } from 'lucide-react';
+import { MultiscaleDecisionFramework } from '@/components/consciousness/MultiscaleDecisionFramework';
+import { Brain, Lightbulb, Activity, Network, TreePine, Target, BarChart3, Layers } from 'lucide-react';
 
 const Leadership = () => {
   const [selectedTab, setSelectedTab] = useState('overview');
@@ -75,7 +76,7 @@ const Leadership = () => {
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 mb-8">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-8">
           <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
             <Brain className="w-4 h-4" />
             <span className="hidden sm:inline">Overview</span>
@@ -103,6 +104,10 @@ const Leadership = () => {
           <TabsTrigger value="complexity" className="flex items-center gap-2" data-testid="tab-complexity">
             <Network className="w-4 h-4" />
             <span className="hidden sm:inline">Complexity</span>
+          </TabsTrigger>
+          <TabsTrigger value="multiscale" className="flex items-center gap-2" data-testid="tab-multiscale">
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">Multiscale</span>
           </TabsTrigger>
         </TabsList>
 
@@ -194,6 +199,8 @@ const Leadership = () => {
               <CardContent>
                 <ComplexityWeb 
                   data={complexityMaps} 
+                  consciousnessData={consciousnessStates}
+                  decisionData={decisions}
                   isLoading={loadingComplexity}
                   compact={true}
                 />
@@ -282,7 +289,26 @@ const Leadership = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ComplexityWeb data={complexityMaps} isLoading={loadingComplexity} />
+              <ComplexityWeb 
+                data={complexityMaps} 
+                consciousnessData={consciousnessStates}
+                decisionData={decisions}
+                isLoading={loadingComplexity} 
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="multiscale">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-gradient-cosmic">Multiscale Decision Framework</CardTitle>
+              <CardDescription>
+                Comprehensive decision-making across all scales of existence - from syntax to existential meaning
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MultiscaleDecisionFramework agentId={agentId} />
             </CardContent>
           </Card>
         </TabsContent>

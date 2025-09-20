@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Target, ArrowRight, Clock, Brain, Zap, AlertTriangle } from 'lucide-react';
-import { DecisionRecord } from '@/../../shared/schema';
+import { DecisionRecord } from '../../../shared/schema';
 
 interface DecisionTimelineProps {
   data?: DecisionRecord[];
