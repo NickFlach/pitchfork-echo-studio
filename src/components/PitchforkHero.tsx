@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight } from 'lucide-react';
+import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight, MessageCircle } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { formatAddress, getNetworkName } from '@/hooks/useWeb3';
 import { useToast } from '@/hooks/use-toast';
@@ -149,7 +149,7 @@ export const PitchforkHero = () => {
           
           {/* Core Platform Features */}
           {isConnected && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-6 max-w-4xl mx-auto">
               <Button 
                 variant="cosmicOutline" 
                 className="flex items-center justify-between p-4 h-auto"
@@ -175,6 +175,21 @@ export const PitchforkHero = () => {
                   <div className="text-left">
                     <div className="font-semibold">Organize</div>
                     <div className="text-xs text-muted-foreground">Coordinate resistance</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              
+              <Button 
+                variant="cosmicOutline" 
+                className="flex items-center justify-between p-4 h-auto"
+                onClick={() => navigate('/messages')}
+              >
+                <div className="flex items-center">
+                  <MessageCircle className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Secure Messages</div>
+                    <div className="text-xs text-muted-foreground">Encrypted communication</div>
                   </div>
                 </div>
                 <ChevronRight className="w-4 h-4" />

@@ -8,6 +8,10 @@ import {
   InsertDocument, 
   Campaign, 
   InsertCampaign,
+  Message,
+  InsertMessage,
+  Conversation,
+  InsertConversation,
   identitySchema,
   insertIdentitySchema 
 } from '../../shared/schema';
@@ -20,6 +24,9 @@ const STORAGE_KEYS = {
   CAMPAIGNS: 'pitchfork_campaigns',
   DONATIONS: 'pitchfork_donations',
   MEMBERSHIPS: 'pitchfork_memberships',
+  MESSAGES: 'pitchfork_messages',
+  CONVERSATIONS: 'pitchfork_conversations',
+  ENCRYPTION_KEYS: 'pitchfork_encryption_keys',
 };
 
 // Helper functions for localStorage
@@ -230,5 +237,91 @@ export const campaignApi = {
     campaigns.push(newCampaign);
     setStorageData(STORAGE_KEYS.CAMPAIGNS, campaigns);
     return newCampaign;
+  },
+};
+
+// Messaging API - Secure communications for activist coordination
+export const messagingApi = {
+  async createConversation(data: InsertConversation): Promise<Conversation> {
+    const conversations = getStorageData<Conversation>(STORAGE_KEYS.CONVERSATIONS);
+    const now = new Date().toISOString();
+    
+    const newConversation: Conversation = {
+      id: Math.random().toString(36).substring(7),
+      createdAt: now,
+      lastActivity: now,
+      ...data,
+    };
+    
+    conversations.push(newConversation);
+    setStorageData(STORAGE_KEYS.CONVERSATIONS, conversations);
+    return newConversation;
+  },
+
+  async getConversationsByWallet(walletAddress: string): Promise<Conversation[]> {
+    const conversations = getStorageData<Conversation>(STORAGE_KEYS.CONVERSATIONS);
+    return conversations
+      .filter(conv => conv.participants.includes(walletAddress) && !conv.isArchived)
+      .sort((a, b) => new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime());
+  },
+
+  async getConversation(id: string): Promise<Conversation | null> {
+    const conversations = getStorageData<Conversation>(STORAGE_KEYS.CONVERSATIONS);
+    return conversations.find(conv => conv.id === id) || null;
+  },
+
+  async sendMessage(data: InsertMessage): Promise<Message> {
+    const messages = getStorageData<Message>(STORAGE_KEYS.MESSAGES);
+    
+    const newMessage: Message = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...data,
+    };
+    
+    messages.push(newMessage);
+    setStorageData(STORAGE_KEYS.MESSAGES, messages);
+    
+    // Update conversation's last activity
+    await this.updateConversationActivity(data.conversationId);
+    
+    return newMessage;
+  },
+
+  async getMessagesByConversation(conversationId: string): Promise<Message[]> {
+    const messages = getStorageData<Message>(STORAGE_KEYS.MESSAGES);
+    return messages
+      .filter(msg => msg.conversationId === conversationId && !msg.isDeleted)
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  },
+
+  async updateConversationActivity(conversationId: string): Promise<void> {
+    const conversations = getStorageData<Conversation>(STORAGE_KEYS.CONVERSATIONS);
+    const index = conversations.findIndex(conv => conv.id === conversationId);
+    
+    if (index !== -1) {
+      conversations[index].lastActivity = new Date().toISOString();
+      setStorageData(STORAGE_KEYS.CONVERSATIONS, conversations);
+    }
+  },
+
+  async archiveConversation(conversationId: string): Promise<void> {
+    const conversations = getStorageData<Conversation>(STORAGE_KEYS.CONVERSATIONS);
+    const index = conversations.findIndex(conv => conv.id === conversationId);
+    
+    if (index !== -1) {
+      conversations[index].isArchived = true;
+      setStorageData(STORAGE_KEYS.CONVERSATIONS, conversations);
+    }
+  },
+
+  async deleteMessage(messageId: string): Promise<void> {
+    const messages = getStorageData<Message>(STORAGE_KEYS.MESSAGES);
+    const index = messages.findIndex(msg => msg.id === messageId);
+    
+    if (index !== -1) {
+      messages[index].isDeleted = true;
+      setStorageData(STORAGE_KEYS.MESSAGES, messages);
+    }
   },
 };
