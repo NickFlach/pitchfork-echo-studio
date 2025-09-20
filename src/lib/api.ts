@@ -12,6 +12,12 @@ import {
   InsertMessage,
   Conversation,
   InsertConversation,
+  Proposal,
+  InsertProposal,
+  Vote,
+  InsertVote,
+  GovernanceConfig,
+  InsertGovernanceConfig,
   identitySchema,
   insertIdentitySchema 
 } from '../../shared/schema';
@@ -27,6 +33,9 @@ const STORAGE_KEYS = {
   MESSAGES: 'pitchfork_messages',
   CONVERSATIONS: 'pitchfork_conversations',
   ENCRYPTION_KEYS: 'pitchfork_encryption_keys',
+  PROPOSALS: 'pitchfork_proposals',
+  VOTES: 'pitchfork_votes',
+  GOVERNANCE_CONFIGS: 'pitchfork_governance_configs',
 };
 
 // Helper functions for localStorage
@@ -323,5 +332,245 @@ export const messagingApi = {
       messages[index].isDeleted = true;
       setStorageData(STORAGE_KEYS.MESSAGES, messages);
     }
+  },
+};
+
+// DAO Governance API - Democratic decision-making for activist movements
+export const governanceApi = {
+  async createProposal(data: InsertProposal): Promise<Proposal> {
+    const proposals = getStorageData<Proposal>(STORAGE_KEYS.PROPOSALS);
+    const now = new Date().toISOString();
+    
+    // Auto-activate if voting starts now or in the past
+    const votingStartsAt = new Date(data.votingStartsAt);
+    const isReadyToActivate = votingStartsAt <= new Date();
+    
+    const newProposal: Proposal = {
+      id: Math.random().toString(36).substring(7),
+      createdAt: now,
+      updatedAt: now,
+      yesVotes: 0,
+      noVotes: 0,
+      abstainVotes: 0,
+      totalVotes: 0,
+      status: isReadyToActivate ? 'active' : 'draft',
+      ...data,
+    };
+    
+    proposals.push(newProposal);
+    setStorageData(STORAGE_KEYS.PROPOSALS, proposals);
+    return newProposal;
+  },
+
+  async getProposals(movementId?: string): Promise<Proposal[]> {
+    const proposals = getStorageData<Proposal>(STORAGE_KEYS.PROPOSALS);
+    
+    // Finalize any expired active proposals before returning
+    let hasUpdates = false;
+    const now = new Date();
+    
+    for (const proposal of proposals) {
+      if (proposal.status === 'active' && new Date(proposal.votingEndsAt) <= now) {
+        await this.checkProposalResolution(proposal);
+        hasUpdates = true;
+      }
+    }
+    
+    if (hasUpdates) {
+      setStorageData(STORAGE_KEYS.PROPOSALS, proposals);
+    }
+    
+    return proposals
+      .filter(proposal => !movementId || proposal.movementId === movementId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  },
+
+  async getProposal(id: string): Promise<Proposal | null> {
+    const proposals = getStorageData<Proposal>(STORAGE_KEYS.PROPOSALS);
+    const proposal = proposals.find(proposal => proposal.id === id);
+    
+    if (!proposal) return null;
+    
+    // Finalize if expired
+    const now = new Date();
+    if (proposal.status === 'active' && new Date(proposal.votingEndsAt) <= now) {
+      await this.checkProposalResolution(proposal);
+      setStorageData(STORAGE_KEYS.PROPOSALS, proposals);
+    }
+    
+    return proposal;
+  },
+
+  async activateProposal(proposalId: string, requesterAddress?: string): Promise<Proposal> {
+    const proposals = getStorageData<Proposal>(STORAGE_KEYS.PROPOSALS);
+    const index = proposals.findIndex(p => p.id === proposalId);
+    
+    if (index === -1) throw new Error('Proposal not found');
+    
+    const proposal = proposals[index];
+    
+    // Validate proposer authorization
+    if (requesterAddress && proposal.proposer !== requesterAddress) {
+      throw new Error('Only the proposer can activate this proposal');
+    }
+    
+    // Validate timing
+    const now = new Date();
+    const votingStarts = new Date(proposal.votingStartsAt);
+    if (now < votingStarts) {
+      throw new Error('Cannot activate before scheduled voting start time');
+    }
+    
+    if (proposal.status !== 'draft') {
+      throw new Error('Only draft proposals can be activated');
+    }
+    
+    proposals[index].status = 'active';
+    proposals[index].updatedAt = new Date().toISOString();
+    
+    setStorageData(STORAGE_KEYS.PROPOSALS, proposals);
+    return proposals[index];
+  },
+
+  async submitVote(data: InsertVote): Promise<Vote> {
+    const proposals = getStorageData<Proposal>(STORAGE_KEYS.PROPOSALS);
+    const votes = getStorageData<Vote>(STORAGE_KEYS.VOTES);
+    
+    // Get the proposal to validate voting window
+    const proposal = proposals.find(p => p.id === data.proposalId);
+    if (!proposal) {
+      throw new Error('Proposal not found');
+    }
+    
+    // Check proposal status and voting window
+    if (proposal.status !== 'active') {
+      throw new Error('Voting is not active for this proposal');
+    }
+    
+    const now = new Date();
+    const votingEnds = new Date(proposal.votingEndsAt);
+    const votingStarts = new Date(proposal.votingStartsAt);
+    
+    if (now < votingStarts) {
+      throw new Error('Voting has not started yet');
+    }
+    
+    if (now > votingEnds) {
+      throw new Error('Voting period has ended');
+    }
+    
+    // Check if user already voted
+    const existingVote = votes.find(
+      vote => vote.proposalId === data.proposalId && vote.voterAddress === data.voterAddress
+    );
+    
+    if (existingVote) {
+      throw new Error('You have already voted on this proposal');
+    }
+    
+    const newVote: Vote = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...data,
+    };
+    
+    votes.push(newVote);
+    setStorageData(STORAGE_KEYS.VOTES, votes);
+    
+    // Update proposal vote counts
+    await this.updateProposalVotes(data.proposalId);
+    
+    return newVote;
+  },
+
+  async getVotesByProposal(proposalId: string): Promise<Vote[]> {
+    const votes = getStorageData<Vote>(STORAGE_KEYS.VOTES);
+    return votes.filter(vote => vote.proposalId === proposalId);
+  },
+
+  async getUserVote(proposalId: string, voterAddress: string): Promise<Vote | null> {
+    const votes = getStorageData<Vote>(STORAGE_KEYS.VOTES);
+    return votes.find(
+      vote => vote.proposalId === proposalId && vote.voterAddress === voterAddress
+    ) || null;
+  },
+
+  async updateProposalVotes(proposalId: string): Promise<void> {
+    const proposals = getStorageData<Proposal>(STORAGE_KEYS.PROPOSALS);
+    const votes = getStorageData<Vote>(STORAGE_KEYS.VOTES);
+    
+    const proposalIndex = proposals.findIndex(p => p.id === proposalId);
+    if (proposalIndex === -1) return;
+    
+    const proposalVotes = votes.filter(vote => vote.proposalId === proposalId);
+    
+    const yesVotes = proposalVotes.filter(v => v.voteChoice === 'yes').length;
+    const noVotes = proposalVotes.filter(v => v.voteChoice === 'no').length;
+    const abstainVotes = proposalVotes.filter(v => v.voteChoice === 'abstain').length;
+    
+    proposals[proposalIndex] = {
+      ...proposals[proposalIndex],
+      yesVotes,
+      noVotes,
+      abstainVotes,
+      totalVotes: proposalVotes.length,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    // Check if proposal should be resolved
+    await this.checkProposalResolution(proposals[proposalIndex]);
+    
+    setStorageData(STORAGE_KEYS.PROPOSALS, proposals);
+  },
+
+  async checkProposalResolution(proposal: Proposal): Promise<void> {
+    const now = new Date();
+    const votingEnds = new Date(proposal.votingEndsAt);
+    
+    // Only resolve if voting period has ended
+    if (now <= votingEnds || proposal.status !== 'active') return;
+    
+    const totalVotes = proposal.totalVotes;
+    const hasQuorum = totalVotes >= proposal.quorumRequired;
+    
+    if (!hasQuorum) {
+      proposal.status = 'rejected';
+      return;
+    }
+    
+    const yesPercentage = (proposal.yesVotes / totalVotes) * 100;
+    proposal.status = yesPercentage >= proposal.passingThreshold ? 'passed' : 'rejected';
+  },
+
+  async createGovernanceConfig(data: InsertGovernanceConfig): Promise<GovernanceConfig> {
+    const configs = getStorageData<GovernanceConfig>(STORAGE_KEYS.GOVERNANCE_CONFIGS);
+    const now = new Date().toISOString();
+    
+    const newConfig: GovernanceConfig = {
+      id: Math.random().toString(36).substring(7),
+      createdAt: now,
+      updatedAt: now,
+      ...data,
+    };
+    
+    configs.push(newConfig);
+    setStorageData(STORAGE_KEYS.GOVERNANCE_CONFIGS, configs);
+    return newConfig;
+  },
+
+  async getGovernanceConfig(movementId?: string): Promise<GovernanceConfig | null> {
+    const configs = getStorageData<GovernanceConfig>(STORAGE_KEYS.GOVERNANCE_CONFIGS);
+    return configs.find(config => 
+      config.isActive && 
+      (movementId ? config.movementId === movementId : !config.movementId)
+    ) || null;
+  },
+
+  // Get drafts for specific proposer
+  async getDraftProposals(proposerAddress: string): Promise<Proposal[]> {
+    const proposals = getStorageData<Proposal>(STORAGE_KEYS.PROPOSALS);
+    return proposals
+      .filter(proposal => proposal.status === 'draft' && proposal.proposer === proposerAddress)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   },
 };

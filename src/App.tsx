@@ -10,6 +10,7 @@ import { Organize } from "./pages/Organize";
 import { Verify } from "./pages/Verify";
 import { Support } from "./pages/Support";
 import { Messages } from "./pages/Messages";
+import { Governance } from "./pages/Governance";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/verify" element={<Verify />} />
             <Route path="/support" element={<Support />} />
             <Route path="/messages" element={<Messages />} />
+            <Route path="/governance" element={<Governance />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
