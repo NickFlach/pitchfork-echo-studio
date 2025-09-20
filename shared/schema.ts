@@ -146,3 +146,74 @@ export const conversationSchema = z.object({
 export const insertConversationSchema = conversationSchema.omit({ id: true, createdAt: true, lastActivity: true });
 export type Conversation = z.infer<typeof conversationSchema>;
 export type InsertConversation = z.infer<typeof insertConversationSchema>;
+
+// DAO Governance Models
+export const proposalSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  proposalType: z.enum(['policy', 'funding', 'platform', 'movement', 'emergency']),
+  proposer: z.string(), // wallet address
+  movementId: z.string().optional(), // link to specific movement
+  status: z.enum(['draft', 'active', 'passed', 'rejected', 'executed']),
+  votingStartsAt: z.string(),
+  votingEndsAt: z.string(),
+  quorumRequired: z.number(), // minimum votes needed
+  passingThreshold: z.number(), // percentage needed to pass (0-100)
+  yesVotes: z.number().default(0),
+  noVotes: z.number().default(0),
+  abstainVotes: z.number().default(0),
+  totalVotes: z.number().default(0),
+  executionData: z.string().optional(), // JSON for execution details
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const insertProposalSchema = proposalSchema.omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true,
+  yesVotes: true,
+  noVotes: true, 
+  abstainVotes: true,
+  totalVotes: true 
+});
+export type Proposal = z.infer<typeof proposalSchema>;
+export type InsertProposal = z.infer<typeof insertProposalSchema>;
+
+export const voteSchema = z.object({
+  id: z.string(),
+  proposalId: z.string(),
+  voterAddress: z.string(),
+  voteChoice: z.enum(['yes', 'no', 'abstain']),
+  votingPower: z.number().default(1), // future: stake-weighted voting
+  reason: z.string().optional(), // optional reasoning
+  timestamp: z.string(),
+  signature: z.string().optional(), // cryptographic proof of vote
+});
+
+export const insertVoteSchema = voteSchema.omit({ id: true, timestamp: true });
+export type Vote = z.infer<typeof voteSchema>;
+export type InsertVote = z.infer<typeof insertVoteSchema>;
+
+export const governanceConfigSchema = z.object({
+  id: z.string(),
+  movementId: z.string().optional(), // if movement-specific
+  proposalCreationThreshold: z.number(), // minimum verification level to create proposals
+  defaultQuorum: z.number(), // default minimum participation
+  defaultPassingThreshold: z.number(), // default percentage to pass
+  votingPeriodDays: z.number(), // how long votes stay open
+  emergencyVotingPeriodHours: z.number(), // expedited voting for emergencies
+  allowedProposalTypes: z.array(z.string()),
+  isActive: z.boolean().default(true),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const insertGovernanceConfigSchema = governanceConfigSchema.omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+export type GovernanceConfig = z.infer<typeof governanceConfigSchema>;
+export type InsertGovernanceConfig = z.infer<typeof insertGovernanceConfigSchema>;
