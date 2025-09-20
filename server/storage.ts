@@ -10,7 +10,17 @@ import {
   Donation, 
   InsertDonation,
   Membership,
-  InsertMembership
+  InsertMembership,
+  ConsciousnessState,
+  InsertConsciousnessState,
+  DecisionRecord,
+  InsertDecisionRecord,
+  ComplexityMap,
+  InsertComplexityMap,
+  LearningCycle,
+  InsertLearningCycle,
+  ReflectionLog,
+  InsertReflectionLog
 } from '../shared/schema';
 
 export interface IStorage {
@@ -45,6 +55,36 @@ export interface IStorage {
   createMembership(membership: InsertMembership): Promise<Membership>;
   getMembershipsByMovement(movementId: string): Promise<Membership[]>;
   getMembershipsByWallet(walletAddress: string): Promise<Membership[]>;
+  
+  // Consciousness operations
+  createConsciousnessState(state: InsertConsciousnessState): Promise<ConsciousnessState>;
+  getConsciousnessStates(agentId: string): Promise<ConsciousnessState[]>;
+  getConsciousnessState(id: string): Promise<ConsciousnessState | null>;
+  updateConsciousnessState(id: string, updates: Partial<ConsciousnessState>): Promise<ConsciousnessState>;
+  
+  // Decision Record operations
+  createDecisionRecord(decision: InsertDecisionRecord): Promise<DecisionRecord>;
+  getDecisionRecords(agentId: string): Promise<DecisionRecord[]>;
+  getDecisionRecord(id: string): Promise<DecisionRecord | null>;
+  updateDecisionRecord(id: string, updates: Partial<DecisionRecord>): Promise<DecisionRecord>;
+  
+  // Complexity Map operations
+  createComplexityMap(map: InsertComplexityMap): Promise<ComplexityMap>;
+  getComplexityMaps(): Promise<ComplexityMap[]>;
+  getComplexityMap(id: string): Promise<ComplexityMap | null>;
+  updateComplexityMap(id: string, updates: Partial<ComplexityMap>): Promise<ComplexityMap>;
+  
+  // Learning Cycle operations
+  createLearningCycle(cycle: InsertLearningCycle): Promise<LearningCycle>;
+  getLearningCycles(agentId: string): Promise<LearningCycle[]>;
+  getLearningCycle(id: string): Promise<LearningCycle | null>;
+  updateLearningCycle(id: string, updates: Partial<LearningCycle>): Promise<LearningCycle>;
+  
+  // Reflection Log operations
+  createReflectionLog(reflection: InsertReflectionLog): Promise<ReflectionLog>;
+  getReflectionLogs(agentId: string): Promise<ReflectionLog[]>;
+  getReflectionLog(id: string): Promise<ReflectionLog | null>;
+  updateReflectionLog(id: string, updates: Partial<ReflectionLog>): Promise<ReflectionLog>;
 }
 
 export class MemStorage implements IStorage {
@@ -54,6 +94,11 @@ export class MemStorage implements IStorage {
   private campaigns: Campaign[] = [];
   private donations: Donation[] = [];
   private memberships: Membership[] = [];
+  private consciousnessStates: ConsciousnessState[] = [];
+  private decisionRecords: DecisionRecord[] = [];
+  private complexityMaps: ComplexityMap[] = [];
+  private learningCycles: LearningCycle[] = [];
+  private reflectionLogs: ReflectionLog[] = [];
 
   // Identity operations
   async createIdentity(identity: InsertIdentity): Promise<Identity> {
@@ -213,6 +258,173 @@ export class MemStorage implements IStorage {
 
   async getMembershipsByWallet(walletAddress: string): Promise<Membership[]> {
     return this.memberships.filter(membership => membership.memberAddress === walletAddress);
+  }
+
+  // Consciousness State operations
+  async createConsciousnessState(state: InsertConsciousnessState): Promise<ConsciousnessState> {
+    const newState: ConsciousnessState = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...state,
+    };
+    this.consciousnessStates.push(newState);
+    return newState;
+  }
+
+  async getConsciousnessStates(agentId: string): Promise<ConsciousnessState[]> {
+    return this.consciousnessStates.filter(state => state.agentId === agentId);
+  }
+
+  async getConsciousnessState(id: string): Promise<ConsciousnessState | null> {
+    return this.consciousnessStates.find(state => state.id === id) || null;
+  }
+
+  async updateConsciousnessState(id: string, updates: Partial<ConsciousnessState>): Promise<ConsciousnessState> {
+    const index = this.consciousnessStates.findIndex(state => state.id === id);
+    if (index === -1) throw new Error('Consciousness state not found');
+    
+    this.consciousnessStates[index] = { ...this.consciousnessStates[index], ...updates };
+    return this.consciousnessStates[index];
+  }
+
+  // Decision Record operations
+  async createDecisionRecord(decision: InsertDecisionRecord): Promise<DecisionRecord> {
+    const newDecision: DecisionRecord = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...decision,
+    };
+    this.decisionRecords.push(newDecision);
+    return newDecision;
+  }
+
+  async getDecisionRecords(agentId: string): Promise<DecisionRecord[]> {
+    return this.decisionRecords.filter(decision => decision.agentId === agentId);
+  }
+
+  async getDecisionRecord(id: string): Promise<DecisionRecord | null> {
+    return this.decisionRecords.find(decision => decision.id === id) || null;
+  }
+
+  async updateDecisionRecord(id: string, updates: Partial<DecisionRecord>): Promise<DecisionRecord> {
+    const index = this.decisionRecords.findIndex(decision => decision.id === id);
+    if (index === -1) throw new Error('Decision record not found');
+    
+    this.decisionRecords[index] = { ...this.decisionRecords[index], ...updates };
+    return this.decisionRecords[index];
+  }
+
+  // Complexity Map operations
+  async createComplexityMap(map: InsertComplexityMap): Promise<ComplexityMap> {
+    const complexityMetrics = {
+      nodeCount: map.nodes.length,
+      edgeCount: map.edges.length,
+      averageConnectivity: map.nodes.length > 0 ? map.edges.length / map.nodes.length : 0,
+      emergenceIndex: map.emergentProperties.length / (map.nodes.length || 1),
+      chaosOrder: 0.5 // Default balanced state
+    };
+
+    const newMap: ComplexityMap = {
+      id: Math.random().toString(36).substring(7),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      complexityMetrics,
+      ...map,
+    };
+    this.complexityMaps.push(newMap);
+    return newMap;
+  }
+
+  async getComplexityMaps(): Promise<ComplexityMap[]> {
+    return this.complexityMaps;
+  }
+
+  async getComplexityMap(id: string): Promise<ComplexityMap | null> {
+    return this.complexityMaps.find(map => map.id === id) || null;
+  }
+
+  async updateComplexityMap(id: string, updates: Partial<ComplexityMap>): Promise<ComplexityMap> {
+    const index = this.complexityMaps.findIndex(map => map.id === id);
+    if (index === -1) throw new Error('Complexity map not found');
+    
+    const updatedMap = { ...this.complexityMaps[index], ...updates, updatedAt: new Date().toISOString() };
+    
+    // Recalculate complexity metrics if structure changed
+    if (updates.nodes || updates.edges) {
+      updatedMap.complexityMetrics = {
+        nodeCount: updatedMap.nodes.length,
+        edgeCount: updatedMap.edges.length,
+        averageConnectivity: updatedMap.nodes.length > 0 ? updatedMap.edges.length / updatedMap.nodes.length : 0,
+        emergenceIndex: updatedMap.emergentProperties.length / (updatedMap.nodes.length || 1),
+        chaosOrder: updatedMap.complexityMetrics?.chaosOrder || 0.5
+      };
+    }
+    
+    this.complexityMaps[index] = updatedMap;
+    return this.complexityMaps[index];
+  }
+
+  // Learning Cycle operations
+  async createLearningCycle(cycle: InsertLearningCycle): Promise<LearningCycle> {
+    const newCycle: LearningCycle = {
+      id: Math.random().toString(36).substring(7),
+      startedAt: new Date().toISOString(),
+      ...cycle,
+    };
+    this.learningCycles.push(newCycle);
+    return newCycle;
+  }
+
+  async getLearningCycles(agentId: string): Promise<LearningCycle[]> {
+    return this.learningCycles.filter(cycle => cycle.agentId === agentId);
+  }
+
+  async getLearningCycle(id: string): Promise<LearningCycle | null> {
+    return this.learningCycles.find(cycle => cycle.id === id) || null;
+  }
+
+  async updateLearningCycle(id: string, updates: Partial<LearningCycle>): Promise<LearningCycle> {
+    const index = this.learningCycles.findIndex(cycle => cycle.id === id);
+    if (index === -1) throw new Error('Learning cycle not found');
+    
+    const updatedCycle = { ...this.learningCycles[index], ...updates };
+    
+    // Calculate duration if completed
+    if (updates.completedAt && updates.status === 'completed') {
+      const startTime = new Date(this.learningCycles[index].startedAt).getTime();
+      const endTime = new Date(updates.completedAt).getTime();
+      updatedCycle.cycleDuration = endTime - startTime;
+    }
+    
+    this.learningCycles[index] = updatedCycle;
+    return this.learningCycles[index];
+  }
+
+  // Reflection Log operations
+  async createReflectionLog(reflection: InsertReflectionLog): Promise<ReflectionLog> {
+    const newReflection: ReflectionLog = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...reflection,
+    };
+    this.reflectionLogs.push(newReflection);
+    return newReflection;
+  }
+
+  async getReflectionLogs(agentId: string): Promise<ReflectionLog[]> {
+    return this.reflectionLogs.filter(reflection => reflection.agentId === agentId);
+  }
+
+  async getReflectionLog(id: string): Promise<ReflectionLog | null> {
+    return this.reflectionLogs.find(reflection => reflection.id === id) || null;
+  }
+
+  async updateReflectionLog(id: string, updates: Partial<ReflectionLog>): Promise<ReflectionLog> {
+    const index = this.reflectionLogs.findIndex(reflection => reflection.id === id);
+    if (index === -1) throw new Error('Reflection log not found');
+    
+    this.reflectionLogs[index] = { ...this.reflectionLogs[index], ...updates };
+    return this.reflectionLogs[index];
   }
 }
 
