@@ -1412,12 +1412,93 @@ router.post('/api/analytics/usage', async (req, res) => {
 
 router.get('/api/analytics/usage', async (req, res) => {
   try {
-    const { timeframe, featureType } = req.query;
+    const { timeframe, featureType, feature } = req.query;
     const analytics = await storage.getAIUsageAnalytics(
       timeframe as string, 
-      featureType as string
+      (featureType || feature) as string
     );
-    res.json(analytics);
+    
+    // Aggregate and transform data to match frontend expectations
+    const aggregatedData = {
+      totalRequests: 0,
+      totalTokens: 0,
+      totalCost: 0,
+      avgResponseTime: 0,
+      successRate: 0,
+      featureBreakdown: {} as Record<string, number>,
+      providers: {} as Record<string, any>
+    };
+    
+    let responseTimeSum = 0;
+    let successfulRequests = 0;
+    let totalResponseTimes = 0;
+    
+    analytics.forEach(usage => {
+      aggregatedData.totalRequests += 1;
+      aggregatedData.totalTokens += usage.tokensUsed;
+      aggregatedData.totalCost += usage.cost;
+      
+      if (usage.responseTime) {
+        responseTimeSum += usage.responseTime;
+        totalResponseTimes += 1;
+      }
+      
+      if (usage.success) {
+        successfulRequests += 1;
+      }
+      
+      // Feature breakdown
+      if (usage.featureType) {
+        aggregatedData.featureBreakdown[usage.featureType] = 
+          (aggregatedData.featureBreakdown[usage.featureType] || 0) + 1;
+      }
+      
+      // Provider breakdown
+      if (usage.aiProvider) {
+        if (!aggregatedData.providers[usage.aiProvider]) {
+          aggregatedData.providers[usage.aiProvider] = {
+            tokens: 0,
+            cost: 0,
+            requests: 0,
+            successRate: 0,
+            avgResponseTime: 0
+          };
+        }
+        
+        const providerData = aggregatedData.providers[usage.aiProvider];
+        providerData.tokens += usage.tokensUsed;
+        providerData.cost += usage.cost;
+        providerData.requests += 1;
+      }
+    });
+    
+    // Calculate averages and rates
+    if (totalResponseTimes > 0) {
+      aggregatedData.avgResponseTime = Math.round(responseTimeSum / totalResponseTimes);
+    }
+    
+    if (aggregatedData.totalRequests > 0) {
+      aggregatedData.successRate = Math.round((successfulRequests / aggregatedData.totalRequests) * 100 * 100) / 100;
+    }
+    
+    // Calculate provider-specific rates
+    Object.keys(aggregatedData.providers).forEach(provider => {
+      const providerAnalytics = analytics.filter(a => a.aiProvider === provider);
+      const providerSuccessful = providerAnalytics.filter(a => a.success).length;
+      const providerTotal = providerAnalytics.length;
+      const providerResponseTimes = providerAnalytics.filter(a => a.responseTime).map(a => a.responseTime!);
+      
+      if (providerTotal > 0) {
+        aggregatedData.providers[provider].successRate = Math.round((providerSuccessful / providerTotal) * 100 * 100) / 100;
+      }
+      
+      if (providerResponseTimes.length > 0) {
+        const avgResponseTime = providerResponseTimes.reduce((sum, time) => sum + time, 0) / providerResponseTimes.length;
+        aggregatedData.providers[provider].avgResponseTime = Math.round(avgResponseTime);
+      }
+    });
+    
+    res.json(aggregatedData);
   } catch (error) {
     console.error('Get AI usage analytics error:', error);
     res.status(500).json({ error: 'Failed to fetch usage analytics' });
@@ -1457,11 +1538,34 @@ router.post('/api/analytics/provider-performance', async (req, res) => {
 router.get('/api/analytics/provider-performance', async (req, res) => {
   try {
     const { provider, timeWindow } = req.query;
-    const performance = await storage.getAIProviderPerformance(
+    const rawPerformance = await storage.getAIProviderPerformance(
       provider as any,
       timeWindow as string
     );
-    res.json(performance);
+    
+    // Transform data to match frontend expectations
+    const transformedData: Record<string, any> = {};
+    
+    rawPerformance.forEach(perf => {
+      const successRate = perf.totalRequests > 0 ? (perf.successfulRequests / perf.totalRequests) * 100 : 0;
+      const errorRate = 100 - successRate;
+      const availability = successRate; // Simple mapping for now
+      
+      transformedData[perf.provider] = {
+        avgResponseTime: perf.avgResponseTime,
+        availability: Math.round(availability * 100) / 100,
+        errorRate: Math.round(errorRate * 100) / 100,
+        successRate: Math.round(successRate * 100) / 100,
+        totalRequests: perf.totalRequests,
+        successfulRequests: perf.successfulRequests,
+        avgTokens: perf.avgTokens,
+        totalCost: perf.totalCost,
+        period: perf.period,
+        timeWindow: perf.timeWindow
+      };
+    });
+    
+    res.json(transformedData);
   } catch (error) {
     console.error('Get AI provider performance error:', error);
     res.status(500).json({ error: 'Failed to fetch provider performance' });
