@@ -1,6 +1,11 @@
 import { AISettings, AIProvider, AIModelConfig } from '../../shared/schema';
 import { storage } from '../storage';
-import { AIProviderAdapter, AIResponse, AIRequest } from './AIProviderAdapter';
+import { AIProviderAdapter, AIResponse, AIRequest, AIStreamResponse } from './AIProviderAdapter';
+import { OpenAIAdapter } from './providers/OpenAIAdapter';
+import { ClaudeAdapter } from './providers/ClaudeAdapter';
+import { GeminiAdapter } from './providers/GeminiAdapter';
+import { XAIAdapter } from './providers/XAIAdapter';
+import { LiteLLMAdapter } from './providers/LiteLLMAdapter';
 
 /**
  * Main AI Service Manager - handles routing, fallbacks, and provider selection
@@ -11,7 +16,39 @@ export class AIServiceManager {
   private currentSettings: AISettings | null = null;
 
   constructor() {
-    // Initialize with empty provider map - providers will be registered dynamically
+    // Initialize all providers on startup
+    this.initializeProviders();
+  }
+
+  /**
+   * Initialize all available AI provider adapters
+   */
+  private initializeProviders(): void {
+    try {
+      // Initialize OpenAI adapter
+      const openaiAdapter = new OpenAIAdapter();
+      this.registerProvider('openai', openaiAdapter);
+
+      // Initialize Claude adapter
+      const claudeAdapter = new ClaudeAdapter();
+      this.registerProvider('claude', claudeAdapter);
+
+      // Initialize Gemini adapter
+      const geminiAdapter = new GeminiAdapter();
+      this.registerProvider('gemini', geminiAdapter);
+
+      // Initialize xAI adapter
+      const xaiAdapter = new XAIAdapter();
+      this.registerProvider('xai', xaiAdapter);
+
+      // Initialize LiteLLM adapter
+      const litellmAdapter = new LiteLLMAdapter();
+      this.registerProvider('litellm', litellmAdapter);
+
+      console.log('AI Service Manager: All providers initialized');
+    } catch (error) {
+      console.error('AI Service Manager: Error initializing providers:', error);
+    }
   }
 
   /**
@@ -19,6 +56,54 @@ export class AIServiceManager {
    */
   registerProvider(provider: AIProvider, adapter: AIProviderAdapter): void {
     this.providers.set(provider, adapter);
+    console.log(`AI Service Manager: Registered ${provider} provider`);
+  }
+
+  /**
+   * Update provider configuration (API keys, base URLs, etc.)
+   */
+  updateProviderConfig(provider: AIProvider, apiKey?: string, baseUrl?: string): void {
+    const adapter = this.providers.get(provider);
+    if (adapter) {
+      adapter.updateConfig(apiKey, baseUrl);
+      console.log(`AI Service Manager: Updated configuration for ${provider} provider`);
+    } else {
+      console.warn(`AI Service Manager: Provider ${provider} not found for config update`);
+    }
+  }
+
+  /**
+   * Reinitialize a specific provider (useful for API key updates)
+   */
+  reinitializeProvider(provider: AIProvider, apiKey?: string, baseUrl?: string): void {
+    try {
+      let adapter: AIProviderAdapter;
+
+      switch (provider) {
+        case 'openai':
+          adapter = new OpenAIAdapter(apiKey);
+          break;
+        case 'claude':
+          adapter = new ClaudeAdapter(apiKey);
+          break;
+        case 'gemini':
+          adapter = new GeminiAdapter(apiKey);
+          break;
+        case 'xai':
+          adapter = new XAIAdapter(apiKey, baseUrl);
+          break;
+        case 'litellm':
+          adapter = new LiteLLMAdapter(apiKey, baseUrl);
+          break;
+        default:
+          throw new Error(`Unknown provider: ${provider}`);
+      }
+
+      this.registerProvider(provider, adapter);
+      console.log(`AI Service Manager: Reinitialized ${provider} provider`);
+    } catch (error) {
+      console.error(`AI Service Manager: Error reinitializing ${provider} provider:`, error);
+    }
   }
 
   /**
@@ -60,6 +145,127 @@ export class AIServiceManager {
   async refreshSettings(): Promise<void> {
     this.currentSettings = null;
     await this.getSettings();
+  }
+
+  /**
+   * Make a streaming AI request with automatic routing, fallback, and retry logic
+   */
+  async* makeStreamRequest(request: AIRequest): AsyncIterable<AIStreamResponse> {
+    const settings = await this.getSettings();
+    const { routing } = settings;
+    
+    // Try primary provider first
+    let lastError: Error | null = null;
+    
+    try {
+      yield* this.attemptProviderStreamRequest(routing.primary, request, settings);
+      return;
+    } catch (error) {
+      lastError = error as Error;
+      console.warn(`Primary provider ${routing.primary} streaming failed:`, error);
+    }
+    
+    // Try fallback providers
+    for (const fallbackProvider of routing.fallbacks) {
+      if (fallbackProvider === routing.primary) continue; // Skip if same as primary
+      
+      try {
+        console.log(`Attempting fallback provider for streaming: ${fallbackProvider}`);
+        yield* this.attemptProviderStreamRequest(fallbackProvider, request, settings);
+        return;
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`Fallback provider ${fallbackProvider} streaming failed:`, error);
+      }
+    }
+    
+    // All providers failed
+    throw new Error(`All AI providers failed for streaming. Last error: ${lastError?.message || 'Unknown error'}`);
+  }
+
+  /**
+   * Attempt streaming request with a specific provider, including retry logic and timeout
+   */
+  private async* attemptProviderStreamRequest(
+    provider: AIProvider, 
+    request: AIRequest, 
+    settings: AISettings
+  ): AsyncIterable<AIStreamResponse> {
+    const adapter = this.providers.get(provider);
+    if (!adapter) {
+      throw new Error(`Provider ${provider} not registered`);
+    }
+
+    const { retry, timeoutMs } = settings.routing;
+    const providerConfig = settings.providerPrefs[provider] || this.getDefaultConfig(provider);
+
+    let lastError: Error | null = null;
+    
+    for (let attempt = 1; attempt <= retry.maxAttempts; attempt++) {
+      try {
+        // Create timeout controller
+        const abortController = new AbortController();
+        const timeoutId = setTimeout(() => {
+          abortController.abort();
+        }, timeoutMs);
+
+        try {
+          // Start the streaming request
+          const streamIterator = adapter.makeStreamRequest({
+            ...request,
+            config: providerConfig,
+          });
+
+          // Yield chunks with timeout monitoring
+          for await (const chunk of streamIterator) {
+            if (abortController.signal.aborted) {
+              throw new Error('Request timeout during streaming');
+            }
+            yield chunk;
+            
+            // If stream is done, we can clear the timeout and return
+            if (chunk.done) {
+              clearTimeout(timeoutId);
+              return;
+            }
+          }
+          
+          clearTimeout(timeoutId);
+          return;
+          
+        } finally {
+          clearTimeout(timeoutId);
+        }
+        
+      } catch (error) {
+        lastError = error as Error;
+        
+        if (attempt < retry.maxAttempts) {
+          // Exponential backoff with jitter
+          const backoffTime = retry.backoffMs * Math.pow(2, attempt - 1) + Math.random() * 1000;
+          console.log(`Retrying ${provider} streaming in ${Math.round(backoffTime)}ms (attempt ${attempt + 1}/${retry.maxAttempts})`);
+          await this.sleep(backoffTime);
+        }
+      }
+    }
+    
+    throw lastError || new Error(`Provider ${provider} streaming failed after ${retry.maxAttempts} attempts`);
+  }
+
+  /**
+   * Public generate method - main entry point for AI generation
+   * Applies routing policy with retry logic, timeouts, and fallback chain
+   */
+  async generate(request: AIRequest): Promise<AIResponse> {
+    return this.makeRequest(request);
+  }
+
+  /**
+   * Public streaming generate method - main entry point for streaming AI generation
+   * Applies routing policy with retry logic, timeouts, and fallback chain
+   */
+  async* generateStream(request: AIRequest): AsyncIterable<AIStreamResponse> {
+    yield* this.makeStreamRequest(request);
   }
 
   /**

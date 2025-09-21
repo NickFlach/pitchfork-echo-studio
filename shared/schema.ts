@@ -1115,8 +1115,17 @@ export const aiModelConfigSchema = z.object({
   maxTokens: z.number().min(1).max(100000).default(4000),
 });
 
+// Optional version for API requests
+export const aiModelConfigRequestSchema = z.object({
+  provider: AIProviderEnum.optional(),
+  model: z.string().optional(),
+  temperature: z.number().min(0).max(2).optional(),
+  maxTokens: z.number().min(1).max(100000).optional(),
+});
+
 export const insertAIModelConfigSchema = aiModelConfigSchema;
 export type AIModelConfig = z.infer<typeof aiModelConfigSchema>;
+export type AIModelConfigRequest = z.infer<typeof aiModelConfigRequestSchema>;
 export type InsertAIModelConfig = z.infer<typeof insertAIModelConfigSchema>;
 
 // AI Routing Policy for fallback and retry strategies
