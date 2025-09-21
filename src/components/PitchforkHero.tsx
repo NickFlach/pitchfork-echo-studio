@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight, MessageCircle, Scale } from 'lucide-react';
+import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight, MessageCircle, Scale, BookOpen } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { formatAddress, getNetworkName } from '@/hooks/useWeb3';
 import { useToast } from '@/hooks/use-toast';
@@ -123,68 +123,94 @@ export const PitchforkHero = React.memo(() => {
           </p>
         </div>
         
-        {/* Wallet connection section */}
+        {/* Action buttons - always visible */}
         <div className="space-y-6 pt-8">
-          {!isConnected ? (
+          {/* Whitepaper - Always accessible */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
-              variant="cosmic" 
+              variant="cosmicOutline" 
               size="lg"
-              onClick={handleWalletAction}
-              disabled={isConnecting}
+              onClick={() => navigate('/whitepaper')}
               className="min-w-[200px] text-lg font-semibold"
             >
-              <Wallet className="w-5 h-5 mr-2" />
-              {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+              <BookOpen className="w-5 h-5 mr-2" />
+              Read Whitepaper
             </Button>
-          ) : (
-            <div className="space-y-4">
-              {/* Connected wallet info */}
-              <div className="bg-background/10 backdrop-blur-sm border border-primary/20 rounded-lg p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Connected Wallet</span>
-                  <Button 
-                    variant="cosmicOutline" 
-                    size="sm"
-                    onClick={handleWalletAction}
-                    className="h-8 px-3"
-                  >
-                    <LogOut className="w-3 h-3 mr-1" />
-                    Disconnect
-                  </Button>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <code className="text-sm font-mono text-foreground bg-muted/20 px-2 py-1 rounded">
-                      {formatAddress(account!)}
-                    </code>
-                    <Button
-                      variant="ghost"
+            
+            {!isConnected ? (
+              <Button 
+                variant="cosmic" 
+                size="lg"
+                onClick={handleWalletAction}
+                disabled={isConnecting}
+                className="min-w-[200px] text-lg font-semibold"
+              >
+                <Wallet className="w-5 h-5 mr-2" />
+                {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+              </Button>
+            ) : (
+              <div className="space-y-4">
+                {/* Connected wallet info */}
+                <div className="bg-background/10 backdrop-blur-sm border border-primary/20 rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Connected Wallet</span>
+                    <Button 
+                      variant="cosmicOutline" 
                       size="sm"
-                      onClick={copyAddress}
-                      className="h-6 w-6 p-0"
+                      onClick={handleWalletAction}
+                      className="h-8 px-3"
                     >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={openInExplorer}
-                      className="h-6 w-6 p-0"
-                    >
-                      <ExternalLink className="w-3 h-3" />
+                      <LogOut className="w-3 h-3 mr-1" />
+                      Disconnect
                     </Button>
                   </div>
                   
-                  {chainId && (
-                    <div className="text-xs text-muted-foreground">
-                      Network: {getNetworkName(chainId)}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <code className="text-sm font-mono text-foreground bg-muted/20 px-2 py-1 rounded">
+                        {formatAddress(account!)}
+                      </code>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={copyAddress}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={openInExplorer}
+                        className="h-6 w-6 p-0"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                      </Button>
                     </div>
-                  )}
+                    
+                    {chainId && (
+                      <div className="text-xs text-muted-foreground">
+                        Network: {getNetworkName(chainId)}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          
+          {/* Introduction text - always visible */}
+          <div className="max-w-3xl mx-auto text-center space-y-4">
+            <p className="text-muted-foreground">
+              Learn how decentralized tools can help you fight corruption, organize resistance, 
+              and build a more just world. Our comprehensive whitepaper explains everything you need to know.
+            </p>
+            {!isConnected && (
+              <p className="text-sm text-muted-foreground/80">
+                Connect your wallet to access the full platform and start taking action.
+              </p>
+            )}
+          </div>
           
           {/* Core Platform Features */}
           {isConnected && (
