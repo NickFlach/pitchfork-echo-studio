@@ -1,30 +1,66 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { BrowserProvider, JsonRpcSigner } from 'ethers';
+import { BrowserProvider, JsonRpcSigner, ethers } from 'ethers';
 
-interface Web3ContextType {
+export interface WalletInfo {
+  name: string;
+  icon: string;
+  connector: any;
+}
+
+export interface Web3ContextType {
   isConnected: boolean;
   account: string | null;
   provider: BrowserProvider | null;
   signer: JsonRpcSigner | null;
   chainId: number | null;
-  connectWallet: () => Promise<void>;
+  walletType: string | null;
+  connectWallet: (walletType?: string) => Promise<void>;
   disconnectWallet: () => void;
   isConnecting: boolean;
+  error: string | null;
+  supportedChains: number[];
+  switchNetwork: (chainId: number) => Promise<void>;
+  availableWallets: WalletInfo[];
 }
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
 
 interface Web3ProviderProps {
   children: ReactNode;
+  config?: {
+    supportedChains?: number[];
+  };
 }
 
-export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
+export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [account, setAccount] = useState<string | null>(null);
   const [provider, setProvider] = useState<BrowserProvider | null>(null);
   const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
+  const [walletType, setWalletType] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [supportedChains] = useState<number[]>(config?.supportedChains || [1, 137, 56, 5, 11155111, 80001, 97]);
+
+  // Available wallet configurations
+  const availableWallets: WalletInfo[] = [
+    {
+      name: 'MetaMask',
+      icon: '🦊',
+      connector: 'metamask'
+    },
+    {
+      name: 'WalletConnect',
+      icon: '📱',
+      connector: 'walletconnect'
+    },
+    {
+      name: 'Coinbase Wallet',
+      icon: '🔷',
+      connector: 'coinbase'
+    }
+  ];
 
   // Check if wallet is already connected on load
   useEffect(() => {
@@ -77,10 +113,13 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
     }
   };
 
-  const connectWallet = async () => {
+  const connectWallet = async (walletType?: string) => {
+    setError(null);
+
     if (!window.ethereum) {
-      alert('MetaMask is not installed. Please install MetaMask to continue.');
-      return;
+      const errorMsg = 'No Web3 wallet detected. Please install MetaMask or another Web3 wallet.';
+      setError(errorMsg);
+      throw new Error(errorMsg);
     }
 
     setIsConnecting(true);
@@ -100,13 +139,65 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
         setProvider(provider);
         setSigner(signer);
         setChainId(Number(network.chainId));
+        setWalletType(walletType || 'metamask');
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to connect wallet';
+      setError(errorMessage);
       console.error('Error connecting wallet:', error);
-      alert('Failed to connect wallet. Please try again.');
+      throw new Error(errorMessage);
     } finally {
       setIsConnecting(false);
     }
+  };
+
+  const switchNetwork = async (chainId: number) => {
+    if (!window.ethereum) {
+      throw new Error('No Web3 wallet detected');
+    }
+
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${chainId.toString(16)}` }],
+      });
+    } catch (error: any) {
+      // If the network doesn't exist in the wallet, try to add it
+      if (error.code === 4902) {
+        // Handle network not found error
+        const networkInfo = getNetworkInfo(chainId);
+        if (networkInfo) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [networkInfo],
+          });
+        }
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  const getNetworkInfo = (chainId: number) => {
+    const networks: Record<number, any> = {
+      1: {
+        chainId: '0x1',
+        chainName: 'Ethereum Mainnet',
+        nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+        rpcUrls: ['https://mainnet.infura.io/v3/'],
+        blockExplorerUrls: ['https://etherscan.io/']
+      },
+      137: {
+        chainId: '0x89',
+        chainName: 'Polygon Mainnet',
+        nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+        rpcUrls: ['https://polygon-rpc.com/'],
+        blockExplorerUrls: ['https://polygonscan.com/']
+      },
+      // Add more network configurations as needed
+    };
+
+    return networks[chainId];
   };
 
   const disconnectWallet = () => {
@@ -123,9 +214,14 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
     provider,
     signer,
     chainId,
+    walletType,
     connectWallet,
     disconnectWallet,
     isConnecting,
+    error,
+    supportedChains,
+    switchNetwork,
+    availableWallets,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
