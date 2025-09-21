@@ -32,9 +32,7 @@ import {
   ResponsiveContainer, 
   PieChart, 
   Pie, 
-  Cell,
-  Heatmap,
-  Calendar
+  Cell
 } from 'recharts';
 import { 
   Activity, 
