@@ -42,7 +42,19 @@ import {
   AICredentials,
   InsertAICredentials,
   MaskedAICredentials,
-  AIProvider
+  AIProvider,
+  AIUsageAnalytics,
+  InsertAIUsageAnalytics,
+  AIProviderPerformance,
+  InsertAIProviderPerformance,
+  AIUserFeedback,
+  InsertAIUserFeedback,
+  AIFeatureAdoption,
+  InsertAIFeatureAdoption,
+  AIProviderFallbackEvent,
+  InsertAIProviderFallbackEvent,
+  AIProviderRecommendation,
+  InsertAIProviderRecommendation
 } from '../shared/schema';
 import * as crypto from 'crypto';
 
@@ -179,6 +191,32 @@ export interface IStorage {
   getMaskedAICredentials(): Promise<MaskedAICredentials[]>;
   deleteAICredentials(provider: AIProvider): Promise<boolean>;
   hasAICredentials(provider: AIProvider): Promise<boolean>;
+  
+  // AI Analytics operations
+  createAIUsageAnalytics(analytics: InsertAIUsageAnalytics): Promise<AIUsageAnalytics>;
+  getAIUsageAnalytics(timeframe?: string, featureType?: string): Promise<AIUsageAnalytics[]>;
+  getAIUsageAnalyticsById(id: string): Promise<AIUsageAnalytics | null>;
+  
+  createAIProviderPerformance(performance: InsertAIProviderPerformance): Promise<AIProviderPerformance>;
+  getAIProviderPerformance(provider?: AIProvider, timeWindow?: string): Promise<AIProviderPerformance[]>;
+  getAIProviderPerformanceById(id: string): Promise<AIProviderPerformance | null>;
+  
+  createAIUserFeedback(feedback: InsertAIUserFeedback): Promise<AIUserFeedback>;
+  getAIUserFeedback(featureType?: string, rating?: string): Promise<AIUserFeedback[]>;
+  getAIUserFeedbackById(id: string): Promise<AIUserFeedback | null>;
+  getAIUserFeedbackByRequestId(requestId: string): Promise<AIUserFeedback | null>;
+  
+  createAIFeatureAdoption(adoption: InsertAIFeatureAdoption): Promise<AIFeatureAdoption>;
+  getAIFeatureAdoption(featureType?: string, timeWindow?: string): Promise<AIFeatureAdoption[]>;
+  getAIFeatureAdoptionById(id: string): Promise<AIFeatureAdoption | null>;
+  
+  createAIProviderFallbackEvent(event: InsertAIProviderFallbackEvent): Promise<AIProviderFallbackEvent>;
+  getAIProviderFallbackEvents(provider?: AIProvider, failureReason?: string): Promise<AIProviderFallbackEvent[]>;
+  getAIProviderFallbackEventById(id: string): Promise<AIProviderFallbackEvent | null>;
+  
+  createAIProviderRecommendation(recommendation: InsertAIProviderRecommendation): Promise<AIProviderRecommendation>;
+  getAIProviderRecommendations(featureType?: string): Promise<AIProviderRecommendation[]>;
+  getAIProviderRecommendationById(id: string): Promise<AIProviderRecommendation | null>;
 }
 
 export class MemStorage implements IStorage {
@@ -204,6 +242,12 @@ export class MemStorage implements IStorage {
   private resourceProfiles: ResourceProfile[] = [];
   private aiSettings: AISettings | null = null;
   private aiCredentials: AICredentials[] = [];
+  private aiUsageAnalytics: AIUsageAnalytics[] = [];
+  private aiProviderPerformance: AIProviderPerformance[] = [];
+  private aiUserFeedback: AIUserFeedback[] = [];
+  private aiFeatureAdoption: AIFeatureAdoption[] = [];
+  private aiProviderFallbackEvents: AIProviderFallbackEvent[] = [];
+  private aiProviderRecommendations: AIProviderRecommendation[] = [];
   
   // Encryption configuration for AI credentials
   private readonly encryptionKey: Buffer;
@@ -957,6 +1001,197 @@ export class MemStorage implements IStorage {
       console.error(`Failed to decrypt API key for provider ${provider}:`, error);
       return null;
     }
+  }
+
+  // AI Analytics operations
+
+  // AI Usage Analytics methods
+  async createAIUsageAnalytics(analytics: InsertAIUsageAnalytics): Promise<AIUsageAnalytics> {
+    const newAnalytics: AIUsageAnalytics = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...analytics,
+    };
+    this.aiUsageAnalytics.push(newAnalytics);
+    return newAnalytics;
+  }
+
+  async getAIUsageAnalytics(timeframe?: string, featureType?: string): Promise<AIUsageAnalytics[]> {
+    let filtered = [...this.aiUsageAnalytics];
+    
+    if (timeframe) {
+      const cutoffDate = new Date();
+      switch (timeframe) {
+        case 'hour':
+          cutoffDate.setHours(cutoffDate.getHours() - 1);
+          break;
+        case 'day':
+          cutoffDate.setDate(cutoffDate.getDate() - 1);
+          break;
+        case 'week':
+          cutoffDate.setDate(cutoffDate.getDate() - 7);
+          break;
+        case 'month':
+          cutoffDate.setMonth(cutoffDate.getMonth() - 1);
+          break;
+      }
+      filtered = filtered.filter(a => new Date(a.timestamp) >= cutoffDate);
+    }
+    
+    if (featureType) {
+      filtered = filtered.filter(a => a.featureType === featureType);
+    }
+    
+    return filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }
+
+  async getAIUsageAnalyticsById(id: string): Promise<AIUsageAnalytics | null> {
+    return this.aiUsageAnalytics.find(a => a.id === id) || null;
+  }
+
+  // AI Provider Performance methods
+  async createAIProviderPerformance(performance: InsertAIProviderPerformance): Promise<AIProviderPerformance> {
+    const newPerformance: AIProviderPerformance = {
+      id: Math.random().toString(36).substring(7),
+      lastUpdated: new Date().toISOString(),
+      ...performance,
+    };
+    this.aiProviderPerformance.push(newPerformance);
+    return newPerformance;
+  }
+
+  async getAIProviderPerformance(provider?: AIProvider, timeWindow?: string): Promise<AIProviderPerformance[]> {
+    let filtered = [...this.aiProviderPerformance];
+    
+    if (provider) {
+      filtered = filtered.filter(p => p.provider === provider);
+    }
+    
+    if (timeWindow) {
+      filtered = filtered.filter(p => p.timeWindow === timeWindow);
+    }
+    
+    return filtered.sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
+  }
+
+  async getAIProviderPerformanceById(id: string): Promise<AIProviderPerformance | null> {
+    return this.aiProviderPerformance.find(p => p.id === id) || null;
+  }
+
+  // AI User Feedback methods
+  async createAIUserFeedback(feedback: InsertAIUserFeedback): Promise<AIUserFeedback> {
+    const newFeedback: AIUserFeedback = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...feedback,
+    };
+    this.aiUserFeedback.push(newFeedback);
+    return newFeedback;
+  }
+
+  async getAIUserFeedback(featureType?: string, rating?: string): Promise<AIUserFeedback[]> {
+    let filtered = [...this.aiUserFeedback];
+    
+    if (featureType) {
+      filtered = filtered.filter(f => f.featureType === featureType);
+    }
+    
+    if (rating) {
+      filtered = filtered.filter(f => f.qualityRating === rating);
+    }
+    
+    return filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }
+
+  async getAIUserFeedbackById(id: string): Promise<AIUserFeedback | null> {
+    return this.aiUserFeedback.find(f => f.id === id) || null;
+  }
+
+  async getAIUserFeedbackByRequestId(requestId: string): Promise<AIUserFeedback | null> {
+    return this.aiUserFeedback.find(f => f.requestId === requestId) || null;
+  }
+
+  // AI Feature Adoption methods
+  async createAIFeatureAdoption(adoption: InsertAIFeatureAdoption): Promise<AIFeatureAdoption> {
+    const newAdoption: AIFeatureAdoption = {
+      id: Math.random().toString(36).substring(7),
+      lastUpdated: new Date().toISOString(),
+      ...adoption,
+    };
+    this.aiFeatureAdoption.push(newAdoption);
+    return newAdoption;
+  }
+
+  async getAIFeatureAdoption(featureType?: string, timeWindow?: string): Promise<AIFeatureAdoption[]> {
+    let filtered = [...this.aiFeatureAdoption];
+    
+    if (featureType) {
+      filtered = filtered.filter(a => a.featureType === featureType);
+    }
+    
+    if (timeWindow) {
+      filtered = filtered.filter(a => a.timeWindow === timeWindow);
+    }
+    
+    return filtered.sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
+  }
+
+  async getAIFeatureAdoptionById(id: string): Promise<AIFeatureAdoption | null> {
+    return this.aiFeatureAdoption.find(a => a.id === id) || null;
+  }
+
+  // AI Provider Fallback Event methods
+  async createAIProviderFallbackEvent(event: InsertAIProviderFallbackEvent): Promise<AIProviderFallbackEvent> {
+    const newEvent: AIProviderFallbackEvent = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...event,
+    };
+    this.aiProviderFallbackEvents.push(newEvent);
+    return newEvent;
+  }
+
+  async getAIProviderFallbackEvents(provider?: AIProvider, failureReason?: string): Promise<AIProviderFallbackEvent[]> {
+    let filtered = [...this.aiProviderFallbackEvents];
+    
+    if (provider) {
+      filtered = filtered.filter(e => e.primaryProvider === provider);
+    }
+    
+    if (failureReason) {
+      filtered = filtered.filter(e => e.failureReason === failureReason);
+    }
+    
+    return filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }
+
+  async getAIProviderFallbackEventById(id: string): Promise<AIProviderFallbackEvent | null> {
+    return this.aiProviderFallbackEvents.find(e => e.id === id) || null;
+  }
+
+  // AI Provider Recommendation methods
+  async createAIProviderRecommendation(recommendation: InsertAIProviderRecommendation): Promise<AIProviderRecommendation> {
+    const newRecommendation: AIProviderRecommendation = {
+      id: Math.random().toString(36).substring(7),
+      lastUpdated: new Date().toISOString(),
+      ...recommendation,
+    };
+    this.aiProviderRecommendations.push(newRecommendation);
+    return newRecommendation;
+  }
+
+  async getAIProviderRecommendations(featureType?: string): Promise<AIProviderRecommendation[]> {
+    let filtered = [...this.aiProviderRecommendations];
+    
+    if (featureType) {
+      filtered = filtered.filter(r => r.featureType === featureType);
+    }
+    
+    return filtered.sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
+  }
+
+  async getAIProviderRecommendationById(id: string): Promise<AIProviderRecommendation | null> {
+    return this.aiProviderRecommendations.find(r => r.id === id) || null;
   }
 }
 

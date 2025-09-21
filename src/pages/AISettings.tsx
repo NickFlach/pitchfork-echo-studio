@@ -51,7 +51,9 @@ import {
   Globe,
   Key,
   Clock,
-  RefreshCw
+  RefreshCw,
+  BarChart3,
+  Sparkles
 } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -61,7 +63,8 @@ import {
   AIProvider, 
   AIModelConfig,
   insertAISettingsSchema,
-  AIProviderEnum
+  AIProviderEnum,
+  type AIUsageAnalytics
 } from '../../shared/schema';
 
 // Form validation schema based on the backend schema
@@ -83,7 +86,7 @@ const aiSettingsFormSchema = insertAISettingsSchema.extend({
 
 type AISettingsFormData = z.infer<typeof aiSettingsFormSchema>;
 
-// Provider information and configurations
+// Enhanced Provider information and configurations with use cases and pricing
 const PROVIDER_INFO = {
   openai: {
     name: 'OpenAI',
@@ -92,6 +95,12 @@ const PROVIDER_INFO = {
     apiKeyUrl: 'https://platform.openai.com/api-keys',
     defaultModel: 'gpt-4',
     requiresApiKey: true,
+    strengths: ['Creative thinking', 'Code generation', 'Conversational AI', 'Broad knowledge'],
+    bestFor: ['Creative consciousness exploration', 'Innovative campaign strategies', 'Complex problem solving'],
+    consciousnessUseCase: 'Excels at creative self-reflection and exploring novel perspectives on personal growth',
+    leadershipUseCase: 'Outstanding for brainstorming innovative campaign strategies and creative solutions',
+    pricing: { model: 'gpt-4', inputPrice: 0.03, outputPrice: 0.06, currency: 'USD per 1K tokens' },
+    testPrompt: 'Analyze how consciousness can evolve through creative exploration',
   },
   claude: {
     name: 'Anthropic Claude',
@@ -105,6 +114,12 @@ const PROVIDER_INFO = {
     apiKeyUrl: 'https://console.anthropic.com/settings/keys',
     defaultModel: 'claude-3-sonnet-20240229',
     requiresApiKey: true,
+    strengths: ['Logical reasoning', 'Ethical analysis', 'Long-form analysis', 'Safety-focused'],
+    bestFor: ['Deep consciousness reflection', 'Ethical decision-making', 'Strategic analysis'],
+    consciousnessUseCase: 'Superior for deep philosophical reflection and ethical consciousness development',
+    leadershipUseCase: 'Excellent for analyzing complex situations and providing balanced strategic guidance',
+    pricing: { model: 'claude-3-sonnet', inputPrice: 0.003, outputPrice: 0.015, currency: 'USD per 1K tokens' },
+    testPrompt: 'Provide a detailed analysis of decision-making frameworks for social movements',
   },
   gemini: {
     name: 'Google Gemini',
@@ -113,6 +128,12 @@ const PROVIDER_INFO = {
     apiKeyUrl: 'https://aistudio.google.com/app/apikey',
     defaultModel: 'gemini-pro',
     requiresApiKey: true,
+    strengths: ['Data analysis', 'Research synthesis', 'Factual accuracy', 'Multimodal capabilities'],
+    bestFor: ['Research-based insights', 'Data-driven decisions', 'Information synthesis'],
+    consciousnessUseCase: 'Ideal for research-backed consciousness insights and evidence-based personal development',
+    leadershipUseCase: 'Perfect for data-driven campaign analysis and research-based strategic planning',
+    pricing: { model: 'gemini-pro', inputPrice: 0.0005, outputPrice: 0.0015, currency: 'USD per 1K tokens' },
+    testPrompt: 'Synthesize research on effective leadership strategies for social change',
   },
   xai: {
     name: 'xAI Grok',
@@ -123,6 +144,12 @@ const PROVIDER_INFO = {
     requiresApiKey: true,
     requiresBaseUrl: true,
     defaultBaseUrl: 'https://api.x.ai/v1',
+    strengths: ['Real-time information', 'Witty insights', 'Current events', 'Direct responses'],
+    bestFor: ['Current context awareness', 'Real-time strategy', 'Timely insights'],
+    consciousnessUseCase: 'Great for consciousness development in current world context and real-time insights',
+    leadershipUseCase: 'Excellent for timely campaign strategies and current event-based decision making',
+    pricing: { model: 'grok-beta', inputPrice: 0.01, outputPrice: 0.02, currency: 'USD per 1K tokens (estimated)' },
+    testPrompt: 'Analyze current social movements and their consciousness-raising strategies',
   },
   litellm: {
     name: 'LiteLLM Proxy',
@@ -133,6 +160,12 @@ const PROVIDER_INFO = {
     requiresApiKey: true,
     requiresBaseUrl: true,
     defaultBaseUrl: 'http://localhost:4000',
+    strengths: ['Model flexibility', 'Custom deployments', 'Cost optimization', 'Model switching'],
+    bestFor: ['Custom workflows', 'Cost control', 'Model experimentation'],
+    consciousnessUseCase: 'Flexible approach for experimenting with different consciousness exploration models',
+    leadershipUseCase: 'Allows strategic model selection based on specific campaign needs and budget',
+    pricing: { model: 'various', inputPrice: 'varies', outputPrice: 'varies', currency: 'depends on proxied model' },
+    testPrompt: 'Test custom model configuration for consciousness and leadership applications',
   },
 } as const;
 
@@ -140,6 +173,14 @@ export default function AISettings() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({});
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(1);
+  const [testingProvider, setTestingProvider] = useState<string | null>(null);
+  const [testResults, setTestResults] = useState<Record<string, any>>({});
+  const [selectedProviderForComparison, setSelectedProviderForComparison] = useState<string | null>(null);
+  const [showProviderComparison, setShowProviderComparison] = useState(false);
+  const [estimatedMonthlyCost, setEstimatedMonthlyCost] = useState<Record<string, number>>({});
+  const [usageEstimate, setUsageEstimate] = useState({ requests: 1000, tokensPerRequest: 2000 });
 
   // Fetch current AI settings
   const { data: currentSettings, isLoading } = useQuery({
@@ -318,6 +359,195 @@ export default function AISettings() {
         return <XCircle className="w-4 h-4 text-red-500" />;
       default:
         return <AlertCircle className="w-4 h-4 text-yellow-500" />;
+    }
+  };
+
+  // Helper functions for enhanced AI Settings features
+  const testProviderMutation = useMutation({
+    mutationFn: async (provider: string) => {
+      const providerInfo = PROVIDER_INFO[provider as keyof typeof PROVIDER_INFO];
+      return apiRequest('/api/ai/test', {
+        method: 'POST',
+        body: {
+          provider,
+          prompt: providerInfo.testPrompt,
+          maxTokens: 100,
+        },
+      });
+    },
+    onSuccess: (result, provider) => {
+      setTestResults(prev => ({ ...prev, [provider]: result }));
+      toast({
+        title: 'Provider Test Successful',
+        description: `${PROVIDER_INFO[provider as keyof typeof PROVIDER_INFO].name} is working correctly`,
+      });
+    },
+    onError: (error, provider) => {
+      setTestResults(prev => ({ ...prev, [provider]: { error: error.message } }));
+      toast({
+        title: 'Provider Test Failed',
+        description: `Failed to test ${PROVIDER_INFO[provider as keyof typeof PROVIDER_INFO].name}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        variant: 'destructive',
+      });
+    },
+    onSettled: () => {
+      setTestingProvider(null);
+    },
+  });
+
+  const testProvider = (provider: string) => {
+    setTestingProvider(provider);
+    testProviderMutation.mutate(provider);
+  };
+
+  const calculateMonthlyCost = (provider: string, requests: number, tokensPerRequest: number) => {
+    const providerInfo = PROVIDER_INFO[provider as keyof typeof PROVIDER_INFO];
+    if (!providerInfo.pricing || typeof providerInfo.pricing.inputPrice !== 'number') {
+      return 0;
+    }
+    const totalTokens = requests * tokensPerRequest;
+    const cost = (totalTokens / 1000) * (providerInfo.pricing.inputPrice + (providerInfo.pricing.outputPrice as number || 0)) / 2;
+    return Math.round(cost * 100) / 100; // Round to 2 decimal places
+  };
+
+  // Update cost estimates when usage changes
+  useEffect(() => {
+    const costs: Record<string, number> = {};
+    Object.keys(PROVIDER_INFO).forEach(provider => {
+      costs[provider] = calculateMonthlyCost(provider, usageEstimate.requests, usageEstimate.tokensPerRequest);
+    });
+    setEstimatedMonthlyCost(costs);
+  }, [usageEstimate]);
+
+  // Check if user needs onboarding (no API keys configured)
+  useEffect(() => {
+    if (currentCredentials && Array.isArray(currentCredentials)) {
+      const hasAnyCredentials = currentCredentials.some(cred => cred.hasApiKey);
+      setShowOnboarding(!hasAnyCredentials);
+    }
+  }, [currentCredentials]);
+
+  const nextOnboardingStep = () => {
+    if (onboardingStep < 4) {
+      setOnboardingStep(prev => prev + 1);
+    } else {
+      setShowOnboarding(false);
+      toast({
+        title: 'Onboarding Complete!',
+        description: 'You\'re all set to use AI-enhanced consciousness and leadership features.',
+      });
+    }
+  };
+
+  const prevOnboardingStep = () => {
+    if (onboardingStep > 1) {
+      setOnboardingStep(prev => prev - 1);
+    }
+  };
+
+  // Get intelligent recommendations based on usage analytics
+  const getIntelligentRecommendations = (analytics: any[]): Array<{
+    title: string;
+    description: string;
+    priority: 'high' | 'medium' | 'low';
+    action?: () => void;
+    actionText?: string;
+  }> => {
+    if (!analytics || analytics.length === 0) return [];
+
+    const recommendations: any[] = [];
+    
+    // Analyze provider performance
+    const providerStats = analytics.reduce((acc: any, item: any) => {
+      if (!acc[item.aiProvider]) {
+        acc[item.aiProvider] = { success: 0, total: 0, avgTime: 0, tokens: 0 };
+      }
+      acc[item.aiProvider].total++;
+      if (item.success) {
+        acc[item.aiProvider].success++;
+        acc[item.aiProvider].avgTime += item.responseTimeMs || 0;
+      }
+      acc[item.aiProvider].tokens += item.totalTokens || 0;
+      return acc;
+    }, {});
+
+    // Check for low-performing providers
+    Object.entries(providerStats).forEach(([provider, stats]: [string, any]) => {
+      const successRate = stats.success / stats.total;
+      const avgTime = stats.success > 0 ? stats.avgTime / stats.success : 0;
+      
+      if (successRate < 0.85 && stats.total > 5) {
+        recommendations.push({
+          title: `${PROVIDER_INFO[provider as keyof typeof PROVIDER_INFO]?.name || provider} Performance Alert`,
+          description: `Success rate is ${(successRate * 100).toFixed(1)}%. Consider checking API credentials or switching primary provider.`,
+          priority: 'high' as const,
+          action: () => {
+            // Set primary to best performing provider
+            const bestProvider = Object.entries(providerStats)
+              .sort(([,a], [,b]) => (b.success / b.total) - (a.success / a.total))[0][0];
+            form.setValue('routing.primary', bestProvider as any);
+          },
+          actionText: 'Switch to best provider'
+        });
+      }
+      
+      if (avgTime > 10000 && stats.success > 0) {
+        recommendations.push({
+          title: 'Slow Response Times Detected',
+          description: `${provider} averages ${Math.round(avgTime)}ms response time. Consider optimizing or using faster providers for real-time features.`,
+          priority: 'medium' as const,
+        });
+      }
+    });
+
+    // Feature-specific recommendations
+    const featureUsage = analytics.reduce((acc: any, item: any) => {
+      acc[item.featureType] = (acc[item.featureType] || 0) + 1;
+      return acc;
+    }, {});
+
+    if (featureUsage['consciousness-reflection'] > 10) {
+      recommendations.push({
+        title: 'Consciousness Reflection Optimization',
+        description: 'Claude is recommended for deep philosophical reflection based on your usage patterns.',
+        priority: 'low' as const,
+        action: () => form.setValue('routing.primary', 'claude'),
+        actionText: 'Set Claude as primary'
+      });
+    }
+
+    return recommendations.slice(0, 3); // Show top 3 recommendations
+  };
+
+  const getProviderRecommendation = (useCase: 'consciousness' | 'leadership' | 'general') => {
+    switch (useCase) {
+      case 'consciousness':
+        return {
+          primary: 'claude',
+          reason: 'Best for deep philosophical reflection and ethical consciousness development',
+          alternatives: [
+            { provider: 'openai', reason: 'Great for creative self-exploration' },
+            { provider: 'gemini', reason: 'Excellent for research-backed insights' }
+          ]
+        };
+      case 'leadership':
+        return {
+          primary: 'openai',
+          reason: 'Outstanding for innovative campaign strategies and creative solutions',
+          alternatives: [
+            { provider: 'claude', reason: 'Excellent for strategic analysis' },
+            { provider: 'xai', reason: 'Great for timely, context-aware strategies' }
+          ]
+        };
+      default:
+        return {
+          primary: 'claude',
+          reason: 'Well-balanced for various AI tasks',
+          alternatives: [
+            { provider: 'openai', reason: 'Versatile and creative' },
+            { provider: 'gemini', reason: 'Cost-effective and reliable' }
+          ]
+        };
     }
   };
 

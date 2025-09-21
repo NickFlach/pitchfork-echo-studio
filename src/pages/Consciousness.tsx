@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ConsciousnessDashboard } from '@/components/consciousness/ConsciousnessDashboard';
 import { DecisionTimeline } from '@/components/consciousness/DecisionTimeline';
 import { ReflectionObservatory } from '@/components/consciousness/ReflectionObservatory';
@@ -34,11 +35,18 @@ import {
   Settings,
   AlertTriangle,
   CheckCircle,
-  Clock
+  Clock,
+  Sparkles,
+  ThumbsUp,
+  ThumbsDown,
+  Info,
+  Loader2
 } from 'lucide-react';
 import type { ConsciousnessState, DecisionRecord, ReflectionLog, LearningCycle, ComplexityMap } from '../../shared/schema';
 import { consciousnessApi } from '@/lib/consciousnessApi';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import type { InsertAIUsageAnalytics, InsertAIUserFeedback, MaskedAICredentials } from '../../shared/schema';
 
 const Consciousness = () => {
   const { toast } = useToast();
@@ -48,6 +56,163 @@ const Consciousness = () => {
   const [decisionContext, setDecisionContext] = useState('');
   const [decisionOptions, setDecisionOptions] = useState('');
   const agentId = 'default-agent';
+
+  // AI Enhancement state - now dynamically detected
+  const [processingWithAI, setProcessingWithAI] = useState<string | null>(null);
+  const [feedbackRatings, setFeedbackRatings] = useState<Record<string, 'up' | 'down' | null>>({});
+  const [feedbackLoading, setFeedbackLoading] = useState<Record<string, boolean>>({});
+  const [showAITips, setShowAITips] = useState<Record<string, boolean>>({});
+  const [sessionId] = useState(() => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+
+  // AI Response Metadata State - tracks actual models used
+  const [latestAIResponseMetadata, setLatestAIResponseMetadata] = useState<{
+    [requestId: string]: {
+      provider: string;
+      model: string;
+      timestamp: number;
+      featureType: string;
+    }
+  }>({});
+
+  // AI Configuration Detection
+  const { data: aiCredentials = [], isLoading: loadingAIConfig } = useQuery<MaskedAICredentials[]>({
+    queryKey: ['/api/admin/ai-credentials'],
+    refetchInterval: 30000, // Check every 30 seconds
+  });
+
+  // Dynamic AI availability detection
+  const aiEnhanced = aiCredentials.some(cred => cred.hasApiKey);
+  const configuredProviders = aiCredentials.filter(cred => cred.hasApiKey).map(cred => cred.provider);
+
+  // AI Enhancement helper components
+  const AIEnhancedBadge = ({ feature, tooltip }: { feature: string; tooltip: string }) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant="secondary" className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-700 dark:text-purple-300 border-purple-300/50" data-testid={`badge-ai-${feature}`}>
+            <Sparkles className="w-3 h-3 mr-1" />
+            AI Enhanced
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="max-w-xs">{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+
+  const ProcessingIndicator = ({ feature }: { feature: string }) => (
+    processingWithAI === feature ? (
+      <div className="flex items-center gap-2 text-sm text-muted-foreground animate-pulse">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        AI Processing...
+      </div>
+    ) : null
+  );
+
+  const FeedbackButtons = ({ itemId, type }: { itemId: string; type: 'reflection' | 'decision' }) => (
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handleFeedback(itemId, 'up')}
+        disabled={feedbackLoading[itemId]}
+        className={`h-8 w-8 p-0 ${feedbackRatings[itemId] === 'up' ? 'text-green-600 bg-green-50' : ''}`}
+        data-testid={`button-thumbs-up-${itemId}`}
+      >
+        {feedbackLoading[itemId] ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <ThumbsUp className="w-4 h-4" />
+        )}
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handleFeedback(itemId, 'down')}
+        disabled={feedbackLoading[itemId]}
+        className={`h-8 w-8 p-0 ${feedbackRatings[itemId] === 'down' ? 'text-red-600 bg-red-50' : ''}`}
+        data-testid={`button-thumbs-down-${itemId}`}
+      >
+        {feedbackLoading[itemId] ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <ThumbsDown className="w-4 h-4" />
+        )}
+      </Button>
+    </div>
+  );
+
+  const TryWithAIPrompt = ({ feature, onTry }: { feature: string; onTry: () => void }) => (
+    !aiEnhanced ? (
+      <Alert className="mt-4">
+        <Sparkles className="w-4 h-4" />
+        <AlertDescription className="flex items-center justify-between">
+          <span>Enhance your {feature.toLowerCase()} with AI-powered insights</span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => window.location.href = '/ai-settings'} 
+            data-testid={`button-try-ai-${feature}`}
+          >
+            Configure AI
+          </Button>
+        </AlertDescription>
+      </Alert>
+    ) : null
+  );
+
+  const handleFeedback = async (itemId: string, rating: 'up' | 'down') => {
+    setFeedbackRatings(prev => ({ ...prev, [itemId]: rating }));
+    setFeedbackLoading(prev => ({ ...prev, [itemId]: true }));
+    
+    try {
+      // Determine feature type and provider from context
+      const featureType = selectedTab === 'reflections' ? 'consciousness-reflection' : 'decision-analysis';
+      
+      // Get actual AI metadata if available, otherwise use configured provider info
+      const responseMetadata = latestAIResponseMetadata[itemId];
+      const aiProvider = responseMetadata?.provider || configuredProviders[0] || 'openai';
+      const modelUsed = responseMetadata?.model || getDefaultModelForProvider(aiProvider);
+      
+      const feedbackData: InsertAIUserFeedback = {
+        sessionId,
+        featureType: featureType as any,
+        aiProvider: aiProvider as any,
+        modelUsed: modelUsed,
+        requestId: itemId,
+        qualityRating: rating === 'up' ? 'thumbs_up' : 'thumbs_down',
+        feedback: {
+          helpful: rating === 'up',
+          relevant: rating === 'up',
+        },
+      };
+
+      await apiRequest('/api/analytics/user-feedback', {
+        method: 'POST',
+        body: JSON.stringify(feedbackData),
+      });
+
+      // Invalidate feedback cache
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics/user-feedback'] });
+      
+      toast({
+        title: rating === 'up' ? 'Positive Feedback Recorded' : 'Feedback Recorded',
+        description: 'Thanks for helping us improve AI responses!',
+      });
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+      toast({
+        title: 'Feedback Error',
+        description: 'Failed to record feedback. Please try again.',
+        variant: 'destructive',
+      });
+      // Revert feedback rating on error
+      setFeedbackRatings(prev => ({ ...prev, [itemId]: null }));
+    } finally {
+      setFeedbackLoading(prev => ({ ...prev, [itemId]: false }));
+    }
+  };
 
   // Real-time consciousness state query
   const { data: consciousnessStates = [], isLoading: loadingConsciousness, refetch: refetchConsciousness } = useQuery<ConsciousnessState[]>({
@@ -81,6 +246,64 @@ const Consciousness = () => {
 
   const isLoading = loadingConsciousness || loadingDecisions || loadingReflections || loadingLearning || loadingComplexity;
 
+  // Get default model for provider
+  const getDefaultModelForProvider = (provider: string): string => {
+    const providerModels: Record<string, string> = {
+      'openai': 'gpt-4',
+      'claude': 'claude-3-sonnet-20240229',
+      'gemini': 'gemini-pro',
+      'xai': 'grok-beta',
+      'litellm': 'gpt-4' // LiteLLM can proxy multiple models, defaulting to gpt-4
+    };
+    return providerModels[provider] || 'gpt-4';
+  };
+
+  // Usage analytics tracking helper with actual model tracking
+  const trackUsage = async (featureType: string, aiProvider?: string, startTime?: number, requestId?: string, providerMetadata?: any) => {
+    try {
+      const responseTime = startTime ? Date.now() - startTime : 0;
+      const actualProvider = aiProvider || configuredProviders[0] || 'openai';
+      const actualModel = providerMetadata?.model || getDefaultModelForProvider(actualProvider);
+      
+      // Store metadata for feedback correlation if requestId provided
+      if (requestId) {
+        setLatestAIResponseMetadata(prev => ({
+          ...prev,
+          [requestId]: {
+            provider: actualProvider,
+            model: actualModel,
+            timestamp: Date.now(),
+            featureType
+          }
+        }));
+      }
+      
+      const usageData: InsertAIUsageAnalytics = {
+        sessionId,
+        featureType: featureType as any,
+        aiProvider: actualProvider as any,
+        modelUsed: actualModel,
+        requestType: 'standard',
+        promptTokens: providerMetadata?.promptTokens || 0,
+        completionTokens: providerMetadata?.completionTokens || 0,
+        totalTokens: providerMetadata?.totalTokens || 0,
+        responseTimeMs: responseTime,
+        success: true,
+        userContext: {
+          consciousnessLevel: 'adaptive',
+          urgencyLevel: 'medium',
+        },
+      };
+
+      await apiRequest('/api/analytics/usage', {
+        method: 'POST',
+        body: JSON.stringify(usageData),
+      });
+    } catch (error) {
+      console.warn('Failed to track usage analytics:', error);
+    }
+  };
+
   // Trigger reflection
   const handleReflection = async () => {
     if (!reflectionTrigger.trim()) {
@@ -93,11 +316,22 @@ const Consciousness = () => {
     }
 
     setIsProcessing(true);
+    setProcessingWithAI('reflection');
+    const startTime = Date.now();
+    const requestId = `reflection-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
     try {
-      await consciousnessApi.reflect(reflectionTrigger);
+      const response = await consciousnessApi.reflect(reflectionTrigger);
+      
+      // Extract AI metadata from response if available
+      const providerMetadata = response?.aiMetadata || response?.providerMetadata;
+      
+      // Track usage analytics with actual model information
+      await trackUsage('consciousness-reflection', providerMetadata?.provider, startTime, requestId, providerMetadata);
+      
       toast({
         title: "Reflection Initiated",
-        description: "AI consciousness is processing the reflection trigger",
+        description: aiEnhanced ? "AI-enhanced consciousness is processing the reflection trigger" : "Consciousness engine is processing the reflection trigger",
       });
       setReflectionTrigger('');
       // Refetch data to show new reflection
@@ -110,6 +344,7 @@ const Consciousness = () => {
       });
     } finally {
       setIsProcessing(false);
+      setProcessingWithAI(null);
     }
   };
 
@@ -125,6 +360,10 @@ const Consciousness = () => {
     }
 
     setIsProcessing(true);
+    setProcessingWithAI('decision');
+    const startTime = Date.now();
+    const requestId = `decision-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
     try {
       const options = decisionOptions.split('\n').filter(opt => opt.trim()).map(opt => ({
         id: `option-${Date.now()}-${Math.random()}`,
@@ -139,10 +378,17 @@ const Consciousness = () => {
         expectedOutcomes: []
       }));
 
-      await consciousnessApi.processMultiscaleDecision(decisionContext, options);
+      const response = await consciousnessApi.processMultiscaleDecision(decisionContext, options);
+      
+      // Extract AI metadata from response if available
+      const providerMetadata = response?.aiMetadata || response?.providerMetadata;
+      
+      // Track usage analytics with actual model information
+      await trackUsage('decision-analysis', providerMetadata?.provider, startTime, requestId, providerMetadata);
+      
       toast({
         title: "Decision Processed",
-        description: "AI consciousness has analyzed the decision through multiscale framework",
+        description: aiEnhanced ? "AI-enhanced consciousness has analyzed the decision" : "Consciousness engine has analyzed the decision",
       });
       setDecisionContext('');
       setDecisionOptions('');
@@ -156,6 +402,7 @@ const Consciousness = () => {
       });
     } finally {
       setIsProcessing(false);
+      setProcessingWithAI(null);
     }
   };
 

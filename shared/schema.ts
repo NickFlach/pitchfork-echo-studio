@@ -1195,3 +1195,176 @@ export const aiSettingsSchema = z.object({
 export const insertAISettingsSchema = aiSettingsSchema.omit({ id: true, updatedAt: true });
 export type AISettings = z.infer<typeof aiSettingsSchema>;
 export type InsertAISettings = z.infer<typeof insertAISettingsSchema>;
+
+// AI Analytics Schema for Usage Tracking and Performance Monitoring
+
+// AI Usage Analytics - tracks how AI features are being used
+export const aiUsageAnalyticsSchema = z.object({
+  id: z.string(),
+  userId: z.string().optional(), // Anonymous tracking possible
+  sessionId: z.string(),
+  featureType: z.enum(['consciousness-reflection', 'leadership-strategy', 'decision-analysis', 'corruption-detection', 'campaign-planning']),
+  aiProvider: AIProviderEnum,
+  modelUsed: z.string(),
+  requestType: z.enum(['standard', 'streaming', 'batch']),
+  promptTokens: z.number().min(0),
+  completionTokens: z.number().min(0),
+  totalTokens: z.number().min(0),
+  responseTimeMs: z.number().min(0),
+  success: z.boolean(),
+  errorType: z.string().optional(),
+  fallbackUsed: z.boolean().default(false),
+  fallbackProvider: AIProviderEnum.optional(),
+  userContext: z.object({
+    consciousnessLevel: z.enum(['reactive', 'adaptive', 'creative', 'integrative', 'transcendent']).optional(),
+    decisionComplexity: z.enum(['simple', 'moderate', 'complex', 'multiscale']).optional(),
+    urgencyLevel: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+  }).optional(),
+  timestamp: z.string(),
+});
+
+export const insertAIUsageAnalyticsSchema = aiUsageAnalyticsSchema.omit({ id: true, timestamp: true });
+
+// AI Provider Performance Metrics - tracks performance across providers
+export const aiProviderPerformanceSchema = z.object({
+  id: z.string(),
+  provider: AIProviderEnum,
+  model: z.string(),
+  timeWindow: z.enum(['hourly', 'daily', 'weekly', 'monthly']),
+  period: z.string(), // ISO date string
+  totalRequests: z.number().min(0),
+  successfulRequests: z.number().min(0),
+  failedRequests: z.number().min(0),
+  averageResponseTimeMs: z.number().min(0),
+  averageTokensPerRequest: z.number().min(0),
+  totalTokensUsed: z.number().min(0),
+  estimatedCost: z.number().min(0),
+  uptime: z.number().min(0).max(1), // percentage as decimal
+  qualityScore: z.number().min(0).max(1).optional(), // based on user feedback
+  failureReasons: z.record(z.string(), z.number()).default({}),
+  peakUsageHour: z.string().optional(),
+  lastUpdated: z.string(),
+});
+
+export const insertAIProviderPerformanceSchema = aiProviderPerformanceSchema.omit({ id: true, lastUpdated: true });
+
+// AI User Feedback - tracks user satisfaction and quality ratings
+export const aiUserFeedbackSchema = z.object({
+  id: z.string(),
+  userId: z.string().optional(),
+  sessionId: z.string(),
+  featureType: z.enum(['consciousness-reflection', 'leadership-strategy', 'decision-analysis', 'corruption-detection', 'campaign-planning']),
+  aiProvider: AIProviderEnum,
+  modelUsed: z.string(),
+  requestId: z.string(), // links back to specific AI request
+  qualityRating: z.enum(['thumbs_up', 'thumbs_down', 'neutral']),
+  satisfactionScore: z.number().min(1).max(5).optional(), // 1-5 scale
+  feedback: z.object({
+    helpful: z.boolean().optional(),
+    accurate: z.boolean().optional(),
+    relevant: z.boolean().optional(),
+    creative: z.boolean().optional(),
+    actionable: z.boolean().optional(),
+  }).optional(),
+  comparison: z.object({
+    preferredOverStandard: z.boolean().optional(),
+    significantImprovement: z.boolean().optional(),
+    wouldRecommend: z.boolean().optional(),
+  }).optional(),
+  textFeedback: z.string().optional(),
+  reportedIssues: z.array(z.enum(['inaccurate', 'irrelevant', 'biased', 'incomplete', 'harmful', 'other'])).default([]),
+  timestamp: z.string(),
+});
+
+export const insertAIUserFeedbackSchema = aiUserFeedbackSchema.omit({ id: true, timestamp: true });
+
+// AI Feature Adoption - tracks which features are AI-enhanced and adoption rates
+export const aiFeatureAdoptionSchema = z.object({
+  id: z.string(),
+  featureType: z.enum(['consciousness-reflection', 'leadership-strategy', 'decision-analysis', 'corruption-detection', 'campaign-planning']),
+  timeWindow: z.enum(['daily', 'weekly', 'monthly']),
+  period: z.string(),
+  totalFeatureUsage: z.number().min(0),
+  aiEnhancedUsage: z.number().min(0),
+  standardUsage: z.number().min(0),
+  aiAdoptionRate: z.number().min(0).max(1), // percentage as decimal
+  newUsersWithAI: z.number().min(0),
+  returningUsersWithAI: z.number().min(0),
+  aiFirstTimeUsers: z.number().min(0),
+  conversionToAI: z.number().min(0), // users who tried AI after standard
+  preferredProviders: z.record(AIProviderEnum, z.number()).default({}),
+  abandonmentRate: z.number().min(0).max(1).optional(), // users who stopped using AI
+  lastUpdated: z.string(),
+});
+
+export const insertAIFeatureAdoptionSchema = aiFeatureAdoptionSchema.omit({ id: true, lastUpdated: true });
+
+// AI Provider Fallback Events - tracks when providers fail and fallbacks are triggered
+export const aiProviderFallbackEventSchema = z.object({
+  id: z.string(),
+  primaryProvider: AIProviderEnum,
+  primaryModel: z.string(),
+  fallbackProvider: AIProviderEnum,
+  fallbackModel: z.string(),
+  featureType: z.enum(['consciousness-reflection', 'leadership-strategy', 'decision-analysis', 'corruption-detection', 'campaign-planning']),
+  failureReason: z.enum(['timeout', 'rate_limit', 'service_unavailable', 'invalid_response', 'authentication_error', 'quota_exceeded', 'model_error']),
+  failureDetails: z.string().optional(),
+  responseTimeMs: z.number().min(0),
+  fallbackSuccess: z.boolean(),
+  retryAttempts: z.number().min(0),
+  finalProvider: AIProviderEnum.optional(),
+  userImpact: z.enum(['none', 'delayed', 'degraded', 'failed']),
+  costImplication: z.number().optional(), // additional cost due to fallback
+  timestamp: z.string(),
+});
+
+export const insertAIProviderFallbackEventSchema = aiProviderFallbackEventSchema.omit({ id: true, timestamp: true });
+
+// AI Provider Recommendations - intelligent suggestions based on context and performance
+export const aiProviderRecommendationSchema = z.object({
+  id: z.string(),
+  featureType: z.enum(['consciousness-reflection', 'leadership-strategy', 'decision-analysis', 'corruption-detection', 'campaign-planning']),
+  contextFactors: z.object({
+    consciousnessDepth: z.enum(['surface', 'moderate', 'deep', 'transcendent']).optional(),
+    decisionComplexity: z.enum(['simple', 'moderate', 'complex', 'multiscale']).optional(),
+    timeConstraint: z.enum(['real-time', 'quick', 'standard', 'deep-analysis']).optional(),
+    creativityNeeded: z.boolean().default(false),
+    analyticalDepth: z.enum(['basic', 'moderate', 'advanced', 'expert']).default('moderate'),
+  }),
+  recommendedProvider: AIProviderEnum,
+  recommendedModel: z.string(),
+  confidence: z.number().min(0).max(1),
+  reasoning: z.array(z.string()),
+  alternativeProviders: z.array(z.object({
+    provider: AIProviderEnum,
+    model: z.string(),
+    suitabilityScore: z.number().min(0).max(1),
+    reason: z.string(),
+  })).default([]),
+  performanceHistory: z.object({
+    successRate: z.number().min(0).max(1),
+    avgResponseTime: z.number().min(0),
+    userSatisfaction: z.number().min(0).max(1),
+  }).optional(),
+  costConsideration: z.object({
+    estimatedCost: z.number().min(0),
+    costEfficiency: z.enum(['low', 'medium', 'high']),
+  }).optional(),
+  lastUpdated: z.string(),
+});
+
+export const insertAIProviderRecommendationSchema = aiProviderRecommendationSchema.omit({ id: true, lastUpdated: true });
+
+// Type exports for AI Analytics
+export type AIUsageAnalytics = z.infer<typeof aiUsageAnalyticsSchema>;
+export type InsertAIUsageAnalytics = z.infer<typeof insertAIUsageAnalyticsSchema>;
+export type AIProviderPerformance = z.infer<typeof aiProviderPerformanceSchema>;
+export type InsertAIProviderPerformance = z.infer<typeof insertAIProviderPerformanceSchema>;
+export type AIUserFeedback = z.infer<typeof aiUserFeedbackSchema>;
+export type InsertAIUserFeedback = z.infer<typeof insertAIUserFeedbackSchema>;
+export type AIFeatureAdoption = z.infer<typeof aiFeatureAdoptionSchema>;
+export type InsertAIFeatureAdoption = z.infer<typeof insertAIFeatureAdoptionSchema>;
+export type AIProviderFallbackEvent = z.infer<typeof aiProviderFallbackEventSchema>;
+export type InsertAIProviderFallbackEvent = z.infer<typeof insertAIProviderFallbackEventSchema>;
+export type AIProviderRecommendation = z.infer<typeof aiProviderRecommendationSchema>;
+export type InsertAIProviderRecommendation = z.infer<typeof insertAIProviderRecommendationSchema>;
