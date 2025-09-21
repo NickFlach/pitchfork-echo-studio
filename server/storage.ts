@@ -26,17 +26,7 @@ import {
   DecisionArchetype,
   InsertDecisionArchetype,
   DecisionEvolution,
-  InsertDecisionEvolution,
-  CorruptionAnalysisResult,
-  InsertCorruptionAnalysisResult,
-  SystemicCorruptionReport,
-  InsertSystemicCorruptionReport,
-  CampaignStrategyPlan,
-  InsertCampaignStrategyPlan,
-  StrategyPattern,
-  TacticalFramework,
-  ResourceProfile,
-  InsertResourceProfile
+  InsertDecisionEvolution
 } from '../shared/schema';
 
 export interface IStorage {
@@ -119,47 +109,6 @@ export interface IStorage {
   getDecisionEvolutions(originalDecisionId: string): Promise<DecisionEvolution[]>;
   getDecisionEvolution(id: string): Promise<DecisionEvolution | null>;
   updateDecisionEvolution(id: string, updates: Partial<DecisionEvolution>): Promise<DecisionEvolution>;
-  
-  // Corruption Analysis operations
-  createCorruptionAnalysisResult(result: InsertCorruptionAnalysisResult): Promise<CorruptionAnalysisResult>;
-  getCorruptionAnalysisResults(): Promise<CorruptionAnalysisResult[]>;
-  getCorruptionAnalysisResult(id: string): Promise<CorruptionAnalysisResult | null>;
-  getCorruptionAnalysisResultsByDocument(documentId: string): Promise<CorruptionAnalysisResult[]>;
-  getCorruptionAnalysisResultsByEntity(entityId: string): Promise<CorruptionAnalysisResult[]>;
-  updateCorruptionAnalysisResult(id: string, updates: Partial<CorruptionAnalysisResult>): Promise<CorruptionAnalysisResult>;
-  
-  // Systemic Corruption Report operations
-  createSystemicCorruptionReport(report: InsertSystemicCorruptionReport): Promise<SystemicCorruptionReport>;
-  getSystemicCorruptionReports(): Promise<SystemicCorruptionReport[]>;
-  getSystemicCorruptionReport(id: string): Promise<SystemicCorruptionReport | null>;
-  updateSystemicCorruptionReport(id: string, updates: Partial<SystemicCorruptionReport>): Promise<SystemicCorruptionReport>;
-  
-  // Campaign Strategy Plan operations
-  createCampaignStrategyPlan(plan: InsertCampaignStrategyPlan): Promise<CampaignStrategyPlan>;
-  getCampaignStrategyPlans(): Promise<CampaignStrategyPlan[]>;
-  getCampaignStrategyPlan(id: string): Promise<CampaignStrategyPlan | null>;
-  getCampaignStrategyPlansByMovement(movementId: string): Promise<CampaignStrategyPlan[]>;
-  getCampaignStrategyPlansByCampaign(campaignId: string): Promise<CampaignStrategyPlan[]>;
-  updateCampaignStrategyPlan(id: string, updates: Partial<CampaignStrategyPlan>): Promise<CampaignStrategyPlan>;
-  
-  // Strategy Pattern operations
-  createStrategyPattern(pattern: StrategyPattern): Promise<StrategyPattern>;
-  getStrategyPatterns(): Promise<StrategyPattern[]>;
-  getStrategyPattern(id: string): Promise<StrategyPattern | null>;
-  updateStrategyPattern(id: string, updates: Partial<StrategyPattern>): Promise<StrategyPattern>;
-  
-  // Tactical Framework operations
-  createTacticalFramework(framework: TacticalFramework): Promise<TacticalFramework>;
-  getTacticalFrameworks(): Promise<TacticalFramework[]>;
-  getTacticalFramework(id: string): Promise<TacticalFramework | null>;
-  getTacticalFrameworksByStrategy(strategyPatternId: string): Promise<TacticalFramework[]>;
-  updateTacticalFramework(id: string, updates: Partial<TacticalFramework>): Promise<TacticalFramework>;
-  
-  // Resource Profile operations
-  createResourceProfile(profile: InsertResourceProfile): Promise<ResourceProfile>;
-  getResourceProfiles(): Promise<ResourceProfile[]>;
-  getResourceProfile(id: string): Promise<ResourceProfile | null>;
-  updateResourceProfile(id: string, updates: Partial<ResourceProfile>): Promise<ResourceProfile>;
 }
 
 export class MemStorage implements IStorage {
@@ -177,12 +126,6 @@ export class MemStorage implements IStorage {
   private decisionSyntheses: DecisionSynthesis[] = [];
   private decisionArchetypes: DecisionArchetype[] = [];
   private decisionEvolutions: DecisionEvolution[] = [];
-  private corruptionAnalysisResults: CorruptionAnalysisResult[] = [];
-  private systemicCorruptionReports: SystemicCorruptionReport[] = [];
-  private campaignStrategyPlans: CampaignStrategyPlan[] = [];
-  private strategyPatterns: StrategyPattern[] = [];
-  private tacticalFrameworks: TacticalFramework[] = [];
-  private resourceProfiles: ResourceProfile[] = [];
 
   // Identity operations
   async createIdentity(identity: InsertIdentity): Promise<Identity> {
@@ -595,177 +538,6 @@ export class MemStorage implements IStorage {
     
     this.decisionEvolutions[index] = { ...this.decisionEvolutions[index], ...updates };
     return this.decisionEvolutions[index];
-  }
-
-  // Corruption Analysis operations
-  async createCorruptionAnalysisResult(result: InsertCorruptionAnalysisResult): Promise<CorruptionAnalysisResult> {
-    const newResult: CorruptionAnalysisResult = {
-      id: Math.random().toString(36).substring(7),
-      createdAt: new Date().toISOString(),
-      ...result,
-    };
-    this.corruptionAnalysisResults.push(newResult);
-    return newResult;
-  }
-
-  async getCorruptionAnalysisResults(): Promise<CorruptionAnalysisResult[]> {
-    return this.corruptionAnalysisResults;
-  }
-
-  async getCorruptionAnalysisResult(id: string): Promise<CorruptionAnalysisResult | null> {
-    return this.corruptionAnalysisResults.find(result => result.id === id) || null;
-  }
-
-  async getCorruptionAnalysisResultsByDocument(documentId: string): Promise<CorruptionAnalysisResult[]> {
-    return this.corruptionAnalysisResults.filter(result => result.documentId === documentId);
-  }
-
-  async getCorruptionAnalysisResultsByEntity(entityId: string): Promise<CorruptionAnalysisResult[]> {
-    return this.corruptionAnalysisResults.filter(result => result.entityId === entityId);
-  }
-
-  async updateCorruptionAnalysisResult(id: string, updates: Partial<CorruptionAnalysisResult>): Promise<CorruptionAnalysisResult> {
-    const index = this.corruptionAnalysisResults.findIndex(result => result.id === id);
-    if (index === -1) throw new Error('Corruption analysis result not found');
-    
-    this.corruptionAnalysisResults[index] = { ...this.corruptionAnalysisResults[index], ...updates };
-    return this.corruptionAnalysisResults[index];
-  }
-
-  // Systemic Corruption Report operations
-  async createSystemicCorruptionReport(report: InsertSystemicCorruptionReport): Promise<SystemicCorruptionReport> {
-    const newReport: SystemicCorruptionReport = {
-      id: Math.random().toString(36).substring(7),
-      timestamp: new Date().toISOString(),
-      ...report,
-    };
-    this.systemicCorruptionReports.push(newReport);
-    return newReport;
-  }
-
-  async getSystemicCorruptionReports(): Promise<SystemicCorruptionReport[]> {
-    return this.systemicCorruptionReports;
-  }
-
-  async getSystemicCorruptionReport(id: string): Promise<SystemicCorruptionReport | null> {
-    return this.systemicCorruptionReports.find(report => report.id === id) || null;
-  }
-
-  async updateSystemicCorruptionReport(id: string, updates: Partial<SystemicCorruptionReport>): Promise<SystemicCorruptionReport> {
-    const index = this.systemicCorruptionReports.findIndex(report => report.id === id);
-    if (index === -1) throw new Error('Systemic corruption report not found');
-    
-    this.systemicCorruptionReports[index] = { ...this.systemicCorruptionReports[index], ...updates };
-    return this.systemicCorruptionReports[index];
-  }
-
-  // Campaign Strategy Plan operations
-  async createCampaignStrategyPlan(plan: InsertCampaignStrategyPlan): Promise<CampaignStrategyPlan> {
-    const newPlan: CampaignStrategyPlan = {
-      id: Math.random().toString(36).substring(7),
-      generatedAt: new Date().toISOString(),
-      ...plan,
-    };
-    this.campaignStrategyPlans.push(newPlan);
-    return newPlan;
-  }
-
-  async getCampaignStrategyPlans(): Promise<CampaignStrategyPlan[]> {
-    return this.campaignStrategyPlans;
-  }
-
-  async getCampaignStrategyPlan(id: string): Promise<CampaignStrategyPlan | null> {
-    return this.campaignStrategyPlans.find(plan => plan.id === id) || null;
-  }
-
-  async getCampaignStrategyPlansByMovement(movementId: string): Promise<CampaignStrategyPlan[]> {
-    return this.campaignStrategyPlans.filter(plan => plan.movementId === movementId);
-  }
-
-  async getCampaignStrategyPlansByCampaign(campaignId: string): Promise<CampaignStrategyPlan[]> {
-    return this.campaignStrategyPlans.filter(plan => plan.campaignId === campaignId);
-  }
-
-  async updateCampaignStrategyPlan(id: string, updates: Partial<CampaignStrategyPlan>): Promise<CampaignStrategyPlan> {
-    const index = this.campaignStrategyPlans.findIndex(plan => plan.id === id);
-    if (index === -1) throw new Error('Campaign strategy plan not found');
-    
-    this.campaignStrategyPlans[index] = { ...this.campaignStrategyPlans[index], ...updates };
-    return this.campaignStrategyPlans[index];
-  }
-
-  // Strategy Pattern operations
-  async createStrategyPattern(pattern: StrategyPattern): Promise<StrategyPattern> {
-    this.strategyPatterns.push(pattern);
-    return pattern;
-  }
-
-  async getStrategyPatterns(): Promise<StrategyPattern[]> {
-    return this.strategyPatterns;
-  }
-
-  async getStrategyPattern(id: string): Promise<StrategyPattern | null> {
-    return this.strategyPatterns.find(pattern => pattern.id === id) || null;
-  }
-
-  async updateStrategyPattern(id: string, updates: Partial<StrategyPattern>): Promise<StrategyPattern> {
-    const index = this.strategyPatterns.findIndex(pattern => pattern.id === id);
-    if (index === -1) throw new Error('Strategy pattern not found');
-    
-    this.strategyPatterns[index] = { ...this.strategyPatterns[index], ...updates };
-    return this.strategyPatterns[index];
-  }
-
-  // Tactical Framework operations
-  async createTacticalFramework(framework: TacticalFramework): Promise<TacticalFramework> {
-    this.tacticalFrameworks.push(framework);
-    return framework;
-  }
-
-  async getTacticalFrameworks(): Promise<TacticalFramework[]> {
-    return this.tacticalFrameworks;
-  }
-
-  async getTacticalFramework(id: string): Promise<TacticalFramework | null> {
-    return this.tacticalFrameworks.find(framework => framework.id === id) || null;
-  }
-
-  async getTacticalFrameworksByStrategy(strategyPatternId: string): Promise<TacticalFramework[]> {
-    return this.tacticalFrameworks.filter(framework => framework.strategyPatternId === strategyPatternId);
-  }
-
-  async updateTacticalFramework(id: string, updates: Partial<TacticalFramework>): Promise<TacticalFramework> {
-    const index = this.tacticalFrameworks.findIndex(framework => framework.id === id);
-    if (index === -1) throw new Error('Tactical framework not found');
-    
-    this.tacticalFrameworks[index] = { ...this.tacticalFrameworks[index], ...updates };
-    return this.tacticalFrameworks[index];
-  }
-
-  // Resource Profile operations
-  async createResourceProfile(profile: InsertResourceProfile): Promise<ResourceProfile> {
-    const newProfile: ResourceProfile = {
-      id: Math.random().toString(36).substring(7),
-      ...profile,
-    };
-    this.resourceProfiles.push(newProfile);
-    return newProfile;
-  }
-
-  async getResourceProfiles(): Promise<ResourceProfile[]> {
-    return this.resourceProfiles;
-  }
-
-  async getResourceProfile(id: string): Promise<ResourceProfile | null> {
-    return this.resourceProfiles.find(profile => profile.id === id) || null;
-  }
-
-  async updateResourceProfile(id: string, updates: Partial<ResourceProfile>): Promise<ResourceProfile> {
-    const index = this.resourceProfiles.findIndex(profile => profile.id === id);
-    if (index === -1) throw new Error('Resource profile not found');
-    
-    this.resourceProfiles[index] = { ...this.resourceProfiles[index], ...updates };
-    return this.resourceProfiles[index];
   }
 }
 

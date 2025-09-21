@@ -29,7 +29,6 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
-import { consciousnessApi } from '@/lib/consciousnessApi';
 
 interface CorruptionDetectionDashboardProps {
   agentId?: string;
@@ -42,19 +41,46 @@ export const CorruptionDetectionDashboard = ({ agentId = 'corruption-ai' }: Corr
   const [analysisType, setAnalysisType] = useState<'document' | 'entity' | 'movement'>('document');
   const [lastAnalysisResult, setLastAnalysisResult] = useState<any>(null);
 
-  // Fetch real corruption statistics
-  const { data: corruptionStats, isLoading: statsLoading } = useQuery({
-    queryKey: ['corruption-stats'],
-    queryFn: consciousnessApi.getCorruptionStats,
-  });
+  // Mock data for demonstration - would connect to real API
+  const corruptionStats = {
+    documentsAnalyzed: 1247,
+    corruptionDetected: 89,
+    systemicCasesFound: 12,
+    movementsProtected: 34,
+    averageConfidence: 0.87,
+    criticalAlerts: 5
+  };
 
-  // Fetch real recent detections
-  const { data: recentDetections = [], isLoading: detectionsLoading } = useQuery({
-    queryKey: ['recent-detections'],
-    queryFn: consciousnessApi.getRecentDetections,
-  });
+  const recentDetections = [
+    {
+      id: '1',
+      type: 'bid-rigging',
+      target: 'City Infrastructure Contract',
+      confidence: 0.92,
+      severity: 'high',
+      timestamp: '2024-01-15T10:30:00Z',
+      status: 'investigating'
+    },
+    {
+      id: '2',
+      type: 'regulatory-capture',
+      target: 'Environmental Protection Agency',
+      confidence: 0.88,
+      severity: 'very-high',
+      timestamp: '2024-01-15T09:15:00Z',
+      status: 'confirmed'
+    },
+    {
+      id: '3',
+      type: 'embezzlement',
+      target: 'Public Education Fund',
+      confidence: 0.79,
+      severity: 'high',
+      timestamp: '2024-01-15T08:45:00Z',
+      status: 'evidence-gathering'
+    }
+  ];
 
-  // Fetch systemic threats (mock for now, could be expanded)
   const systemicThreats = [
     {
       id: '1',
@@ -74,28 +100,50 @@ export const CorruptionDetectionDashboard = ({ agentId = 'corruption-ai' }: Corr
     }
   ];
 
-  // Real analysis mutation
+  // Mock analysis mutation
   const analyzeTargetMutation = useMutation({
     mutationFn: async ({ target, type }: { target: string, type: string }) => {
-      if (type === 'document') {
-        return await consciousnessApi.analyzeDocumentForCorruption(target);
-      } else if (type === 'entity') {
-        return await consciousnessApi.analyzeEntityForCorruption(target, 'organization');
-      } else {
-        // For movement type, we'll use entity analysis for now
-        return await consciousnessApi.analyzeEntityForCorruption(target, 'movement');
-      }
+      // Simulate AI analysis
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      return {
+        target,
+        type,
+        overallCorruptionScore: Math.random() * 0.8 + 0.1,
+        riskLevel: Math.random() > 0.7 ? 'high' : Math.random() > 0.4 ? 'medium' : 'low',
+        detectedPatterns: [
+          {
+            patternName: 'Suspicious Financial Patterns',
+            confidence: Math.random() * 0.4 + 0.6,
+            severity: 'high',
+            indicators: ['Unusual transaction timing', 'Shell company involvement', 'Undisclosed relationships']
+          },
+          {
+            patternName: 'Regulatory Anomalies',
+            confidence: Math.random() * 0.3 + 0.5,
+            severity: 'medium',
+            indicators: ['Expedited approvals', 'Waived requirements', 'Selective enforcement']
+          }
+        ],
+        recommendedActions: [
+          'Immediate forensic investigation',
+          'Secure all relevant documents',
+          'Interview key stakeholders',
+          'Coordinate with legal authorities'
+        ],
+        consciousnessInsights: [
+          'Pattern suggests systematic manipulation of approval processes',
+          'Multi-layer coordination indicates organized corruption',
+          'Temporal analysis reveals consistent manipulation timeline'
+        ]
+      };
     },
     onSuccess: (result) => {
       setLastAnalysisResult(result);
       setSelectedTab('analysis');
-      // Invalidate and refetch corruption data
-      queryClient.invalidateQueries({ queryKey: ['corruption-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['recent-detections'] });
-      queryClient.invalidateQueries({ queryKey: ['corruption-analysis'] });
       toast({
         title: "Analysis Complete",
-        description: `Corruption analysis completed for ${result.documentId || result.entityId || 'target'}`,
+        description: `Corruption analysis completed for ${result.target}`,
       });
     },
     onError: () => {
@@ -244,10 +292,8 @@ export const CorruptionDetectionDashboard = ({ agentId = 'corruption-ai' }: Corr
         </div>
 
         {/* Critical Alerts */}
-        {statsLoading ? (
-          <div className="h-12 bg-gray-800 animate-pulse rounded-md" data-testid="loading-critical-alerts" />
-        ) : corruptionStats && corruptionStats.criticalAlerts > 0 && (
-          <Alert className="border-red-500/30 bg-red-500/5" data-testid="alert-critical-corruption">
+        {corruptionStats.criticalAlerts > 0 && (
+          <Alert className="border-red-500/30 bg-red-500/5">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="text-red-300">
               <strong>{corruptionStats.criticalAlerts} critical corruption alerts</strong> require immediate attention
@@ -256,84 +302,57 @@ export const CorruptionDetectionDashboard = ({ agentId = 'corruption-ai' }: Corr
         )}
       </div>
 
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full" data-testid="dashboard-tabs">
-        <TabsList className="grid w-full grid-cols-4" data-testid="tabs-list">
-          <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
-          <TabsTrigger value="analyze" data-testid="tab-analyze">New Analysis</TabsTrigger>
-          <TabsTrigger value="analysis" data-testid="tab-analysis">Latest Results</TabsTrigger>
-          <TabsTrigger value="systemic" data-testid="tab-systemic">Systemic Threats</TabsTrigger>
+      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="analyze">New Analysis</TabsTrigger>
+          <TabsTrigger value="analysis">Latest Results</TabsTrigger>
+          <TabsTrigger value="systemic">Systemic Threats</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
           {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="stats-grid">
-            <Card className="border-blue-500/30 bg-blue-500/5" data-testid="card-documents-analyzed">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="border-blue-500/30 bg-blue-500/5">
               <CardContent className="p-6">
-                {statsLoading ? (
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-700 animate-pulse rounded" />
-                    <div className="h-8 bg-gray-700 animate-pulse rounded" />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Documents Analyzed</p>
+                    <p className="text-2xl font-bold text-blue-300">{corruptionStats.documentsAnalyzed.toLocaleString()}</p>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Documents Analyzed</p>
-                      <p className="text-2xl font-bold text-blue-300" data-testid="text-documents-count">
-                        {corruptionStats?.documentsAnalyzed?.toLocaleString() || 0}
-                      </p>
-                    </div>
-                    <FileText className="w-8 h-8 text-blue-400" />
-                  </div>
-                )}
+                  <FileText className="w-8 h-8 text-blue-400" />
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="border-red-500/30 bg-red-500/5" data-testid="card-corruption-detected">
+            <Card className="border-red-500/30 bg-red-500/5">
               <CardContent className="p-6">
-                {statsLoading ? (
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-700 animate-pulse rounded" />
-                    <div className="h-8 bg-gray-700 animate-pulse rounded" />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Corruption Detected</p>
+                    <p className="text-2xl font-bold text-red-300">{corruptionStats.corruptionDetected}</p>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Corruption Detected</p>
-                      <p className="text-2xl font-bold text-red-300" data-testid="text-corruption-count">
-                        {corruptionStats?.corruptionDetected || 0}
-                      </p>
-                    </div>
-                    <AlertTriangle className="w-8 h-8 text-red-400" />
-                  </div>
-                )}
+                  <AlertTriangle className="w-8 h-8 text-red-400" />
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="border-purple-500/30 bg-purple-500/5" data-testid="card-ai-confidence">
+            <Card className="border-purple-500/30 bg-purple-500/5">
               <CardContent className="p-6">
-                {statsLoading ? (
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-700 animate-pulse rounded" />
-                    <div className="h-8 bg-gray-700 animate-pulse rounded" />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">AI Confidence</p>
+                    <p className="text-2xl font-bold text-purple-300">{(corruptionStats.averageConfidence * 100).toFixed(1)}%</p>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">AI Confidence</p>
-                      <p className="text-2xl font-bold text-purple-300" data-testid="text-confidence-percentage">
-                        {((corruptionStats?.averageConfidence || 0) * 100).toFixed(1)}%
-                      </p>
-                    </div>
-                    <Brain className="w-8 h-8 text-purple-400" />
-                  </div>
-                )}
+                  <Brain className="w-8 h-8 text-purple-400" />
+                </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Recent Detections */}
-          <Card data-testid="card-recent-detections">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Eye className="w-5 h-5" />
@@ -341,64 +360,38 @@ export const CorruptionDetectionDashboard = ({ agentId = 'corruption-ai' }: Corr
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {detectionsLoading ? (
-                <div className="space-y-4" data-testid="loading-detections">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-gray-700 animate-pulse rounded-lg" />
-                        <div className="space-y-2">
-                          <div className="h-4 w-32 bg-gray-700 animate-pulse rounded" />
-                          <div className="h-3 w-24 bg-gray-700 animate-pulse rounded" />
-                        </div>
+              <div className="space-y-4">
+                {recentDetections.map((detection) => (
+                  <div key={detection.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-red-500/20 rounded-lg">
+                        {getPatternIcon(detection.type)}
                       </div>
-                      <div className="space-y-2">
-                        <div className="h-6 w-16 bg-gray-700 animate-pulse rounded" />
-                        <div className="h-3 w-12 bg-gray-700 animate-pulse rounded" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : recentDetections.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground" data-testid="no-detections">
-                  <Eye className="w-12 h-12 mx-auto mb-4" />
-                  <p>No recent corruption detections</p>
-                  <p className="text-sm">Run an analysis to see results here</p>
-                </div>
-              ) : (
-                <div className="space-y-4" data-testid="detections-list">
-                  {recentDetections.map((detection) => (
-                    <div key={detection.id} className="flex items-center justify-between p-4 border rounded-lg" data-testid={`detection-${detection.id}`}>
-                      <div className="flex items-center gap-4">
-                        <div className="p-2 bg-red-500/20 rounded-lg">
-                          {getPatternIcon(detection.type)}
-                        </div>
-                        <div>
-                          <h4 className="font-semibold" data-testid={`detection-target-${detection.id}`}>{detection.target}</h4>
-                          <p className="text-sm text-muted-foreground capitalize" data-testid={`detection-details-${detection.id}`}>
-                            {detection.type.replace('-', ' ')} • {(detection.confidence * 100).toFixed(1)}% confidence
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Badge className={getRiskColor(detection.severity)} data-testid={`detection-severity-${detection.id}`}>
-                          {detection.severity}
-                        </Badge>
-                        <p className="text-xs text-muted-foreground mt-1" data-testid={`detection-timestamp-${detection.id}`}>
-                          {new Date(detection.timestamp).toLocaleDateString()}
+                      <div>
+                        <h4 className="font-semibold">{detection.target}</h4>
+                        <p className="text-sm text-muted-foreground capitalize">
+                          {detection.type.replace('-', ' ')} • {(detection.confidence * 100).toFixed(1)}% confidence
                         </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                    <div className="text-right">
+                      <Badge className={getRiskColor(detection.severity)}>
+                        {detection.severity}
+                      </Badge>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {new Date(detection.timestamp).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* New Analysis Tab */}
-        <TabsContent value="analyze" className="space-y-6" data-testid="tab-content-analyze">
-          <Card data-testid="card-new-analysis">
+        <TabsContent value="analyze" className="space-y-6">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Search className="w-5 h-5" />
@@ -413,7 +406,6 @@ export const CorruptionDetectionDashboard = ({ agentId = 'corruption-ai' }: Corr
                   value={analysisType}
                   onChange={(e) => setAnalysisType(e.target.value as any)}
                   className="mt-2 w-full p-2 border rounded-md bg-background"
-                  data-testid="select-analysis-type"
                 >
                   <option value="document">Document Analysis</option>
                   <option value="entity">Entity Investigation</option>
@@ -430,7 +422,6 @@ export const CorruptionDetectionDashboard = ({ agentId = 'corruption-ai' }: Corr
                   onChange={(e) => setAnalysisTarget(e.target.value)}
                   className="mt-2"
                   rows={3}
-                  data-testid="input-analysis-target"
                 />
               </div>
 
@@ -439,14 +430,13 @@ export const CorruptionDetectionDashboard = ({ agentId = 'corruption-ai' }: Corr
                 disabled={analyzeTargetMutation.isPending || !analysisTarget.trim()}
                 size="lg"
                 className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
-                data-testid="button-start-analysis"
               >
                 <Brain className="w-5 h-5 mr-2" />
                 {analyzeTargetMutation.isPending ? 'Analyzing...' : 'Start AI Analysis'}
               </Button>
 
               {analyzeTargetMutation.isPending && (
-                <div className="text-center py-8" data-testid="analysis-progress">
+                <div className="text-center py-8">
                   <div className="inline-flex items-center gap-3">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
                     <span>AI consciousness analyzing for corruption patterns...</span>
@@ -458,9 +448,9 @@ export const CorruptionDetectionDashboard = ({ agentId = 'corruption-ai' }: Corr
         </TabsContent>
 
         {/* Analysis Results Tab */}
-        <TabsContent value="analysis" data-testid="tab-content-analysis">
+        <TabsContent value="analysis">
           {lastAnalysisResult ? renderAnalysisResults() : (
-            <div className="text-center py-12 text-muted-foreground" data-testid="no-analysis-results">
+            <div className="text-center py-12 text-muted-foreground">
               <Brain className="w-12 h-12 mx-auto mb-4" />
               <p>No analysis results yet</p>
               <p className="text-sm">Run an analysis to see AI-powered corruption detection</p>
