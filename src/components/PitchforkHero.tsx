@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight, MessageCircle, Scale, BookOpen } from 'lucide-react';
+import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight, MessageCircle, Scale, BookOpen, DollarSign } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { formatAddress, getNetworkName } from '@/hooks/useWeb3';
 import { useToast } from '@/hooks/use-toast';
@@ -125,7 +125,7 @@ export const PitchforkHero = React.memo(() => {
         
         {/* Action buttons - always visible */}
         <div className="space-y-6 pt-8">
-          {/* Whitepaper - Always accessible */}
+          {/* Primary Actions - Always accessible */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
               variant="cosmicOutline" 
@@ -135,6 +135,16 @@ export const PitchforkHero = React.memo(() => {
             >
               <BookOpen className="w-5 h-5 mr-2" />
               Read Whitepaper
+            </Button>
+            
+            <Button 
+              variant="cosmic" 
+              size="lg"
+              onClick={() => navigate('/funding')}
+              className="min-w-[200px] text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+            >
+              <DollarSign className="w-5 h-5 mr-2" />
+              Fund Development
             </Button>
             
             {!isConnected ? (
