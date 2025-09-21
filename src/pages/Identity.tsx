@@ -1,11 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Eye, EyeOff, Check, AlertTriangle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Shield, CheckCircle, AlertCircle, Lock, Key, Eye, EyeOff } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { identityApi } from '@/lib/api';
+import { Navigation } from '@/components/Navigation';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const Identity = () => {
   const { isConnected, account } = useWeb3();
@@ -98,8 +100,9 @@ const Identity = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle p-4">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-subtle">
+      <Navigation />
+      <div className="max-w-4xl mx-auto space-y-8 p-4">
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-4xl font-bold text-gradient-cosmic">Privacy-First Identity</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">

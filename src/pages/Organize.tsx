@@ -6,6 +6,7 @@ import { useWeb3 } from '@/hooks/useWeb3';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { Navigation } from '@/components/Navigation';
 
 const Organize = () => {
   const { isConnected } = useWeb3();
@@ -81,8 +82,9 @@ const Organize = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle p-4">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-subtle">
+      <Navigation />
+      <div className="max-w-6xl mx-auto space-y-8 p-4">
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-4xl font-bold text-gradient-cosmic">Organize Resistance</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
