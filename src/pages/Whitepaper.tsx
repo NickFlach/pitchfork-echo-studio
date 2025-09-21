@@ -19,13 +19,16 @@ const Whitepaper = () => {
     });
   };
 
-  const generatePdf = () => {
+  const generatePdf = async () => {
+    // First, read the full whitepaper content
+    const fullWhitepaperContent = await fetch('/FIGHTING_BACK_WHITEPAPER.md').then(res => res.text()).catch(() => '');
+    
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
       compress: true,
-    }) as any; // Temporary type assertion to fix type issues
+    }) as any;
 
     // Add metadata
     const title = "Fighting Back Against Greed and Corruption";
@@ -41,6 +44,9 @@ const Whitepaper = () => {
       creator: 'Pitchfork Echo Studio',
     });
 
+    // Initialize page tracking
+    (doc as any).lastAutoTable = { finalY: 30 };
+
     // Add title page
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
@@ -55,79 +61,97 @@ const Whitepaper = () => {
     
     doc.addPage();
     
-    // Table of Contents
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Table of Contents', 20, 30);
-    
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    
-    const sections = [
-      { title: 'The Problem We Face', page: 3 },
-      { title: 'The Power of Decentralized Resistance', page: 4 },
-      { title: 'Key Technologies for Digital Resistance', page: 5 },
-      { title: 'Building Your Digital Resistance Toolkit', page: 8 },
-      { title: 'Taking Action: A Step-by-Step Guide', page: 12 },
-      { title: 'Staying Safe and Secure', page: 16 },
-      { title: 'Real-World Examples', page: 18 },
-      { title: 'Join the Movement', page: 20 },
-    ];
-    
-    sections.forEach((section, index) => {
-      doc.text(section.title, 25, 50 + (index * 10));
-      doc.text('... ' + section.page, 180, 50 + (index * 10), { align: 'right' });
-    });
-    
-    // Add main content
-    doc.addPage();
-    
     // Function to add section with proper formatting
     const addSection = (title: string, content: string[], isSubsection = false) => {
-      const startY = doc.getNumberOfPages() > 3 ? 20 : 30;
-      
-      doc.setFont('helvetica', isSubsection ? 'bold' : 'bold');
-      doc.setFontSize(isSubsection ? 14 : 16);
-      
-      const splitTitle = doc.splitTextToSize(title, 170);
-      const titleHeight = splitTitle.length * 7;
-      
       // Check if we need a new page
-      if (doc.internal.pageSize.height - (doc as any).lastAutoTable.finalY < 40 + titleHeight) {
+      if ((doc as any).lastAutoTable.finalY > 250) {
         doc.addPage();
+        (doc as any).lastAutoTable.finalY = 20;
       }
       
-      doc.text(title, 20, startY);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(isSubsection ? 14 : 16);
+      
+      let y = (doc as any).lastAutoTable.finalY + 10;
+      doc.text(title, 20, y);
       
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
-      
-      let y = startY + 10;
+      y += 10;
       
       content.forEach(paragraph => {
-        const lines = doc.splitTextToSize(paragraph, 170);
-        doc.text(lines, 20, y);
-        y += lines.length * 7;
-        
-        // Add some space between paragraphs
-        y += 5;
-        
-        // Check if we need a new page
-        if (y > doc.internal.pageSize.height - 20) {
+        if (y > 270) {
           doc.addPage();
           y = 20;
         }
+        
+        const lines = doc.splitTextToSize(paragraph, 170);
+        doc.text(lines, 20, y);
+        y += lines.length * 5 + 5;
       });
       
-      // Add some space after section
-      y += 10;
-      
-      // Update finalY for autoTable
-      (doc as any).lastAutoTable.finalY = y;
+      (doc as any).lastAutoTable.finalY = y + 5;
     };
+
+    // Add full whitepaper content
+    if (fullWhitepaperContent) {
+      // Parse markdown content and add to PDF
+      const sections = fullWhitepaperContent.split(/^## /gm).filter(section => section.trim());
+      
+      sections.forEach((section, index) => {
+        if (index === 0) return; // Skip the title section
+        
+        const lines = section.split('\n').filter(line => line.trim());
+        const sectionTitle = lines[0];
+        const sectionContent = lines.slice(1).filter(line => !line.startsWith('#')).map(line => 
+          line.replace(/^\*\*([^*]+)\*\*/, '$1').replace(/^\* /, '• ').replace(/^- /, '• ')
+        );
+        
+        addSection(sectionTitle, sectionContent);
+      });
+    } else {
+      // Fallback content if markdown file can't be loaded
+      addSection('The Problem We Face', [
+        'We live in an age where corporate greed drives environmental destruction and worker exploitation, government corruption serves special interests over public welfare, and war crimes happen while perpetrators escape accountability.',
+        'Traditional systems have failed us through media censorship that silences whistleblowers, legal systems that favor the wealthy, and social platforms that can delete evidence overnight.',
+        'You are not powerless. Technology has given us new tools to fight back.'
+      ]);
+
+      addSection('The Power of Decentralized Resistance', [
+        'Decentralized systems spread power across many participants, cannot be easily shut down because there\'s no central point of failure, resist censorship because no single entity controls the network, preserve evidence permanently on blockchain technology, and enable global coordination without borders or permissions.',
+        'When you use decentralized tools: Your evidence is permanent, your communications are private, your organizing is protected, your funding is direct, and your voice can\'t be silenced.'
+      ]);
+
+      addSection('Your Digital Toolkit for Justice', [
+        'Secure Identity: Verifies who you are without revealing personal information. Prevents impersonation and builds trust while protecting privacy.',
+        'Organize: Coordinates resistance movements and activist groups. Enables large-scale coordination without central leadership.',
+        'Secure Messages: Provides encrypted communication that can\'t be monitored. Protects sensitive discussions from surveillance.',
+        'DAO Governance: Enables democratic voting on important decisions. Ensures movements remain truly grassroots and democratic.',
+        'Verify: Documents and verifies evidence of corruption. Creates tamper-proof records that can\'t be lost or altered.',
+        'Support: Funds justice movements and campaigns. Enables direct financial support without intermediaries taking cuts.'
+      ]);
+
+      addSection('Getting Started Today', [
+        'Step 1: Set up your digital wallet (5 minutes) - Download a Web3 wallet like MetaMask, create a new wallet and securely save your recovery phrase.',
+        'Step 2: Connect to Pitchfork Protocol (2 minutes) - Visit the application, click Connect Wallet, approve the connection.',
+        'Step 3: Create your secure identity (10 minutes) - Navigate to Secure Identity, choose your verification level, complete the process.',
+        'Step 4: Explore the tools (13 minutes) - Spend time understanding each tool\'s capabilities.'
+      ]);
+
+      addSection('Safety First: Protecting Yourself', [
+        'Digital Security: Never share your private keys or recovery phrase, use hardware wallets for large amounts, keep wallet software updated, use strong unique passwords.',
+        'Communication Security: Always use encrypted messaging within the platform, don\'t discuss sensitive matters on regular social media, be aware that metadata can reveal patterns, use VPNs when possible.',
+        'Legal Considerations: Understand your local laws regarding activism and digital privacy, document everything legally, know your rights, seek legal counsel when needed.'
+      ]);
+
+      addSection('The Choice Before Us', [
+        'We can accept the status quo and allow corruption to continue unchecked, let the powerful silence the truth, watch injustice triumph over justice, and leave a broken world for our children.',
+        'Or we can fight back: Use technology to expose corruption, build networks of resistance, create accountability where none existed, and build a better world together.',
+        'The pitchforks are digital now. The revolution will be decentralized.'
+      ]);
+    }
     
-    // Add header and footer to each page
-    // Note: We're using a type assertion here to access internal properties
+    // Add page numbers and headers
     const pageCount = (doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
@@ -135,18 +159,18 @@ const Whitepaper = () => {
       // Header
       doc.setFontSize(10);
       doc.setTextColor(100);
-      doc.text("Pitchfork Echo Studio", 20, 10);
+      doc.text("Pitchfork Protocol - Fighting Back Whitepaper", 20, 10);
       doc.text(`Page ${i} of ${pageCount}`, 180, 10, { align: 'right' } as any);
       
       // Footer
-      doc.text("Confidential - For educational purposes only", 105, 285, { align: 'center' } as any);
+      doc.text("For educational purposes - Share freely", 105, 285, { align: 'center' } as any);
       
       // Reset text color
       doc.setTextColor(0, 0, 0);
     }
     
     // Save the PDF
-    doc.save('Fighting_Back_Whitepaper.pdf');
+    doc.save('Fighting_Back_Whitepaper_Complete.pdf');
   };
 
   const handleDownload = (downloadFormat: 'pdf' | 'text' = 'text') => {

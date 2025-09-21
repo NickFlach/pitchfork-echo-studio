@@ -47,7 +47,7 @@ const Support = () => {
     }
   ];
 
-  const handleDonate = (campaignTitle: string) => {
+  const handleDonate = async (campaignTitle: string) => {
     if (!donationAmount) {
       toast({
         title: "Please enter an amount",
@@ -58,14 +58,33 @@ const Support = () => {
     }
 
     setDonating(true);
-    setTimeout(() => {
-      setDonating(false);
+    
+    try {
+      // Show info about real implementation
       toast({
-        title: "Donation Sent",
-        description: `Thank you for donating $${donationAmount} to ${campaignTitle}`,
+        title: "Smart Contract Integration Required",
+        description: `To donate $${donationAmount} to ${campaignTitle}, this will be implemented with smart contracts for transparent, trustless funding.`,
+        variant: "default"
       });
+      
+      // Simulate blockchain transaction delay
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      toast({
+        title: "Feature Coming Soon",
+        description: "Real blockchain donations will be available once smart contracts are deployed. Your contribution will go directly to verified campaigns.",
+      });
+      
       setDonationAmount('');
-    }, 2000);
+    } catch (error) {
+      toast({
+        title: "Implementation Note",
+        description: "This will use real ETH transactions through smart contracts for transparent funding.",
+        variant: "destructive"
+      });
+    } finally {
+      setDonating(false);
+    }
   };
 
   if (!isConnected) {

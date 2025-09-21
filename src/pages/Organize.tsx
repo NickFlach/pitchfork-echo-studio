@@ -3,9 +3,39 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Users, MapPin, Calendar, Lock, Plus, MessageCircle, Vote } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const Organize = () => {
   const { isConnected } = useWeb3();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreateMovement = () => {
+    setIsCreating(true);
+    toast({
+      title: "Creating Movement",
+      description: "This feature will be available soon. Currently implementing decentralized movement creation on blockchain.",
+    });
+    setTimeout(() => setIsCreating(false), 2000);
+  };
+
+  const handleJoinMovement = (movementTitle: string) => {
+    toast({
+      title: "Joining Movement",
+      description: `Joining "${movementTitle}". This will be implemented with smart contracts for secure, anonymous participation.`,
+    });
+  };
+
+  const handleSecureMessaging = () => {
+    navigate('/messages');
+  };
+
+  const handleGovernance = () => {
+    navigate('/governance');
+  };
 
   const activeMovements = [
     {
@@ -63,15 +93,28 @@ const Organize = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4 justify-center">
-          <Button variant="cosmic" className="flex items-center gap-2">
+          <Button 
+            variant="cosmic" 
+            className="flex items-center gap-2"
+            onClick={handleCreateMovement}
+            disabled={isCreating}
+          >
             <Plus className="w-4 h-4" />
-            Create Movement
+            {isCreating ? 'Creating...' : 'Create Movement'}
           </Button>
-          <Button variant="cosmicOutline" className="flex items-center gap-2">
+          <Button 
+            variant="cosmicOutline" 
+            className="flex items-center gap-2"
+            onClick={handleSecureMessaging}
+          >
             <MessageCircle className="w-4 h-4" />
             Secure Messaging
           </Button>
-          <Button variant="cosmicOutline" className="flex items-center gap-2">
+          <Button 
+            variant="cosmicOutline" 
+            className="flex items-center gap-2"
+            onClick={handleGovernance}
+          >
             <Vote className="w-4 h-4" />
             Governance
           </Button>
@@ -109,7 +152,12 @@ const Organize = () => {
                   </div>
                   
                   <div className="flex gap-2">
-                    <Button variant="cosmic" size="sm" className="flex-1">
+                    <Button 
+                      variant="cosmic" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => handleJoinMovement(movement.title)}
+                    >
                       Join Movement
                     </Button>
                     <Button variant="cosmicOutline" size="sm">

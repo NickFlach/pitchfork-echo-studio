@@ -32,18 +32,32 @@ export class Web3StorageService implements DecentralizedStorage {
 
   private async initializeWeb3() {
     if (typeof window !== 'undefined' && window.ethereum) {
-      this.provider = new ethers.BrowserProvider(window.ethereum);
+      try {
+        this.provider = new ethers.BrowserProvider(window.ethereum);
+        // Don't await signer in constructor - get it when needed
+      } catch (error) {
+        console.error('Failed to initialize Web3:', error);
+      }
+    }
+  }
+
+  private async ensureSigner(): Promise<ethers.Signer> {
+    if (!this.provider) {
+      throw new Error('Web3 provider not initialized');
+    }
+    if (!this.signer) {
       this.signer = await this.provider.getSigner();
     }
+    return this.signer;
   }
 
   // Identity Management - Blockchain-based verification
   async storeIdentity(walletAddress: string, verificationData: any): Promise<string> {
-    if (!this.signer) throw new Error('Web3 not initialized');
+    const signer = await this.ensureSigner();
     
     // In a real implementation, this would interact with an identity contract
     // For now, we'll use a simplified approach with transaction data
-    const tx = await this.signer.sendTransaction({
+    const tx = await signer.sendTransaction({
       to: walletAddress, // Self-transaction for identity storage
       value: 0,
       data: ethers.hexlify(ethers.toUtf8Bytes(JSON.stringify({
@@ -57,16 +71,24 @@ export class Web3StorageService implements DecentralizedStorage {
   }
 
   async getIdentity(walletAddress: string): Promise<any> {
-    if (!this.provider) throw new Error('Web3 not initialized');
+    // Return null if no provider - this allows the API to handle gracefully
+    if (!this.provider) {
+      return null;
+    }
     
-    // In a real implementation, this would query the identity contract
-    // For now, return a basic identity structure
-    return {
-      walletAddress,
-      verificationLevel: 'basic', // Would be read from blockchain
-      verifiedAt: new Date().toISOString(),
-      onChain: true
-    };
+    try {
+      // In a real implementation, this would query the identity contract
+      // For now, return a basic identity structure
+      return {
+        walletAddress,
+        verificationLevel: 'none', // Start with 'none' to allow verification flow
+        verifiedAt: undefined,
+        onChain: true
+      };
+    } catch (error) {
+      console.error('Error getting identity from blockchain:', error);
+      return null;
+    }
   }
 
   // Document Storage - IPFS with blockchain references
