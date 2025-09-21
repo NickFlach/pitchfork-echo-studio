@@ -874,7 +874,7 @@ export const systemicCorruptionReportSchema = z.object({
   temporalPatterns: z.array(z.object({
     pattern: z.string(),
     frequency: z.string(),
-    escalationTrend: z.enum(['declining', 'stable', 'increasing', 'accelerating']
+    escalationTrend: z.enum(['declining', 'stable', 'increasing', 'accelerating'])
   })),
   countermeasures: z.array(z.object({
     strategy: z.string(),
