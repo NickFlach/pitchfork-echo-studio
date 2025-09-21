@@ -68,7 +68,6 @@
     "recharts": "^2.15.4",
     "serve": "^14.2.5",
     "sonner": "^1.7.4",
-    "sublinear-time-solver": "^1.0.3",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.20.5",
