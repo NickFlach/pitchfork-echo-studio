@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { identityApi } from '@/lib/api';
 
-export const Identity = () => {
+const Identity = () => {
   const { isConnected, account } = useWeb3();
   const [isVerifying, setIsVerifying] = useState(false);
   const { toast } = useToast();
@@ -233,3 +233,5 @@ export const Identity = () => {
     </div>
   );
 };
+
+export default Identity;

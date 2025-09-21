@@ -8,7 +8,7 @@ import { useWeb3 } from '@/hooks/useWeb3';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
-export const Support = () => {
+const Support = () => {
   const { isConnected } = useWeb3();
   const [donationAmount, setDonationAmount] = useState('');
   const [donating, setDonating] = useState(false);
@@ -288,3 +288,5 @@ export const Support = () => {
     </div>
   );
 };
+
+export default Support;

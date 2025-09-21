@@ -8,7 +8,7 @@ import { useWeb3 } from '@/hooks/useWeb3';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
-export const Verify = () => {
+const Verify = () => {
   const { isConnected } = useWeb3();
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
@@ -256,3 +256,5 @@ export const Verify = () => {
     </div>
   );
 };
+
+export default Verify;

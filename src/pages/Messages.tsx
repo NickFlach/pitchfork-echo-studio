@@ -21,7 +21,7 @@ import { messagingApi } from '@/lib/api';
 import { encryption } from '@/lib/encryption';
 import { Conversation, Message } from '../../shared/schema';
 
-export const Messages = () => {
+const Messages = () => {
   const { isConnected, account } = useWeb3();
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
@@ -473,3 +473,5 @@ const MessageBubble = ({
     </div>
   );
 };
+
+export default Messages;

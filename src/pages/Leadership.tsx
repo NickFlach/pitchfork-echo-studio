@@ -11,37 +11,38 @@ import { ComplexityWeb } from '@/components/consciousness/ComplexityWeb';
 import { OrderChaosBalanceMeter } from '@/components/consciousness/OrderChaosBalanceMeter';
 import { MultiscaleDecisionFramework } from '@/components/consciousness/MultiscaleDecisionFramework';
 import { Brain, Lightbulb, Activity, Network, TreePine, Target, BarChart3, Layers } from 'lucide-react';
+import type { ConsciousnessState, DecisionRecord, ReflectionLog, LearningCycle, ComplexityMap } from '../../shared/schema';
 
 const Leadership = () => {
   const [selectedTab, setSelectedTab] = useState('overview');
   const agentId = 'default-agent'; // In a real app, this would be dynamic
 
   // Real-time consciousness state query
-  const { data: consciousnessStates, isLoading: loadingConsciousness } = useQuery({
+  const { data: consciousnessStates = [], isLoading: loadingConsciousness } = useQuery<ConsciousnessState[]>({
     queryKey: ['/api/consciousness-states', agentId],
     refetchInterval: 2000, // Real-time updates every 2 seconds
   });
 
   // Real-time decision records
-  const { data: decisions, isLoading: loadingDecisions } = useQuery({
+  const { data: decisions = [], isLoading: loadingDecisions } = useQuery<DecisionRecord[]>({
     queryKey: ['/api/decisions', agentId],
     refetchInterval: 3000,
   });
 
   // Real-time reflection logs
-  const { data: reflections, isLoading: loadingReflections } = useQuery({
+  const { data: reflections = [], isLoading: loadingReflections } = useQuery<ReflectionLog[]>({
     queryKey: ['/api/reflections', agentId],
     refetchInterval: 2500,
   });
 
   // Real-time learning cycles
-  const { data: learningCycles, isLoading: loadingLearning } = useQuery({
+  const { data: learningCycles = [], isLoading: loadingLearning } = useQuery<LearningCycle[]>({
     queryKey: ['/api/learning-cycles', agentId],
     refetchInterval: 4000,
   });
 
   // Real-time complexity maps
-  const { data: complexityMaps, isLoading: loadingComplexity } = useQuery({
+  const { data: complexityMaps = [], isLoading: loadingComplexity } = useQuery<ComplexityMap[]>({
     queryKey: ['/api/complexity-maps'],
     refetchInterval: 5000,
   });
