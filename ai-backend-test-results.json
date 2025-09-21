@@ -1,0 +1,415 @@
+{
+  "summary": {
+    "passed": 43,
+    "failed": 1,
+    "skipped": 0,
+    "successRate": "97.7"
+  },
+  "errors": [
+    {
+      "message": "Storage interface test failed",
+      "details": {
+        "error": "crypto.createCipher is not a function",
+        "stack": "TypeError: crypto.createCipher is not a function\n    at MemStorage.encryptText (/home/runner/workspace/server/storage.ts:797:27)\n    at MemStorage.createOrUpdateAICredentials (/home/runner/workspace/server/storage.ts:838:20)\n    at testStorageInterface (/home/runner/workspace/test-ai-backend-direct.js:189:19)\n    at async runDirectBackendTests (/home/runner/workspace/test-ai-backend-direct.js:468:5)"
+      }
+    }
+  ],
+  "details": [
+    {
+      "type": "PASS",
+      "message": "AIServiceManager class can be imported",
+      "details": {
+        "type": "class",
+        "hasConstructor": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "AIServiceManager can be instantiated",
+      "details": {
+        "instance": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Provider registration works",
+      "details": {
+        "provider": "openai"
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "OpenAI adapter class can be imported",
+      "details": {
+        "provider": "OpenAI",
+        "module": "./server/ai/providers/OpenAIAdapter.ts"
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "OpenAI adapter can be instantiated with required methods",
+      "details": {
+        "provider": "OpenAI",
+        "hasMakeRequest": true,
+        "hasMakeStreamRequest": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "OpenAI adapter provides proper info",
+      "details": {
+        "provider": "OpenAI",
+        "info": {
+          "provider": "openai",
+          "healthy": true,
+          "lastHealthCheck": "2025-09-21T21:44:32.043Z",
+          "hasApiKey": true
+        }
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Claude adapter class can be imported",
+      "details": {
+        "provider": "Claude",
+        "module": "./server/ai/providers/ClaudeAdapter.ts"
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Claude adapter can be instantiated with required methods",
+      "details": {
+        "provider": "Claude",
+        "hasMakeRequest": true,
+        "hasMakeStreamRequest": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Claude adapter provides proper info",
+      "details": {
+        "provider": "Claude",
+        "info": {
+          "provider": "claude",
+          "healthy": true,
+          "lastHealthCheck": "2025-09-21T21:44:32.046Z",
+          "hasApiKey": true
+        }
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Gemini adapter class can be imported",
+      "details": {
+        "provider": "Gemini",
+        "module": "./server/ai/providers/GeminiAdapter.ts"
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Gemini adapter can be instantiated with required methods",
+      "details": {
+        "provider": "Gemini",
+        "hasMakeRequest": true,
+        "hasMakeStreamRequest": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Gemini adapter provides proper info",
+      "details": {
+        "provider": "Gemini",
+        "info": {
+          "provider": "gemini",
+          "healthy": true,
+          "lastHealthCheck": "2025-09-21T21:44:32.049Z",
+          "hasApiKey": true
+        }
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "xAI adapter class can be imported",
+      "details": {
+        "provider": "xAI",
+        "module": "./server/ai/providers/XAIAdapter.ts"
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "xAI adapter can be instantiated with required methods",
+      "details": {
+        "provider": "xAI",
+        "hasMakeRequest": true,
+        "hasMakeStreamRequest": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "xAI adapter provides proper info",
+      "details": {
+        "provider": "xAI",
+        "info": {
+          "provider": "xai",
+          "healthy": true,
+          "lastHealthCheck": "2025-09-21T21:44:32.052Z",
+          "hasApiKey": true
+        }
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "LiteLLM adapter class can be imported",
+      "details": {
+        "provider": "LiteLLM",
+        "module": "./server/ai/providers/LiteLLMAdapter.ts"
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "LiteLLM adapter can be instantiated with required methods",
+      "details": {
+        "provider": "LiteLLM",
+        "hasMakeRequest": true,
+        "hasMakeStreamRequest": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "LiteLLM adapter provides proper info",
+      "details": {
+        "provider": "LiteLLM",
+        "info": {
+          "provider": "litellm",
+          "healthy": true,
+          "lastHealthCheck": "2025-09-21T21:44:32.055Z",
+          "hasApiKey": true
+        }
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "MemStorage class can be imported",
+      "details": {
+        "hasStorage": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Storage has AI settings methods",
+      "details": {
+        "hasGetAISettings": true,
+        "hasUpdateAISettings": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Storage has AI credentials methods",
+      "details": {
+        "hasCredentialMethods": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "AI settings can be saved and retrieved",
+      "details": {
+        "mode": "direct",
+        "primary": "openai"
+      }
+    },
+    {
+      "type": "FAIL",
+      "message": "Storage interface test failed",
+      "details": {
+        "error": "crypto.createCipher is not a function",
+        "stack": "TypeError: crypto.createCipher is not a function\n    at MemStorage.encryptText (/home/runner/workspace/server/storage.ts:797:27)\n    at MemStorage.createOrUpdateAICredentials (/home/runner/workspace/server/storage.ts:838:20)\n    at testStorageInterface (/home/runner/workspace/test-ai-backend-direct.js:189:19)\n    at async runDirectBackendTests (/home/runner/workspace/test-ai-backend-direct.js:468:5)"
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "ConsciousnessEngine class can be imported",
+      "details": {
+        "hasConsciousness": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "ConsciousnessEngine can be instantiated with required methods",
+      "details": {
+        "hasProcessMethod": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Consciousness processing completes successfully",
+      "details": {
+        "hasResult": true,
+        "processingComplete": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Prompt templates can be imported",
+      "details": {
+        "templateCount": 22
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Template interpolation function is available",
+      "details": {
+        "hasInterpolation": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Template CONSCIOUSNESS_REFLECTION exists with required fields",
+      "details": {
+        "templateName": "CONSCIOUSNESS_REFLECTION",
+        "hasTemplate": true,
+        "variableCount": 3
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Template CAMPAIGN_STRATEGY exists with required fields",
+      "details": {
+        "templateName": "CAMPAIGN_STRATEGY",
+        "hasTemplate": true,
+        "variableCount": 4
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Template CORRUPTION_ANALYSIS exists with required fields",
+      "details": {
+        "templateName": "CORRUPTION_ANALYSIS",
+        "hasTemplate": true,
+        "variableCount": 4
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Template STRATEGIC_PLANNING exists with required fields",
+      "details": {
+        "templateName": "STRATEGIC_PLANNING",
+        "hasTemplate": true,
+        "variableCount": 4
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Template interpolation works correctly",
+      "details": {
+        "original": "Hello {{name}}, your task is {{task}}.",
+        "interpolated": "Hello Test, your task is validation."
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "openai health check returns boolean",
+      "details": {
+        "provider": "openai",
+        "healthy": false
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "openai correctly reports unhealthy with invalid key",
+      "details": {
+        "provider": "openai",
+        "correctlyUnhealthy": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "claude health check returns boolean",
+      "details": {
+        "provider": "claude",
+        "healthy": false
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "claude correctly reports unhealthy with invalid key",
+      "details": {
+        "provider": "claude",
+        "correctlyUnhealthy": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Valid request passed validation (failed at API level as expected)",
+      "details": {
+        "expectedAPIFailure": true
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Invalid request properly rejected",
+      "details": {
+        "error": "Prompt is required and cannot be empty",
+        "request": {
+          "config": {
+            "temperature": 0.7
+          }
+        }
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Invalid request properly rejected",
+      "details": {
+        "error": "Prompt is required and cannot be empty",
+        "request": {
+          "prompt": "",
+          "config": {
+            "temperature": 0.7
+          }
+        }
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Invalid request properly rejected",
+      "details": {
+        "error": "Temperature must be between 0 and 2",
+        "request": {
+          "prompt": "test",
+          "config": {
+            "temperature": 3
+          }
+        }
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Invalid request properly rejected",
+      "details": {
+        "error": "Max tokens must be between 1 and 100000",
+        "request": {
+          "prompt": "test",
+          "config": {
+            "maxTokens": -1
+          }
+        }
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Proper error for missing API key",
+      "details": {
+        "error": "openai provider error: OpenAI client not initialized. Please provide OPENAI_API_KEY."
+      }
+    },
+    {
+      "type": "PASS",
+      "message": "Errors are properly formatted with provider context",
+      "details": {
+        "formattedMessage": "[test context] openai provider error: Test error"
+      }
+    }
+  ],
+  "timestamp": "2025-09-21T21:45:17.921Z",
+  "testType": "direct-backend"
+}
