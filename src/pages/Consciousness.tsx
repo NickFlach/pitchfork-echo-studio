@@ -9,6 +9,11 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TierBadge } from "@/components/ui/tier-badge";
+import { FeatureComparison } from "@/components/ui/feature-comparison";
+import { TierUpgradeModal } from "@/components/ui/tier-upgrade-modal";
+import { UpgradePromptModal } from "@/components/ui/upgrade-prompt";
+import { useTier } from "@/contexts/TierContext";
 import { ConsciousnessDashboard } from '@/components/consciousness/ConsciousnessDashboard';
 import { DecisionTimeline } from '@/components/consciousness/DecisionTimeline';
 import { ReflectionObservatory } from '@/components/consciousness/ReflectionObservatory';
@@ -74,31 +79,36 @@ const Consciousness = () => {
     }
   }>({});
 
-  // AI Configuration Detection
-  const { data: aiCredentials = [], isLoading: loadingAIConfig } = useQuery<MaskedAICredentials[]>({
-    queryKey: ['/api/admin/ai-credentials'],
-    refetchInterval: 30000, // Check every 30 seconds
-  });
+  // Tier System Integration
+  const {
+    currentTier,
+    isAIConfigured,
+    loadingAIConfig,
+    configuredProviders,
+    canAccessFeature,
+    canAccessAIFeature,
+    getFeatureDetails,
+    triggerUpgradePrompt,
+    dismissUpgradePrompt,
+    currentUpgradePrompt,
+    trackFeatureUsage,
+    trackUpgradeConversion,
+    getFeaturesByCategory
+  } = useTier();
 
-  // Dynamic AI availability detection
-  const aiEnhanced = aiCredentials.some(cred => cred.hasApiKey);
-  const configuredProviders = aiCredentials.filter(cred => cred.hasApiKey).map(cred => cred.provider);
+  // Modal state for tier upgrades
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeatureId, setUpgradeFeatureId] = useState<string | null>(null);
 
-  // AI Enhancement helper components
-  const AIEnhancedBadge = ({ feature, tooltip }: { feature: string; tooltip: string }) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge variant="secondary" className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-purple-700 dark:text-purple-300 border-purple-300/50" data-testid={`badge-ai-${feature}`}>
-            <Sparkles className="w-3 h-3 mr-1" />
-            AI Enhanced
-          </Badge>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p className="max-w-xs">{tooltip}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+  // Tier Enhancement helper components
+  const getTierBadgeForFeature = (featureId: string, tooltip?: string) => (
+    <TierBadge
+      tier={currentTier}
+      feature={featureId}
+      variant={isAIConfigured ? 'enhanced' : 'default'}
+      tooltip={tooltip}
+      size="sm"
+    />
   );
 
   const ProcessingIndicator = ({ feature }: { feature: string }) => (
@@ -143,24 +153,36 @@ const Consciousness = () => {
     </div>
   );
 
-  const TryWithAIPrompt = ({ feature, onTry }: { feature: string; onTry: () => void }) => (
-    !aiEnhanced ? (
-      <Alert className="mt-4">
-        <Sparkles className="w-4 h-4" />
+  const TierUpgradePrompt = ({ featureId, featureName }: { featureId: string; featureName: string }) => {
+    const featureDetails = getFeatureDetails(featureId);
+    
+    if (!featureDetails || isAIConfigured) return null;
+    
+    return (
+      <Alert className="mt-4 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 dark:border-purple-800 dark:from-purple-950/20 dark:to-blue-950/20">
+        <Sparkles className="w-4 h-4 text-purple-600" />
         <AlertDescription className="flex items-center justify-between">
-          <span>Enhance your {feature.toLowerCase()} with AI-powered insights</span>
+          <div>
+            <span className="font-medium">Unlock AI-Enhanced {featureName}</span>
+            <p className="text-sm mt-1 text-muted-foreground">{featureDetails.upgradePrompt}</p>
+          </div>
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => window.location.href = '/ai-settings'} 
-            data-testid={`button-try-ai-${feature}`}
+            onClick={() => {
+              trackFeatureUsage(`upgrade_prompt_${featureId}`, featureDetails.category);
+              triggerUpgradePrompt(featureId, 'usage');
+            }}
+            className="ml-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700"
+            data-testid={`button-upgrade-${featureId}`}
           >
-            Configure AI
+            <Sparkles className="w-3 h-3 mr-1" />
+            Upgrade
           </Button>
         </AlertDescription>
       </Alert>
-    ) : null
-  );
+    );
+  };
 
   const handleFeedback = async (itemId: string, rating: 'up' | 'down') => {
     setFeedbackRatings(prev => ({ ...prev, [itemId]: rating }));
@@ -304,6 +326,21 @@ const Consciousness = () => {
     }
   };
 
+  // Upgrade handlers
+  const handleUpgradeFromFeature = (featureId: string) => {
+    setUpgradeFeatureId(featureId);
+    setShowUpgradeModal(true);
+    trackFeatureUsage(`upgrade_modal_${featureId}`, 'consciousness');
+  };
+
+  const handleUpgradeConversion = () => {
+    if (upgradeFeatureId) {
+      trackUpgradeConversion(upgradeFeatureId, true);
+    }
+    setShowUpgradeModal(false);
+    setUpgradeFeatureId(null);
+  };
+
   // Trigger reflection
   const handleReflection = async () => {
     if (!reflectionTrigger.trim()) {
@@ -313,6 +350,17 @@ const Consciousness = () => {
         variant: "destructive",
       });
       return;
+    }
+    
+    // CRITICAL: Operational access control - prevent AI calls when not configured
+    if (!canAccessAIFeature('consciousness_reflection')) {
+      triggerUpgradePrompt('consciousness_reflection', 'high_intent');
+      toast({
+        title: "AI Configuration Required",
+        description: "Configure AI to unlock enhanced reflection processing",
+        variant: "default",
+      });
+      return; // CRITICAL: Stop execution to prevent AI calls without configuration
     }
 
     setIsProcessing(true);
@@ -329,9 +377,12 @@ const Consciousness = () => {
       // Track usage analytics with actual model information
       await trackUsage('consciousness-reflection', providerMetadata?.provider, startTime, requestId, providerMetadata);
       
+      // Track feature usage
+      trackFeatureUsage('consciousness_reflection', 'consciousness');
+      
       toast({
         title: "Reflection Initiated",
-        description: aiEnhanced ? "AI-enhanced consciousness is processing the reflection trigger" : "Consciousness engine is processing the reflection trigger",
+        description: isAIConfigured ? "AI-enhanced consciousness is processing the reflection trigger" : "Consciousness engine is processing the reflection trigger",
       });
       setReflectionTrigger('');
       // Refetch data to show new reflection
@@ -357,6 +408,17 @@ const Consciousness = () => {
         variant: "destructive",
       });
       return;
+    }
+
+    // CRITICAL: Operational access control - prevent AI calls when not configured
+    if (!canAccessAIFeature('consciousness_decisions')) {
+      triggerUpgradePrompt('consciousness_decisions', 'high_intent');
+      toast({
+        title: "AI Configuration Required",
+        description: "Configure AI to unlock enhanced decision analysis",
+        variant: "default",
+      });
+      return; // CRITICAL: Stop execution to prevent AI calls without configuration
     }
 
     setIsProcessing(true);
@@ -388,7 +450,7 @@ const Consciousness = () => {
       
       toast({
         title: "Decision Processed",
-        description: aiEnhanced ? "AI-enhanced consciousness has analyzed the decision" : "Consciousness engine has analyzed the decision",
+        description: isAIConfigured ? "AI-enhanced consciousness has analyzed the decision" : "Consciousness engine has analyzed the decision",
       });
       setDecisionContext('');
       setDecisionOptions('');
@@ -621,8 +683,9 @@ const Consciousness = () => {
                   </div>
                   <Button 
                     onClick={handleReflection}
-                    disabled={isProcessing || !reflectionTrigger.trim()}
+                    disabled={isProcessing || !reflectionTrigger.trim() || !canAccessAIFeature('consciousness_reflection')}
                     className="w-full"
+                    data-testid="button-trigger-reflection"
                   >
                     {isProcessing ? (
                       <>
@@ -673,8 +736,9 @@ const Consciousness = () => {
                   </div>
                   <Button 
                     onClick={handleDecision}
-                    disabled={isProcessing || !decisionContext.trim() || !decisionOptions.trim()}
+                    disabled={isProcessing || !decisionContext.trim() || !decisionOptions.trim() || !canAccessAIFeature('consciousness_decisions')}
                     className="w-full"
+                    data-testid="button-trigger-decision"
                   >
                     {isProcessing ? (
                       <>
@@ -790,6 +854,23 @@ const Consciousness = () => {
             </Card>
           </TabsContent>
         </Tabs>
+        
+        {/* Tier Upgrade Modals */}
+        <UpgradePromptModal
+          prompt={currentUpgradePrompt}
+          onDismiss={dismissUpgradePrompt}
+          onUpgrade={() => trackUpgradeConversion(currentUpgradePrompt?.featureId || '', true)}
+        />
+        
+        <TierUpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => {
+            setShowUpgradeModal(false);
+            setUpgradeFeatureId(null);
+          }}
+          featureId={upgradeFeatureId || undefined}
+          initialTab="features"
+        />
       </div>
     </div>
   );
