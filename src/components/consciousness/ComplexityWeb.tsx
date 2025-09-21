@@ -9,7 +9,7 @@ import {
   Network, Zap, GitBranch, Layers, Activity, Eye, 
   TrendingUp, Waves, RotateCcw, Compass, BarChart3,
   Target, Clock, Sparkles, Cpu, Brain, LineChart,
-  Atom, Infinity, Triangle, Hexagon, Circle, Square
+  Atom, Infinity as InfinityIcon, Triangle, Hexagon, Circle, Square
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { ComplexityMap, ConsciousnessState, DecisionRecord } from '../../../shared/schema';
@@ -395,14 +395,14 @@ export const ComplexityWeb = ({ data, consciousnessData, decisionData, isLoading
     });
     
     // Draw cascade layers
-    const layers = [
+    const cascadeLayers = [
       { name: 'Immediate', y: rect.height * 0.2, color: '#ef4444' },
       { name: 'Short-term', y: rect.height * 0.4, color: '#f97316' },
       { name: 'Long-term', y: rect.height * 0.6, color: '#3b82f6' },
       { name: 'Emergent', y: rect.height * 0.8, color: '#ec4899' }
     ];
     
-    layers.forEach((layer, index) => {
+    cascadeLayers.forEach((layer, index) => {
       ctx.save();
       ctx.strokeStyle = layer.color;
       ctx.lineWidth = 2;
@@ -879,7 +879,7 @@ export const ComplexityWeb = ({ data, consciousnessData, decisionData, isLoading
         <Card className="p-3 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/20 hover:border-yellow-400/40 transition-colors">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Infinity className="w-4 h-4 text-yellow-300" />
+              <InfinityIcon className="w-4 h-4 text-yellow-300" />
               <span className="text-xs text-muted-foreground">Entropy</span>
             </div>
             <div className="text-xl font-bold text-yellow-300" data-testid="entropy-level">
@@ -993,15 +993,15 @@ export const ComplexityWeb = ({ data, consciousnessData, decisionData, isLoading
                 
                 // Find nearest 3D node
                 let nearestNodeId = null;
-                let shortestDistance = Infinity;
+                let minDistance = Infinity;
                 
                 enhanced3DNodes.forEach(node => {
                   const deltaX = x - (node.position.x + 0.5);
                   const deltaY = y - (node.position.y + 0.5);
                   const nodeDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                   
-                  if (nodeDistance < 0.08 && nodeDistance < shortestDistance) {
-                    shortestDistance = nodeDistance;
+                  if (nodeDistance < 0.08 && nodeDistance < minDistance) {
+                    minDistance = nodeDistance;
                     nearestNodeId = node.id;
                   }
                 });
@@ -1291,7 +1291,7 @@ export const ComplexityWeb = ({ data, consciousnessData, decisionData, isLoading
             
             <Card className="p-6">
               <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Infinity className="w-5 h-5" />
+                <InfinityIcon className="w-5 h-5" />
                 Nonlinear Indicators
               </h4>
               <div className="space-y-3">
