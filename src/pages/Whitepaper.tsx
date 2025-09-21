@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Download, Share2, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { format } from 'date-fns';
 
 const Whitepaper = () => {
   const navigate = useNavigate();
@@ -16,7 +19,146 @@ const Whitepaper = () => {
     });
   };
 
+  const generatePdf = () => {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true,
+    });
+
+    // Add metadata
+    const title = "Fighting Back Against Greed and Corruption";
+    const subtitle = "A People's Guide to Digital Resistance";
+    const date = format(new Date(), 'MMMM d, yyyy');
+    
+    // Set document properties
+    doc.setProperties({
+      title: title,
+      subject: 'A guide to digital resistance using decentralized tools',
+      author: 'Pitchfork Echo Studio',
+      keywords: 'activism, digital resistance, decentralization, corruption',
+      creator: 'Pitchfork Echo Studio',
+    });
+
+    // Add title page
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, 105, 100, { align: 'center', maxWidth: 180 });
+    
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'normal');
+    doc.text(subtitle, 105, 120, { align: 'center', maxWidth: 180 });
+    
+    doc.setFontSize(12);
+    doc.text(`Version 1.0 • ${date}`, 105, 200, { align: 'center' });
+    
+    doc.addPage();
+    
+    // Table of Contents
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Table of Contents', 20, 30);
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    
+    const sections = [
+      { title: 'The Problem We Face', page: 3 },
+      { title: 'The Power of Decentralized Resistance', page: 4 },
+      { title: 'Key Technologies for Digital Resistance', page: 5 },
+      { title: 'Building Your Digital Resistance Toolkit', page: 8 },
+      { title: 'Taking Action: A Step-by-Step Guide', page: 12 },
+      { title: 'Staying Safe and Secure', page: 16 },
+      { title: 'Real-World Examples', page: 18 },
+      { title: 'Join the Movement', page: 20 },
+    ];
+    
+    sections.forEach((section, index) => {
+      doc.text(section.title, 25, 50 + (index * 10));
+      doc.text('... ' + section.page, 180, 50 + (index * 10), { align: 'right' });
+    });
+    
+    // Add main content
+    doc.addPage();
+    
+    // Function to add section with proper formatting
+    const addSection = (title: string, content: string[], isSubsection = false) => {
+      const startY = doc.getNumberOfPages() > 3 ? 20 : 30;
+      
+      doc.setFont('helvetica', isSubsection ? 'bold' : 'bold');
+      doc.setFontSize(isSubsection ? 14 : 16);
+      
+      const splitTitle = doc.splitTextToSize(title, 170);
+      const titleHeight = splitTitle.length * 7;
+      
+      // Check if we need a new page
+      if (doc.internal.pageSize.height - (doc as any).lastAutoTable.finalY < 40 + titleHeight) {
+        doc.addPage();
+      }
+      
+      doc.text(title, 20, startY);
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      
+      let y = startY + 10;
+      
+      content.forEach(paragraph => {
+        const lines = doc.splitTextToSize(paragraph, 170);
+        doc.text(lines, 20, y);
+        y += lines.length * 7;
+        
+        // Add some space between paragraphs
+        y += 5;
+        
+        // Check if we need a new page
+        if (y > doc.internal.pageSize.height - 20) {
+          doc.addPage();
+          y = 20;
+        }
+      });
+      
+      // Add some space after section
+      y += 10;
+      
+      // Update finalY for autoTable
+      (doc as any).lastAutoTable.finalY = y;
+    };
+    
+    // Add header and footer to each page
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      
+      // Header
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text("Pitchfork Echo Studio", 20, 10);
+      doc.text(`Page ${i} of ${pageCount}`, 180, 10, { align: 'right' });
+      
+      // Footer
+      doc.text("Confidential - For educational purposes only", 105, 285, { align: 'center' });
+      
+      // Reset text color
+      doc.setTextColor(0, 0, 0);
+    }
+    
+    // Save the PDF
+    doc.save('Fighting_Back_Whitepaper.pdf');
+  };
+
   const handleDownload = (format: 'pdf' | 'text' = 'text') => {
+    if (format === 'pdf') {
+      generatePdf();
+      toast({
+        title: "PDF Generated",
+        description: "Your whitepaper PDF is being downloaded.",
+      });
+      return;
+    }
+    
+    // Fallback to text download
     const whitepaperContent = `# Fighting Back Against Greed and Corruption: A People's Guide to Digital Resistance
 
 *A White Paper for Regular Citizens Using Decentralized Tools*
@@ -389,10 +531,24 @@ For the complete whitepaper with detailed action guides, safety protocols, real-
                 safety protocols, real-world case studies, and comprehensive instructions for building 
                 effective resistance movements.
               </p>
-              <Button variant="cosmic" className="mt-4" onClick={() => handleDownload('text')}>
-                <Download className="w-4 h-4 mr-2" />
-                Download Complete Whitepaper
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+                <Button 
+                  variant="cosmic" 
+                  onClick={() => handleDownload('pdf')}
+                  className="flex-1 sm:flex-none min-w-[200px]"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download PDF Version
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleDownload('text')}
+                  className="flex-1 sm:flex-none min-w-[200px]"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Text Version
+                </Button>
+              </div>
             </div>
           </div>
         </div>
