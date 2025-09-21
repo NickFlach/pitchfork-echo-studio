@@ -20,7 +20,9 @@ import {
   insertCorruptionAnalysisResultSchema,
   insertSystemicCorruptionReportSchema,
   insertCampaignStrategyPlanSchema,
-  insertResourceProfileSchema
+  insertResourceProfileSchema,
+  insertAISettingsSchema,
+  aiSettingsSchema
 } from '../shared/schema';
 
 const router = express.Router();
@@ -727,6 +729,46 @@ router.get('/api/tactical-frameworks', async (req, res) => {
     res.json(frameworks);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch tactical frameworks' });
+  }
+});
+
+// Admin AI Settings API
+router.get('/api/admin/ai-settings', async (req, res) => {
+  try {
+    const settings = await storage.getAISettings();
+    if (!settings) {
+      // Return default settings if none exist
+      return res.json({
+        mode: 'direct',
+        routing: {
+          primary: 'openai',
+          fallbacks: ['claude', 'gemini'],
+          timeoutMs: 30000,
+          retry: {
+            maxAttempts: 3,
+            backoffMs: 1000
+          }
+        },
+        providerPrefs: {}
+      });
+    }
+    res.json(settings);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch AI settings' });
+  }
+});
+
+router.put('/api/admin/ai-settings', async (req, res) => {
+  try {
+    const validatedData = insertAISettingsSchema.parse(req.body);
+    const settings = await storage.updateAISettings(validatedData);
+    res.json(settings);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      res.status(500).json({ error: 'Failed to update AI settings' });
+    }
   }
 });
 
