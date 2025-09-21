@@ -25,7 +25,7 @@ const Whitepaper = () => {
       unit: 'mm',
       format: 'a4',
       compress: true,
-    });
+    }) as any; // Temporary type assertion to fix type issues
 
     // Add metadata
     const title = "Fighting Back Against Greed and Corruption";
@@ -127,7 +127,8 @@ const Whitepaper = () => {
     };
     
     // Add header and footer to each page
-    const pageCount = doc.internal.getNumberOfPages();
+    // Note: We're using a type assertion here to access internal properties
+    const pageCount = (doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       
@@ -135,10 +136,10 @@ const Whitepaper = () => {
       doc.setFontSize(10);
       doc.setTextColor(100);
       doc.text("Pitchfork Echo Studio", 20, 10);
-      doc.text(`Page ${i} of ${pageCount}`, 180, 10, { align: 'right' });
+      doc.text(`Page ${i} of ${pageCount}`, 180, 10, { align: 'right' } as any);
       
       // Footer
-      doc.text("Confidential - For educational purposes only", 105, 285, { align: 'center' });
+      doc.text("Confidential - For educational purposes only", 105, 285, { align: 'center' } as any);
       
       // Reset text color
       doc.setTextColor(0, 0, 0);
@@ -148,8 +149,8 @@ const Whitepaper = () => {
     doc.save('Fighting_Back_Whitepaper.pdf');
   };
 
-  const handleDownload = (format: 'pdf' | 'text' = 'text') => {
-    if (format === 'pdf') {
+  const handleDownload = (downloadFormat: 'pdf' | 'text' = 'text') => {
+    if (downloadFormat === 'pdf') {
       generatePdf();
       toast({
         title: "PDF Generated",
@@ -319,22 +320,23 @@ We stand at a crossroads. We can:
 For the complete whitepaper with detailed action guides, safety protocols, real-world case studies, and comprehensive instructions, visit: ${window.location.origin}/whitepaper
 `;
 
-    const filename = format === 'pdf' ? 'Fighting_Back_Whitepaper.pdf' : 'Fighting_Back_Whitepaper.txt';
-    const mimeType = format === 'pdf' ? 'application/pdf' : 'text/plain';
+    const filename = downloadFormat === 'pdf' ? 'Fighting_Back_Whitepaper.pdf' : 'Fighting_Back_Whitepaper.txt';
+    const mimeType = downloadFormat === 'pdf' ? 'application/pdf' : 'text/plain';
     
-    if (format === 'pdf') {
+    if (downloadFormat === 'pdf') {
       toast({
-        title: "PDF Coming Soon",
-        description: "PDF download will be available soon. For now, downloading as text file.",
+        title: "PDF Generated",
+        description: "Your whitepaper PDF is being downloaded.",
         variant: "default",
       });
+      return;
     }
     
     const blob = new Blob([whitepaperContent], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = format === 'pdf' ? 'Fighting_Back_Whitepaper.txt' : filename;
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
