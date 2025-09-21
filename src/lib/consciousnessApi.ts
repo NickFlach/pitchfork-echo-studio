@@ -241,6 +241,56 @@ export const consciousnessApi = {
     return apiRequest('/api/tactical-frameworks');
   },
 
+  // Leadership-Specific AI-Enhanced Methods
+  async analyzeLeadershipDecision(data: {
+    decisionContext: string;
+    options: any[];
+    stakeholders?: string;
+    timeframe?: string;
+    urgency?: string;
+  }): Promise<any> {
+    return apiRequest('/api/leadership/analyze-decision', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async optimizeResources(data: {
+    availableResources: any;
+    objectives: any;
+    constraints?: string[];
+    priorities?: string[];
+  }): Promise<any> {
+    return apiRequest('/api/leadership/optimize-resources', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async analyzeOpposition(data: {
+    oppositionForces: any;
+    objectives: any;
+    movementContext?: string;
+    timeframe?: string;
+  }): Promise<any> {
+    return apiRequest('/api/leadership/analyze-opposition', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async coordinateMovements(data: {
+    movements: any[];
+    activities: any[];
+    timeline?: string;
+    challenges?: string[];
+  }): Promise<any> {
+    return apiRequest('/api/leadership/coordinate-movements', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
   // Dashboard utility functions
   async getCorruptionStats(): Promise<{
     documentsAnalyzed: number;
