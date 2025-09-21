@@ -1143,6 +1143,46 @@ export const insertAIRoutingPolicySchema = aiRoutingPolicySchema;
 export type AIRoutingPolicy = z.infer<typeof aiRoutingPolicySchema>;
 export type InsertAIRoutingPolicy = z.infer<typeof insertAIRoutingPolicySchema>;
 
+// AI Credentials for secure storage
+export const aiCredentialsSchema = z.object({
+  id: z.string(),
+  provider: AIProviderEnum,
+  apiKey: z.string(), // Stored encrypted
+  baseUrl: z.string().optional(), // For custom endpoints like xAI, LiteLLM
+  encryptedAt: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const insertAICredentialsSchema = aiCredentialsSchema.omit({ 
+  id: true, 
+  encryptedAt: true,
+  createdAt: true, 
+  updatedAt: true 
+});
+
+// Masked credentials for API responses (never return actual keys)
+export const maskedAICredentialsSchema = z.object({
+  id: z.string(),
+  provider: AIProviderEnum,
+  apiKeyMask: z.string(), // Shows "••••••••" or last 4 chars
+  baseUrl: z.string().optional(),
+  hasApiKey: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+// Credential update request (for form submissions)
+export const updateCredentialsRequestSchema = z.object({
+  apiKeys: z.record(AIProviderEnum, z.string()).optional(),
+  baseUrls: z.record(AIProviderEnum, z.string().url()).optional(),
+});
+
+export type AICredentials = z.infer<typeof aiCredentialsSchema>;
+export type InsertAICredentials = z.infer<typeof insertAICredentialsSchema>;
+export type MaskedAICredentials = z.infer<typeof maskedAICredentialsSchema>;
+export type UpdateCredentialsRequest = z.infer<typeof updateCredentialsRequestSchema>;
+
 // AI Settings for the entire system
 export const aiSettingsSchema = z.object({
   id: z.string(),

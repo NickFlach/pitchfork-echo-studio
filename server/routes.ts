@@ -22,7 +22,9 @@ import {
   insertCampaignStrategyPlanSchema,
   insertResourceProfileSchema,
   insertAISettingsSchema,
-  aiSettingsSchema
+  aiSettingsSchema,
+  updateCredentialsRequestSchema,
+  AIProviderEnum
 } from '../shared/schema';
 import { aiService } from './ai/AIServiceManager';
 import { AIRequest } from './ai/AIProviderAdapter';
@@ -1139,6 +1141,123 @@ router.put('/api/admin/ai-settings', async (req, res) => {
     } else {
       res.status(500).json({ error: 'Failed to update AI settings' });
     }
+  }
+});
+
+// Admin AI Credentials API (secure credential management)
+router.get('/api/admin/ai-credentials', async (req, res) => {
+  try {
+    // Always return masked credentials for security
+    const maskedCredentials = await storage.getMaskedAICredentials();
+    res.json(maskedCredentials);
+  } catch (error) {
+    console.error('Failed to fetch AI credentials:', error);
+    res.status(500).json({ error: 'Failed to fetch AI credentials' });
+  }
+});
+
+router.put('/api/admin/ai-credentials', async (req, res) => {
+  try {
+    const validatedData = updateCredentialsRequestSchema.parse(req.body);
+    const updatedCredentials = [];
+    
+    // Process API keys
+    if (validatedData.apiKeys) {
+      for (const [provider, apiKey] of Object.entries(validatedData.apiKeys)) {
+        if (apiKey && apiKey.trim()) {
+          const credentials = await storage.createOrUpdateAICredentials(
+            provider as any, // Type assertion for provider
+            apiKey.trim()
+          );
+          updatedCredentials.push(credentials);
+          console.log(`Updated API key for provider: ${provider}`);
+        }
+      }
+    }
+    
+    // Process base URLs
+    if (validatedData.baseUrls) {
+      for (const [provider, baseUrl] of Object.entries(validatedData.baseUrls)) {
+        if (baseUrl && baseUrl.trim()) {
+          // Get existing credentials or create new ones
+          const existing = await storage.getAICredentials(provider as any);
+          if (existing) {
+            // Update existing with new base URL
+            const decryptedKey = await storage.getDecryptedAPIKey(provider as any);
+            if (decryptedKey) {
+              await storage.createOrUpdateAICredentials(
+                provider as any,
+                decryptedKey,
+                baseUrl.trim()
+              );
+            }
+          } else {
+            // Create placeholder for base URL only (will need API key later)
+            await storage.createOrUpdateAICredentials(
+              provider as any,
+              'placeholder-key', // Will be replaced when real key is provided
+              baseUrl.trim()
+            );
+          }
+          console.log(`Updated base URL for provider: ${provider}`);
+        }
+      }
+    }
+    
+    // Refresh AI service to pick up new credentials
+    try {
+      await aiService.refreshConfiguration();
+      console.log('AI service configuration refreshed');
+    } catch (refreshError) {
+      console.warn('Failed to refresh AI service configuration:', refreshError);
+      // Continue - credential update succeeded even if refresh failed
+    }
+    
+    // Return masked credentials
+    const result = await storage.getMaskedAICredentials();
+    res.json({ 
+      message: 'Credentials updated successfully',
+      credentials: result,
+      count: updatedCredentials.length
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      console.error('Failed to update AI credentials:', error);
+      res.status(500).json({ error: 'Failed to update AI credentials', details: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  }
+});
+
+router.delete('/api/admin/ai-credentials/:provider', async (req, res) => {
+  try {
+    const provider = req.params.provider;
+    
+    // Validate provider
+    const validProvider = AIProviderEnum.safeParse(provider);
+    if (!validProvider.success) {
+      return res.status(400).json({ error: 'Invalid provider' });
+    }
+    
+    const deleted = await storage.deleteAICredentials(validProvider.data);
+    if (deleted) {
+      console.log(`Deleted credentials for provider: ${provider}`);
+      
+      // Refresh AI service to remove deleted credentials
+      try {
+        await aiService.refreshConfiguration();
+      } catch (refreshError) {
+        console.warn('Failed to refresh AI service after credential deletion:', refreshError);
+      }
+      
+      res.json({ message: 'Credentials deleted successfully' });
+    } else {
+      res.status(404).json({ error: 'Credentials not found' });
+    }
+  } catch (error) {
+    console.error('Failed to delete AI credentials:', error);
+    res.status(500).json({ error: 'Failed to delete AI credentials' });
   }
 });
 

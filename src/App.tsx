@@ -19,6 +19,7 @@ const Governance = lazy(() => import("./pages/Governance"));
 const Leadership = lazy(() => import("./pages/Leadership"));
 const Funding = lazy(() => import("./pages/Funding"));
 const Consciousness = lazy(() => import("./pages/Consciousness"));
+const AISettings = lazy(() => import("./pages/AISettings"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -51,6 +52,8 @@ const App = () => (
               <Route path="/consciousness" element={<Consciousness />} />
 
               <Route path="/funding" element={<Funding />} />
+
+              <Route path="/ai-settings" element={<AISettings />} />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

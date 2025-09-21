@@ -16,36 +16,66 @@ export class AIServiceManager {
   private currentSettings: AISettings | null = null;
 
   constructor() {
-    // Initialize all providers on startup
-    this.initializeProviders();
+    // Initialize all providers on startup (async, but don't wait)
+    this.initializeProviders().catch(error => {
+      console.error('AI Service Manager: Failed to initialize providers:', error);
+    });
   }
 
   /**
-   * Initialize all available AI provider adapters
+   * Initialize all available AI provider adapters with stored credentials
    */
-  private initializeProviders(): void {
+  private async initializeProviders(): Promise<void> {
     try {
-      // Initialize OpenAI adapter
-      const openaiAdapter = new OpenAIAdapter();
-      this.registerProvider('openai', openaiAdapter);
-
-      // Initialize Claude adapter
-      const claudeAdapter = new ClaudeAdapter();
-      this.registerProvider('claude', claudeAdapter);
-
-      // Initialize Gemini adapter
-      const geminiAdapter = new GeminiAdapter();
-      this.registerProvider('gemini', geminiAdapter);
-
-      // Initialize xAI adapter
-      const xaiAdapter = new XAIAdapter();
-      this.registerProvider('xai', xaiAdapter);
-
-      // Initialize LiteLLM adapter
-      const litellmAdapter = new LiteLLMAdapter();
-      this.registerProvider('litellm', litellmAdapter);
-
-      console.log('AI Service Manager: All providers initialized');
+      console.log('AI Service Manager: Initializing providers with stored credentials...');
+      
+      // Load all stored credentials
+      const allCredentials = await storage.getAllAICredentials();
+      const credentialMap = new Map();
+      
+      for (const cred of allCredentials) {
+        const decryptedKey = await storage.getDecryptedAPIKey(cred.provider);
+        if (decryptedKey && decryptedKey !== 'placeholder-key') {
+          credentialMap.set(cred.provider, {
+            apiKey: decryptedKey,
+            baseUrl: cred.baseUrl
+          });
+        }
+      }
+      
+      // Initialize providers with stored credentials or fallback to env vars
+      const providers = [
+        { name: 'openai' as AIProvider, envKey: 'OPENAI_API_KEY', AdapterClass: OpenAIAdapter },
+        { name: 'claude' as AIProvider, envKey: 'ANTHROPIC_API_KEY', AdapterClass: ClaudeAdapter },
+        { name: 'gemini' as AIProvider, envKey: 'GOOGLE_AI_API_KEY', AdapterClass: GeminiAdapter },
+        { name: 'xai' as AIProvider, envKey: 'XAI_API_KEY', AdapterClass: XAIAdapter },
+        { name: 'litellm' as AIProvider, envKey: 'LITELLM_API_KEY', AdapterClass: LiteLLMAdapter }
+      ];
+      
+      for (const { name, envKey, AdapterClass } of providers) {
+        try {
+          const storedCred = credentialMap.get(name);
+          const apiKey = storedCred?.apiKey || process.env[envKey];
+          const baseUrl = storedCred?.baseUrl;
+          
+          let adapter: AIProviderAdapter;
+          if (name === 'xai' || name === 'litellm') {
+            adapter = new AdapterClass(apiKey, baseUrl);
+          } else {
+            adapter = new AdapterClass(apiKey);
+          }
+          
+          this.registerProvider(name, adapter);
+          
+          const source = storedCred ? 'stored credentials' : 'environment variables';
+          console.log(`AI Service Manager: Initialized ${name} provider from ${source}`);
+        } catch (error) {
+          console.warn(`AI Service Manager: Failed to initialize ${name} provider:`, error);
+          // Continue with other providers
+        }
+      }
+      
+      console.log('AI Service Manager: Provider initialization completed');
     } catch (error) {
       console.error('AI Service Manager: Error initializing providers:', error);
     }
@@ -145,6 +175,26 @@ export class AIServiceManager {
   async refreshSettings(): Promise<void> {
     this.currentSettings = null;
     await this.getSettings();
+  }
+  
+  /**
+   * Refresh configuration - reload credentials and reinitialize providers
+   */
+  async refreshConfiguration(): Promise<void> {
+    console.log('AI Service Manager: Refreshing configuration...');
+    
+    try {
+      // Clear current settings cache
+      this.currentSettings = null;
+      
+      // Reinitialize all providers with latest credentials
+      await this.initializeProviders();
+      
+      console.log('AI Service Manager: Configuration refresh completed');
+    } catch (error) {
+      console.error('AI Service Manager: Failed to refresh configuration:', error);
+      throw error;
+    }
   }
 
   /**
