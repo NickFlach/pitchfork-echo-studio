@@ -420,14 +420,53 @@ export const messagingApi = {
       timestamp: new Date().toISOString(),
       ...data,
     };
-    
+
+    // Store locally first
     messages.push(newMessage);
     setStorageData(STORAGE_KEYS.MESSAGES, messages);
+
+    // Try to send via P2P to all participants
+    try {
+      const conversation = await this.getConversation(data.conversationId);
+      if (conversation) {
+        // Send to each participant via P2P
+        for (const participantAddress of conversation.participants) {
+          if (participantAddress !== data.senderAddress) {
+            try {
+              await p2pMessaging.sendMessage(participantAddress, data.encryptedContent);
+            } catch (error) {
+              console.error(`Failed to send P2P message to ${participantAddress}:`, error);
+              // Message still stored locally, will sync when P2P connection is restored
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error sending P2P messages:', error);
+      // Message is still stored locally
+    }
     
     // Update conversation's last activity
     await this.updateConversationActivity(data.conversationId);
     
     return newMessage;
+  },
+
+  // Initialize P2P connections for a conversation
+  async initializeP2PConnections(conversationId: string, currentUserAddress: string): Promise<void> {
+    const conversation = await this.getConversation(conversationId);
+    if (!conversation) return;
+
+    // Create P2P connections to all other participants
+    for (const participantAddress of conversation.participants) {
+      if (participantAddress !== currentUserAddress) {
+        try {
+          await p2pMessaging.createConnection(participantAddress);
+        } catch (error) {
+          console.error(`Failed to create P2P connection to ${participantAddress}:`, error);
+        }
+      }
+    }
   },
 
   async getMessagesByConversation(conversationId: string): Promise<Message[]> {
