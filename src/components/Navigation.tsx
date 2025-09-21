@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings } from 'lucide-react';
+import { ArrowLeft, Home, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface NavigationProps {
@@ -29,6 +29,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     { path: '/leadership', icon: UserCheck, label: 'Leadership' },
     { path: '/funding', icon: DollarSign, label: 'Funding' },
     { path: '/ai-settings', icon: Settings, label: 'AI Settings' },
+    { path: '/provider-health', icon: Activity, label: 'Provider Health' },
   ];
 
   const currentPath = location.pathname;

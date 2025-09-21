@@ -1664,4 +1664,398 @@ router.get('/api/analytics/dashboard', async (req, res) => {
   }
 });
 
+// Provider Health Dashboard Routes
+// Cost Analytics
+router.get('/api/analytics/costs', async (req, res) => {
+  try {
+    const { timeframe = 'day' } = req.query;
+    const usage = await storage.getAIUsageAnalytics(timeframe as string);
+    
+    // Calculate costs based on token usage and provider pricing
+    const costData = usage.reduce((acc: any, record: any) => {
+      const costPerToken = getCostPerToken(record.aiProvider, record.model);
+      const cost = (record.tokensUsed || 0) * costPerToken / 1000; // Convert to cost per 1K tokens
+      
+      acc.totalCost += cost;
+      acc.providerCosts = acc.providerCosts || {};
+      acc.providerCosts[record.aiProvider] = (acc.providerCosts[record.aiProvider] || 0) + cost;
+      
+      return acc;
+    }, { totalCost: 0, providerCosts: {} });
+    
+    res.json(costData);
+  } catch (error) {
+    console.error('Failed to fetch cost analytics:', error);
+    res.status(500).json({ error: 'Failed to fetch cost analytics' });
+  }
+});
+
+// Performance Metrics
+router.get('/api/analytics/performance', async (req, res) => {
+  try {
+    const performance = await storage.getAIProviderPerformance();
+    const usage = await storage.getAIUsageAnalytics('week');
+    
+    // Aggregate performance data
+    const responseTimeData = aggregateResponseTimes(usage);
+    const successRates = calculateSuccessRates(usage);
+    
+    res.json({
+      responseTimeData,
+      successRates,
+      performanceTrends: performance
+    });
+  } catch (error) {
+    console.error('Failed to fetch performance metrics:', error);
+    res.status(500).json({ error: 'Failed to fetch performance metrics' });
+  }
+});
+
+// Feedback Analytics
+router.get('/api/analytics/feedback', async (req, res) => {
+  try {
+    const feedback = await storage.getAIUserFeedback();
+    
+    // Aggregate satisfaction data by provider
+    const satisfactionByProvider = aggregateSatisfactionByProvider(feedback);
+    const recentFeedback = feedback.slice(0, 10); // Get 10 most recent
+    
+    res.json({
+      satisfactionByProvider,
+      recentFeedback
+    });
+  } catch (error) {
+    console.error('Failed to fetch feedback analytics:', error);
+    res.status(500).json({ error: 'Failed to fetch feedback analytics' });
+  }
+});
+
+// Intelligent Recommendations
+router.get('/api/analytics/recommendations', async (req, res) => {
+  try {
+    const recommendations = await storage.getAIProviderRecommendations();
+    const usage = await storage.getAIUsageAnalytics('month');
+    const performance = await storage.getAIProviderPerformance();
+    
+    // Generate AI-powered recommendations based on data
+    const providerRecommendations = generateProviderRecommendations(usage, performance);
+    
+    res.json({
+      providerRecommendations,
+      storedRecommendations: recommendations
+    });
+  } catch (error) {
+    console.error('Failed to fetch recommendations:', error);
+    res.status(500).json({ error: 'Failed to fetch recommendations' });
+  }
+});
+
+// Optimization Insights
+router.get('/api/analytics/optimization', async (req, res) => {
+  try {
+    const usage = await storage.getAIUsageAnalytics('month');
+    const performance = await storage.getAIProviderPerformance();
+    const fallbacks = await storage.getAIProviderFallbackEvents();
+    
+    // Calculate optimization opportunities
+    const potentialSavings = calculatePotentialSavings(usage, performance);
+    const suggestions = generateOptimizationSuggestions(usage, performance, fallbacks);
+    const routingStrategies = generateRoutingStrategies(performance);
+    
+    res.json({
+      potentialSavings,
+      suggestions,
+      routingStrategies
+    });
+  } catch (error) {
+    console.error('Failed to fetch optimization insights:', error);
+    res.status(500).json({ error: 'Failed to fetch optimization insights' });
+  }
+});
+
+// Bulk Provider Testing
+router.post('/api/ai/test-all-providers', async (req, res) => {
+  try {
+    const testResults: any = {};
+    let healthyProviders = 0;
+    let failedProviders = 0;
+    
+    // Test each provider
+    const providers = ['openai', 'claude', 'gemini', 'xai', 'litellm'];
+    const testPromises = providers.map(async (provider) => {
+      try {
+        const startTime = Date.now();
+        const result = await aiService.makeRequest({
+          messages: [{ role: 'user', content: 'Test connection - respond with OK' }],
+          model: 'default',
+          maxTokens: 10,
+          temperature: 0.1,
+          metadata: { featureType: 'health-check' }
+        }, { preferredProvider: provider as any });
+        
+        const responseTime = Date.now() - startTime;
+        testResults[provider] = {
+          status: 'healthy',
+          responseTime,
+          success: true
+        };
+        healthyProviders++;
+      } catch (error) {
+        testResults[provider] = {
+          status: 'unhealthy',
+          error: error.message,
+          success: false
+        };
+        failedProviders++;
+      }
+    });
+    
+    await Promise.all(testPromises);
+    
+    res.json({
+      totalProviders: providers.length,
+      healthyProviders,
+      failedProviders,
+      results: testResults
+    });
+  } catch (error) {
+    console.error('Failed to test providers:', error);
+    res.status(500).json({ error: 'Failed to test providers' });
+  }
+});
+
+// Data Export Routes
+router.get('/api/analytics/export/usage', async (req, res) => {
+  try {
+    const usage = await storage.getAIUsageAnalytics();
+    res.json(usage);
+  } catch (error) {
+    console.error('Failed to export usage data:', error);
+    res.status(500).json({ error: 'Failed to export usage data' });
+  }
+});
+
+router.get('/api/analytics/export/performance', async (req, res) => {
+  try {
+    const performance = await storage.getAIProviderPerformance();
+    res.json(performance);
+  } catch (error) {
+    console.error('Failed to export performance data:', error);
+    res.status(500).json({ error: 'Failed to export performance data' });
+  }
+});
+
+router.get('/api/analytics/export/feedback', async (req, res) => {
+  try {
+    const feedback = await storage.getAIUserFeedback();
+    res.json(feedback);
+  } catch (error) {
+    console.error('Failed to export feedback data:', error);
+    res.status(500).json({ error: 'Failed to export feedback data' });
+  }
+});
+
+router.get('/api/analytics/export/all', async (req, res) => {
+  try {
+    const [usage, performance, feedback, fallbacks] = await Promise.all([
+      storage.getAIUsageAnalytics(),
+      storage.getAIProviderPerformance(),
+      storage.getAIUserFeedback(),
+      storage.getAIProviderFallbackEvents()
+    ]);
+    
+    res.json({
+      usage,
+      performance,
+      feedback,
+      fallbacks,
+      exportedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Failed to export all data:', error);
+    res.status(500).json({ error: 'Failed to export all data' });
+  }
+});
+
+// Helper functions for analytics calculations
+function getCostPerToken(provider: string, model?: string): number {
+  const pricing: Record<string, Record<string, number>> = {
+    openai: { 'gpt-4': 0.00003, 'gpt-3.5-turbo': 0.000002 },
+    claude: { 'claude-3-sonnet': 0.000015, 'claude-3-haiku': 0.00025 },
+    gemini: { 'gemini-pro': 0.0000005 },
+    xai: { 'grok-beta': 0.00001 },
+    litellm: { 'default': 0.00001 }
+  };
+  
+  return pricing[provider]?.[model || 'default'] || pricing[provider]?.['default'] || 0.00001;
+}
+
+function aggregateResponseTimes(usage: any[]): any[] {
+  const dailyData: Record<string, Record<string, number[]>> = {};
+  
+  usage.forEach(record => {
+    const date = new Date(record.timestamp).toISOString().split('T')[0];
+    if (!dailyData[date]) dailyData[date] = {};
+    if (!dailyData[date][record.aiProvider]) dailyData[date][record.aiProvider] = [];
+    
+    if (record.responseTimeMs) {
+      dailyData[date][record.aiProvider].push(record.responseTimeMs);
+    }
+  });
+  
+  return Object.entries(dailyData).map(([date, providers]) => {
+    const result: any = { date };
+    Object.entries(providers).forEach(([provider, times]) => {
+      result[provider] = times.reduce((a, b) => a + b, 0) / times.length;
+    });
+    return result;
+  });
+}
+
+function calculateSuccessRates(usage: any[]): any[] {
+  const providerStats: Record<string, { success: number; total: number }> = {};
+  
+  usage.forEach(record => {
+    if (!providerStats[record.aiProvider]) {
+      providerStats[record.aiProvider] = { success: 0, total: 0 };
+    }
+    providerStats[record.aiProvider].total++;
+    if (record.success) {
+      providerStats[record.aiProvider].success++;
+    }
+  });
+  
+  return Object.entries(providerStats).map(([provider, stats]) => ({
+    name: provider,
+    rate: Math.round((stats.success / stats.total) * 100)
+  }));
+}
+
+function aggregateSatisfactionByProvider(feedback: any[]): any[] {
+  const providerRatings: Record<string, number[]> = {};
+  
+  feedback.forEach(record => {
+    if (!providerRatings[record.aiProvider]) {
+      providerRatings[record.aiProvider] = [];
+    }
+    if (record.qualityRating === 'thumbs_up') {
+      providerRatings[record.aiProvider].push(5);
+    } else if (record.qualityRating === 'neutral') {
+      providerRatings[record.aiProvider].push(3);
+    } else if (record.qualityRating === 'thumbs_down') {
+      providerRatings[record.aiProvider].push(1);
+    }
+  });
+  
+  return Object.entries(providerRatings).map(([provider, ratings]) => ({
+    provider,
+    rating: ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 3
+  }));
+}
+
+function generateProviderRecommendations(usage: any[], performance: any[]): any[] {
+  const features = ['consciousness-reflection', 'leadership-strategy', 'decision-analysis', 'corruption-detection'];
+  
+  return features.map(feature => {
+    const featureUsage = usage.filter(u => u.featureType === feature);
+    const bestProvider = findBestProviderForFeature(featureUsage, performance);
+    
+    return {
+      feature,
+      recommendedProvider: bestProvider.name,
+      reasoning: bestProvider.reasoning,
+      performanceScore: bestProvider.performanceScore,
+      costScore: bestProvider.costScore
+    };
+  });
+}
+
+function findBestProviderForFeature(featureUsage: any[], performance: any[]): any {
+  const providers = ['openai', 'claude', 'gemini', 'xai'];
+  let bestProvider = { name: 'openai', reasoning: 'Default choice', performanceScore: 7, costScore: 6 };
+  
+  // Simple heuristic based on success rate and response time
+  providers.forEach(provider => {
+    const providerUsage = featureUsage.filter(u => u.aiProvider === provider);
+    if (providerUsage.length > 0) {
+      const successRate = providerUsage.filter(u => u.success).length / providerUsage.length;
+      const avgResponseTime = providerUsage.reduce((sum, u) => sum + (u.responseTimeMs || 0), 0) / providerUsage.length;
+      
+      if (successRate > 0.9 && avgResponseTime < 3000) {
+        bestProvider = {
+          name: provider,
+          reasoning: `High success rate (${Math.round(successRate * 100)}%) and fast response time`,
+          performanceScore: Math.min(10, Math.round(successRate * 10)),
+          costScore: Math.max(1, 10 - Math.floor(avgResponseTime / 500))
+        };
+      }
+    }
+  });
+  
+  return bestProvider;
+}
+
+function calculatePotentialSavings(usage: any[], performance: any[]): number {
+  // Simple calculation: estimate 10-30% savings through optimization
+  const totalCost = usage.reduce((sum, record) => {
+    const costPerToken = getCostPerToken(record.aiProvider, record.model || 'default');
+    return sum + ((record.tokensUsed || 0) * costPerToken / 1000);
+  }, 0);
+  
+  return Math.round(totalCost * 0.15 * 100) / 100; // 15% average savings potential, rounded
+}
+
+function generateOptimizationSuggestions(usage: any[], performance: any[], fallbacks: any[]): any[] {
+  const suggestions = [
+    {
+      title: 'Route simple queries to cost-efficient providers',
+      description: 'Use Gemini or Claude Haiku for basic tasks to reduce costs by up to 80%',
+      impact: 'High Cost Savings'
+    },
+    {
+      title: 'Implement intelligent caching',
+      description: 'Cache similar requests to reduce redundant API calls',
+      impact: 'Medium Cost & Speed'
+    },
+    {
+      title: 'Optimize timeout settings',
+      description: 'Adjust timeout settings based on provider performance patterns',
+      impact: 'Low Reliability'
+    }
+  ];
+  
+  if (fallbacks.length > 10) {
+    suggestions.push({
+      title: 'Review primary provider reliability',
+      description: 'High fallback rate detected - consider changing primary provider',
+      impact: 'High Reliability'
+    });
+  }
+  
+  return suggestions;
+}
+
+function generateRoutingStrategies(performance: any[]): any[] {
+  return [
+    {
+      name: 'Cost-Optimized Routing',
+      description: 'Route requests to the most cost-effective provider for each task type',
+      performanceGain: 5,
+      costReduction: 25
+    },
+    {
+      name: 'Speed-Optimized Routing', 
+      description: 'Prioritize fastest responding providers for real-time features',
+      performanceGain: 30,
+      costReduction: 0
+    },
+    {
+      name: 'Quality-Optimized Routing',
+      description: 'Use highest-performing providers based on user feedback',
+      performanceGain: 15,
+      costReduction: -10
+    }
+  ];
+}
+
 export default router;

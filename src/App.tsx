@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Web3Provider } from "@/contexts/Web3Context";
+import { TierProvider, useTier } from "@/contexts/TierContext";
+import { UpgradePromptModal } from "@/components/ui/upgrade-prompt";
 import { queryClient } from "@/lib/queryClient";
 
 // Lazy load components
@@ -20,6 +22,7 @@ const Leadership = lazy(() => import("./pages/Leadership"));
 const Funding = lazy(() => import("./pages/Funding"));
 const Consciousness = lazy(() => import("./pages/Consciousness"));
 const AISettings = lazy(() => import("./pages/AISettings"));
+const ProviderHealthDashboard = lazy(() => import("./pages/ProviderHealthDashboard"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -30,38 +33,62 @@ const LoadingSpinner = () => (
   </div>
 );
 
+// Global UpgradePrompt component that listens to TierContext
+const GlobalUpgradePrompt = () => {
+  const { currentUpgradePrompt, dismissUpgradePrompt, trackUpgradeConversion } = useTier();
+  
+  const handleUpgrade = () => {
+    if (currentUpgradePrompt) {
+      trackUpgradeConversion(currentUpgradePrompt.featureId, true);
+    }
+    dismissUpgradePrompt();
+  };
+  
+  return (
+    <UpgradePromptModal
+      prompt={currentUpgradePrompt}
+      onDismiss={dismissUpgradePrompt}
+      onUpgrade={handleUpgrade}
+    />
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <Web3Provider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<LoadingSpinner />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/whitepaper" element={<Whitepaper />} />
-              <Route path="/identity" element={<Identity />} />
-              <Route path="/organize" element={<Organize />} />
-              <Route path="/verify" element={<Verify />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/governance" element={<Governance />} />
-              <Route path="/leadership" element={<Leadership />} />
+    <TierProvider>
+      <Web3Provider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <GlobalUpgradePrompt />
+          <BrowserRouter>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/whitepaper" element={<Whitepaper />} />
+                <Route path="/identity" element={<Identity />} />
+                <Route path="/organize" element={<Organize />} />
+                <Route path="/verify" element={<Verify />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/governance" element={<Governance />} />
+                <Route path="/leadership" element={<Leadership />} />
 
-              <Route path="/consciousness" element={<Consciousness />} />
+                <Route path="/consciousness" element={<Consciousness />} />
 
-              <Route path="/funding" element={<Funding />} />
+                <Route path="/funding" element={<Funding />} />
 
-              <Route path="/ai-settings" element={<AISettings />} />
+                <Route path="/ai-settings" element={<AISettings />} />
+                <Route path="/provider-health" element={<ProviderHealthDashboard />} />
 
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </TooltipProvider>
-    </Web3Provider>
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </TooltipProvider>
+      </Web3Provider>
+    </TierProvider>
   </QueryClientProvider>
 );
 

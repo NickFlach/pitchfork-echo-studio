@@ -10,6 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TierBadge } from "@/components/ui/tier-badge";
+import { FeatureComparison } from "@/components/ui/feature-comparison";
+import { TierUpgradeModal } from "@/components/ui/tier-upgrade-modal";
+import { UpgradePromptModal } from "@/components/ui/upgrade-prompt";
+import { useTier } from "@/contexts/TierContext";
 import { 
   Crown, 
   Users, 
@@ -105,15 +110,83 @@ const Leadership = () => {
   const [feedbackLoading, setFeedbackLoading] = useState<Record<string, boolean>>({});
   const [sessionId] = useState(() => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
 
-  // AI Configuration Detection
-  const { data: aiCredentials = [], isLoading: loadingAIConfig } = useQuery<MaskedAICredentials[]>({
-    queryKey: ['/api/admin/ai-credentials'],
-    refetchInterval: 30000, // Check every 30 seconds
-  });
+  // Tier helper functions
+  const getTierBadgeForFeature = (featureId: string, tooltip?: string) => (
+    <TierBadge
+      tier={currentTier}
+      feature={featureId}
+      variant={isAIConfigured ? 'enhanced' : 'default'}
+      tooltip={tooltip}
+      size="sm"
+    />
+  );
 
-  // Dynamic AI availability detection
-  const aiEnhanced = aiCredentials.some(cred => cred.hasApiKey);
-  const configuredProviders = aiCredentials.filter(cred => cred.hasApiKey).map(cred => cred.provider);
+  const TierUpgradePrompt = ({ featureId, featureName }: { featureId: string; featureName: string }) => {
+    const featureDetails = getFeatureDetails(featureId);
+    
+    if (!featureDetails || isAIConfigured) return null;
+    
+    return (
+      <Alert className="mt-4 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 dark:border-purple-800 dark:from-purple-950/20 dark:to-blue-950/20">
+        <Sparkles className="w-4 h-4 text-purple-600" />
+        <AlertDescription className="flex items-center justify-between">
+          <div>
+            <span className="font-medium">Unlock AI-Enhanced {featureName}</span>
+            <p className="text-sm mt-1 text-muted-foreground">{featureDetails.upgradePrompt}</p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              trackFeatureUsage(`upgrade_prompt_${featureId}`, featureDetails.category);
+              triggerUpgradePrompt(featureId, 'usage');
+            }}
+            className="ml-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700"
+            data-testid={`button-upgrade-${featureId}`}
+          >
+            <Sparkles className="w-3 h-3 mr-1" />
+            Upgrade
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  };
+
+  // Upgrade handlers
+  const handleUpgradeFromFeature = (featureId: string) => {
+    setUpgradeFeatureId(featureId);
+    setShowUpgradeModal(true);
+    trackFeatureUsage(`upgrade_modal_${featureId}`, 'leadership');
+  };
+
+  const handleUpgradeConversion = () => {
+    if (upgradeFeatureId) {
+      trackUpgradeConversion(upgradeFeatureId, true);
+    }
+    setShowUpgradeModal(false);
+    setUpgradeFeatureId(null);
+  };
+
+  // Tier System Integration
+  const {
+    currentTier,
+    isAIConfigured,
+    loadingAIConfig,
+    configuredProviders,
+    canAccessFeature,
+    canAccessAIFeature,
+    getFeatureDetails,
+    triggerUpgradePrompt,
+    dismissUpgradePrompt,
+    currentUpgradePrompt,
+    trackFeatureUsage,
+    trackUpgradeConversion,
+    getFeaturesByCategory
+  } = useTier();
+
+  // Modal state for tier upgrades
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeatureId, setUpgradeFeatureId] = useState<string | null>(null);
 
   // Mock data - in a real app, this would come from APIs
   const [movements] = useState<Movement[]>([
@@ -168,19 +241,47 @@ const Leadership = () => {
     queryFn: consciousnessApi.getResourceProfiles,
   });
 
-  // Usage analytics tracking helper
-  const trackUsage = async (featureType: string, aiProvider?: string, startTime?: number) => {
+  // Get default model for provider
+  const getDefaultModelForProvider = (provider: string): string => {
+    const providerModels: Record<string, string> = {
+      'openai': 'gpt-4',
+      'claude': 'claude-3-sonnet-20240229',
+      'gemini': 'gemini-pro',
+      'xai': 'grok-beta',
+      'litellm': 'gpt-4' // LiteLLM can proxy multiple models, defaulting to gpt-4
+    };
+    return providerModels[provider] || 'gpt-4';
+  };
+
+  // Usage analytics tracking helper with real provider metadata
+  const trackUsage = async (featureType: string, aiProvider?: string, startTime?: number, requestId?: string, providerMetadata?: any) => {
     try {
       const responseTime = startTime ? Date.now() - startTime : 0;
+      const actualProvider = aiProvider || configuredProviders[0] || 'openai';
+      const actualModel = providerMetadata?.model || getDefaultModelForProvider(actualProvider);
+      
+      // Store metadata for feedback correlation if requestId provided
+      if (requestId) {
+        setLatestAIResponseMetadata(prev => ({
+          ...prev,
+          [requestId]: {
+            provider: actualProvider,
+            model: actualModel,
+            timestamp: Date.now(),
+            featureType
+          }
+        }));
+      }
+      
       const usageData: InsertAIUsageAnalytics = {
         sessionId,
         featureType: featureType as any,
-        aiProvider: (aiProvider || configuredProviders[0] || 'openai') as any,
-        modelUsed: 'gpt-4', // Should be tracked from actual usage
+        aiProvider: actualProvider as any,
+        modelUsed: actualModel, // Use actual model from provider metadata
         requestType: 'standard',
-        promptTokens: 0, // Would be filled by AI service
-        completionTokens: 0, // Would be filled by AI service
-        totalTokens: 0, // Would be filled by AI service
+        promptTokens: providerMetadata?.promptTokens || 0,
+        completionTokens: providerMetadata?.completionTokens || 0,
+        totalTokens: providerMetadata?.totalTokens || 0,
         responseTimeMs: responseTime,
         success: true,
         userContext: {
@@ -198,19 +299,32 @@ const Leadership = () => {
     }
   };
 
+  // AI Response Metadata State - tracks actual models used
+  const [latestAIResponseMetadata, setLatestAIResponseMetadata] = useState<{
+    [requestId: string]: {
+      provider: string;
+      model: string;
+      timestamp: number;
+      featureType: string;
+    }
+  }>({});
+
   // Feedback handler for AI responses
   const handleFeedback = async (itemId: string, rating: 'up' | 'down', featureType: string) => {
     setFeedbackRatings(prev => ({ ...prev, [itemId]: rating }));
     setFeedbackLoading(prev => ({ ...prev, [itemId]: true }));
     
     try {
-      const aiProvider = configuredProviders[0] || 'openai'; // Use first available or fallback
+      // Get actual AI metadata if available, otherwise use configured provider info
+      const responseMetadata = latestAIResponseMetadata[itemId];
+      const aiProvider = responseMetadata?.provider || configuredProviders[0] || 'openai';
+      const modelUsed = responseMetadata?.model || getDefaultModelForProvider(aiProvider);
       
       const feedbackData: InsertAIUserFeedback = {
         sessionId,
         featureType: featureType as any,
         aiProvider: aiProvider as any,
-        modelUsed: 'gpt-4', // Default, should be tracked from actual usage
+        modelUsed: modelUsed, // Use actual model from AI response metadata
         requestId: itemId,
         qualityRating: rating === 'up' ? 'thumbs_up' : 'thumbs_down',
         feedback: {
@@ -266,7 +380,7 @@ const Leadership = () => {
     onSuccess: (strategy) => {
       toast({
         title: "Strategy Generated",
-        description: aiEnhanced ? "AI-enhanced strategy created successfully" : "Strategy created successfully",
+        description: isAIConfigured ? "AI-enhanced strategy created successfully" : "Strategy created successfully",
       });
       setNewCampaign({ name: '', objective: '', timeframe: '', budget: '', constraints: '' });
     },
@@ -306,7 +420,7 @@ const Leadership = () => {
     onSuccess: (result) => {
       toast({
         title: "Decision Processed",
-        description: aiEnhanced ? "AI-enhanced decision analysis completed" : "Decision analysis completed",
+        description: isAIConfigured ? "AI-enhanced decision analysis completed" : "Decision analysis completed",
       });
       setNewDecision({ title: '', context: '', urgency: 'medium', options: '' });
     },
@@ -329,6 +443,17 @@ const Leadership = () => {
       return;
     }
 
+    // CRITICAL: Operational access control - prevent AI calls when not configured
+    if (!canAccessAIFeature('leadership_strategy')) {
+      triggerUpgradePrompt('leadership_strategy', 'high_intent');
+      toast({
+        title: "AI Configuration Required",
+        description: "Configure AI to unlock enhanced campaign strategy generation",
+        variant: "default",
+      });
+      return; // CRITICAL: Stop execution to prevent AI calls without configuration
+    }
+
     generateStrategyMutation.mutate(newCampaign);
   };
 
@@ -340,6 +465,17 @@ const Leadership = () => {
         variant: "destructive",
       });
       return;
+    }
+
+    // CRITICAL: Operational access control - prevent AI calls when not configured
+    if (!canAccessAIFeature('leadership_strategy')) {
+      triggerUpgradePrompt('leadership_strategy', 'high_intent');
+      toast({
+        title: "AI Configuration Required",
+        description: "Configure AI to unlock enhanced strategic analysis",
+        variant: "default",
+      });
+      return; // CRITICAL: Stop execution to prevent AI calls without configuration
     }
 
     processDecisionMutation.mutate(newDecision);
@@ -405,7 +541,7 @@ const Leadership = () => {
 
   // Try with AI prompt component
   const TryWithAIPrompt = ({ feature }: { feature: string }) => (
-    !aiEnhanced ? (
+    !isAIConfigured ? (
       <Alert className="mt-4">
         <Sparkles className="w-4 h-4" />
         <AlertDescription className="flex items-center justify-between">
@@ -1044,8 +1180,9 @@ const Leadership = () => {
                   </div>
                   <Button 
                     onClick={handleProcessDecision}
-                    disabled={processDecisionMutation.isPending}
+                    disabled={processDecisionMutation.isPending || !canAccessAIFeature('leadership_strategy')}
                     className="w-full"
+                    data-testid="button-process-decision"
                   >
                     {processDecisionMutation.isPending ? (
                       <>
@@ -1130,6 +1267,23 @@ const Leadership = () => {
             )}
           </TabsContent>
         </Tabs>
+        
+        {/* Tier Upgrade Modals */}
+        <UpgradePromptModal
+          prompt={currentUpgradePrompt}
+          onDismiss={dismissUpgradePrompt}
+          onUpgrade={() => trackUpgradeConversion(currentUpgradePrompt?.featureId || '', true)}
+        />
+        
+        <TierUpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => {
+            setShowUpgradeModal(false);
+            setUpgradeFeatureId(null);
+          }}
+          featureId={upgradeFeatureId || undefined}
+          initialTab="features"
+        />
       </div>
     </div>
   );
