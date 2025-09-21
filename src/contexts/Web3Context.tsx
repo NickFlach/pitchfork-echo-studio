@@ -136,12 +136,15 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
     }
 
     console.log('✅ Ethereum object found:', window.ethereum);
+    console.log('🔗 About to request accounts...');
     setIsConnecting(true);
     try {
       // Request account access
+      console.log('📞 Calling eth_requestAccounts...');
       const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts',
       });
+      console.log('📞 eth_requestAccounts completed');
 
       console.log('📋 Accounts received:', accounts);
 
