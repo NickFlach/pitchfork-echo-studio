@@ -93,35 +93,49 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
   }, []);
 
   const checkConnection = async () => {
+    console.log('🔍 Checking existing wallet connection...');
     if (window.ethereum) {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        console.log('🔍 Existing accounts found:', accounts);
+        
         if (accounts.length > 0) {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const network = await provider.getNetwork();
+          
+          console.log('🔄 Restoring connection for:', accounts[0]);
           
           setIsConnected(true);
           setAccount(accounts[0]);
           setProvider(provider);
           setSigner(signer);
           setChainId(Number(network.chainId));
+          
+          console.log('✅ Connection restored successfully!');
+        } else {
+          console.log('ℹ️ No existing connection found');
         }
       } catch (error) {
-        console.error('Error checking connection:', error);
+        console.error('❌ Error checking connection:', error);
       }
+    } else {
+      console.log('❌ No ethereum object found during check');
     }
   };
 
   const connectWallet = async (walletType?: string) => {
+    console.log('🔗 Attempting to connect wallet...', { walletType });
     setError(null);
 
     if (!window.ethereum) {
       const errorMsg = 'No Web3 wallet detected. Please install MetaMask or another Web3 wallet.';
+      console.error('❌ No ethereum object found');
       setError(errorMsg);
       throw new Error(errorMsg);
     }
 
+    console.log('✅ Ethereum object found:', window.ethereum);
     setIsConnecting(true);
     try {
       // Request account access
@@ -129,10 +143,15 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
         method: 'eth_requestAccounts',
       });
 
+      console.log('📋 Accounts received:', accounts);
+
       if (accounts.length > 0) {
         const provider = new BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const network = await provider.getNetwork();
+
+        console.log('🌐 Network info:', { chainId: network.chainId, name: network.name });
+        console.log('👤 Account connected:', accounts[0]);
 
         setIsConnected(true);
         setAccount(accounts[0]);
@@ -140,6 +159,8 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
         setSigner(signer);
         setChainId(Number(network.chainId));
         setWalletType(walletType || 'metamask');
+        
+        console.log('✅ Wallet connection successful!');
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to connect wallet';
