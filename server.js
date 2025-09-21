@@ -2,7 +2,10 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 5000;
+// Load configuration
+const config = require('./server/config.js');
+
+const PORT = config.frontendPort;
 const DIST_DIR = path.join(__dirname, 'dist');
 
 const mimeTypes = {

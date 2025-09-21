@@ -1,3 +1,4 @@
+import React, { useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight, MessageCircle, Scale } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
@@ -6,12 +7,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import neoTokenLogo from '@/assets/neo-token-logo.png';
 
-export const PitchforkHero = () => {
+export const PitchforkHero = React.memo(() => {
   const { isConnected, account, chainId, connectWallet, disconnectWallet, isConnecting } = useWeb3();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleWalletAction = () => {
+  const handleWalletAction = useCallback(() => {
     if (isConnected) {
       disconnectWallet();
       toast({
@@ -21,9 +22,9 @@ export const PitchforkHero = () => {
     } else {
       connectWallet();
     }
-  };
+  }, [isConnected, disconnectWallet, connectWallet, toast]);
 
-  const copyAddress = () => {
+  const copyAddress = useCallback(() => {
     if (account) {
       navigator.clipboard.writeText(account);
       toast({
@@ -31,9 +32,9 @@ export const PitchforkHero = () => {
         description: "Wallet address copied to clipboard!",
       });
     }
-  };
+  }, [account, toast]);
 
-  const openInExplorer = () => {
+  const openInExplorer = useCallback(() => {
     if (account && chainId) {
       let explorerUrl = '';
       switch (chainId) {
@@ -56,8 +57,46 @@ export const PitchforkHero = () => {
       }
       window.open(explorerUrl, '_blank');
     }
-  };
+  }, [account, chainId, toast]);
 
+  const navigationItems = useMemo(() => [
+    {
+      path: '/identity',
+      icon: Shield,
+      title: 'Secure Identity',
+      description: 'Privacy-first verification'
+    },
+    {
+      path: '/organize',
+      icon: Users,
+      title: 'Organize',
+      description: 'Coordinate resistance'
+    },
+    {
+      path: '/messages',
+      icon: MessageCircle,
+      title: 'Secure Messages',
+      description: 'Encrypted communication'
+    },
+    {
+      path: '/governance',
+      icon: Scale,
+      title: 'DAO Governance',
+      description: 'Democratic decisions'
+    },
+    {
+      path: '/verify',
+      icon: FileCheck,
+      title: 'Verify',
+      description: 'Document truth'
+    },
+    {
+      path: '/support',
+      icon: Heart,
+      title: 'Support',
+      description: 'Fund justice'
+    }
+  ], []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
@@ -252,4 +291,6 @@ export const PitchforkHero = () => {
       </div>
     </div>
   );
-};
+});
+
+PitchforkHero.displayName = 'PitchforkHero';
