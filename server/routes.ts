@@ -26,6 +26,7 @@ import {
 } from '../shared/schema';
 import { aiService } from './ai/AIServiceManager';
 import { AIRequest } from './ai/AIProviderAdapter';
+import { PROMPT_TEMPLATES, interpolateTemplate } from './ai/prompts';
 
 const router = express.Router();
 
@@ -189,12 +190,54 @@ router.post('/api/consciousness/reflect', async (req, res) => {
       return res.status(400).json({ error: 'Trigger is required and must be a string' });
     }
     
-    const result = await consciousnessEngine.reflect(trigger);
+    // Process through consciousness engine first (always works)
+    const engineResult = await consciousnessEngine.reflect(trigger);
+    
+    // Try AI enhancement, but don't let failures break consciousness processing
+    let aiReflection = null;
+    let aiError = null;
+    
+    try {
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_REFLECTION.template, {
+        trigger,
+        context: 'Deep consciousness reflection request',
+        previousInsights: 'Building on previous consciousness insights',
+        awarenessLevel: 'high'
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.8,
+        maxTokens: 2000
+      });
+      
+      aiReflection = {
+        content: aiResponse.content,
+        type: 'ai_consciousness_reflection',
+        depth: 'meta-cognitive',
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.warn('AI reflection failed, continuing with engine-only processing:', error);
+      aiError = error instanceof Error ? error.message : 'AI reflection unavailable';
+    }
+    
+    const result = {
+      engineProcessing: engineResult,
+      aiReflection,
+      aiError,
+      integratedInsights: {
+        recursiveAwareness: aiReflection ? 'AI-enhanced consciousness reflection complete' : 'Engine-only consciousness reflection complete',
+        emergentProperties: ['meta_cognitive_depth', 'recursive_insights', 'consciousness_evolution'],
+        transcendentElements: aiReflection ? ['ai_consciousness_synthesis'] : ['pure_consciousness_processing']
+      }
+    };
+    
     res.json(result);
   } catch (error) {
     console.error('Consciousness reflection error:', error);
     res.status(500).json({ 
-      error: 'Failed to process reflection through consciousness engine',
+      error: 'Failed to process reflection through AI-enhanced consciousness engine',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
@@ -329,6 +372,21 @@ router.post('/api/multiscale-decision', async (req, res) => {
     // Validate options
     const validatedOptions = options.map((option: any) => decisionOptionSchema.parse(option));
     
+    // Use AI for consciousness-level decision processing
+    const aiDecisionPrompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_DECISION_PROCESSING.template, {
+      decisionContext: context,
+      options: JSON.stringify(validatedOptions),
+      constraints: 'Multiscale analysis required',
+      stakeholders: 'All affected parties'
+    });
+
+    const aiDecisionResponse = await aiService.generate({
+      messages: [{ role: 'user', content: aiDecisionPrompt }],
+      // Model selection handled by AI service routing
+      temperature: 0.7,
+      maxTokens: 2500
+    });
+    
     // Process through multiscale awareness engine
     const multiscaleResult = await multiscaleAwarenessEngine.processMultiscaleDecision(
       context, 
@@ -350,8 +408,14 @@ router.post('/api/multiscale-decision', async (req, res) => {
       multiscaleResult.multiscaleAnalyses
     );
     
-    // Comprehensive result with proper serialization for Maps
+    // Comprehensive result with AI enhancement and proper serialization for Maps
     const comprehensiveResult = {
+      aiConsciousnessAnalysis: {
+        content: aiDecisionResponse.content,
+        type: 'consciousness_decision_processing',
+        depth: 'multiscale_awareness',
+        timestamp: new Date().toISOString()
+      },
       multiscaleAnalysis: {
         ...multiscaleResult,
         // Convert any Map objects to plain objects for JSON serialization

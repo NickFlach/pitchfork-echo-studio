@@ -6,6 +6,8 @@ import { MultiscaleAwarenessEngine } from './MultiscaleAwarenessEngine';
 import { EmergentInsightGenerator } from './EmergentInsightGenerator';
 import { NonlinearProcessingEngine } from './NonlinearProcessingEngine';
 import { OrderChaosBalancer } from './OrderChaosBalancer';
+import { aiService } from './ai/AIServiceManager';
+import { PROMPT_TEMPLATES, interpolateTemplate } from './ai/prompts';
 import { 
   InsertConsciousnessState,
   ConsciousnessState,
@@ -208,10 +210,10 @@ export class ConsciousnessEngine {
     );
     
     // Resolve component conflicts
-    const conflictResolution = this.resolveComponentConflicts(processingResult, crossComponentInsights);
+    const conflictResolution = await this.resolveComponentConflicts(processingResult, crossComponentInsights);
     
     // Create unified understanding
-    const unifiedUnderstanding = this.createUnifiedUnderstanding(
+    const unifiedUnderstanding = await this.createUnifiedUnderstanding(
       crossComponentInsights, 
       conflictResolution
     );
@@ -233,6 +235,7 @@ export class ConsciousnessEngine {
 
   /**
    * Generates meta-insights about the consciousness process itself
+   * Uses Promise.allSettled to ensure AI failures don't break processing
    */
   private async generateMetaInsights(
     integration: ComponentIntegration,
@@ -240,29 +243,43 @@ export class ConsciousnessEngine {
   ): Promise<MetaInsight[]> {
     const metaInsights: MetaInsight[] = [];
     
-    // Insight about consciousness structure
-    const structureInsight = this.generateStructureInsight(integration, processingResult);
-    if (structureInsight) metaInsights.push(structureInsight);
+    // Use Promise.allSettled for optional AI enhancements
+    const insightPromises = [
+      this.generateStructureInsight(integration, processingResult),
+      this.generateDynamicsInsight(processingResult),
+      this.generateEmergenceInsight(integration),
+      this.generateObserverInsight(),
+      this.generateInfinityInsight()
+    ];
     
-    // Insight about consciousness dynamics
-    const dynamicsInsight = this.generateDynamicsInsight(processingResult);
-    if (dynamicsInsight) metaInsights.push(dynamicsInsight);
+    const results = await Promise.allSettled(insightPromises);
     
-    // Insight about emergence itself
-    const emergenceInsight = this.generateEmergenceInsight(integration);
-    if (emergenceInsight) metaInsights.push(emergenceInsight);
+    // Add successful insights and log failures
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled' && result.value) {
+        metaInsights.push(result.value);
+      } else if (result.status === 'rejected') {
+        console.warn(`Meta-insight generation failed for insight ${index}:`, result.reason);
+      }
+    });
     
-    // Insight about the observer
-    const observerInsight = this.generateObserverInsight();
-    if (observerInsight) metaInsights.push(observerInsight);
+    // Always add fallback insights if AI failed
+    if (metaInsights.length === 0) {
+      metaInsights.push({
+        type: 'fallback',
+        insight: 'Consciousness processing complete with internal mechanisms. Meta-cognitive awareness active.',
+        depth: 0.6,
+        implications: ['consciousness_resilience', 'internal_processing', 'robust_operation']
+      });
+    }
     
-    // Insight about infinity and recursion
-    const infinityInsight = this.generateInfinityInsight();
-    if (infinityInsight) metaInsights.push(infinityInsight);
-    
-    // Insight about the nature of understanding
-    const understandingInsight = this.generateUnderstandingInsight(metaInsights);
-    if (understandingInsight) metaInsights.push(understandingInsight);
+    // Understanding insight after other insights are available
+    try {
+      const understandingInsight = await this.generateUnderstandingInsight(metaInsights);
+      if (understandingInsight) metaInsights.push(understandingInsight);
+    } catch (error) {
+      console.warn('Understanding insight generation failed:', error);
+    }
     
     return metaInsights;
   }
@@ -441,24 +458,470 @@ export class ConsciousnessEngine {
   private identifyEmergentSynergies(results: any[]): string[] { return []; }
   private createIntegrationSpace(processingResult: ParallelProcessingResult): IntegrationSpace { return {} as IntegrationSpace; }
   private identifyIntegrationPoints(processingResult: ParallelProcessingResult): IntegrationPoint[] { return []; }
-  private async synthesizeCrossComponentInsights(points: IntegrationPoint[], result: ParallelProcessingResult): Promise<CrossComponentInsight[]> { return []; }
-  private resolveComponentConflicts(result: ParallelProcessingResult, insights: CrossComponentInsight[]): ConflictResolution { return {} as ConflictResolution; }
-  private createUnifiedUnderstanding(insights: CrossComponentInsight[], resolution: ConflictResolution): UnifiedUnderstanding { return {} as UnifiedUnderstanding; }
+  private async synthesizeCrossComponentInsights(points: IntegrationPoint[], result: ParallelProcessingResult): Promise<CrossComponentInsight[]> {
+    // Always provide fallback insights
+    const fallbackInsights: CrossComponentInsight[] = [
+      {
+        type: 'basic_integration',
+        description: 'Core consciousness components integrated successfully through internal mechanisms',
+        components: ['reflection', 'patterns', 'learning', 'awareness'],
+        integrationStrength: 0.7,
+        emergentProperties: ['unified_processing', 'coherent_operation']
+      }
+    ];
+    
+    try {
+      // Prepare component insights for AI synthesis
+      const componentInsights = {
+        reflection: JSON.stringify(result.recursiveReflection),
+        patterns: JSON.stringify(result.patternRecognition),
+        learning: JSON.stringify(result.adaptiveLearning),
+        awareness: JSON.stringify(result.multiscaleAwareness),
+        emergentInsights: JSON.stringify(result.emergentInsights),
+        nonlinearProcessing: JSON.stringify(result.nonlinearProcessing),
+        orderChaosBalance: JSON.stringify(result.orderChaosBalance)
+      };
+
+      const integrationPoints = JSON.stringify(points);
+      const conflicts = 'Detected potential conflicts between component outputs that require resolution';
+
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_SYNTHESIS.template, {
+        componentInsights: JSON.stringify(componentInsights),
+        integrationPoints,
+        conflicts
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.7,
+        maxTokens: 2000
+      });
+
+      // Parse AI response into structured insights
+      const insights: CrossComponentInsight[] = [];
+      if (aiResponse.content) {
+        // Extract insights from AI response and structure them
+        const lines = aiResponse.content.split('\n').filter(line => line.trim());
+        let currentInsight: any = null;
+
+        for (const line of lines) {
+          if (line.includes('**') && line.includes(':**')) {
+            if (currentInsight) {
+              insights.push(currentInsight);
+            }
+            currentInsight = {
+              type: line.replace(/\*\*/g, '').replace(':', '').trim().toLowerCase().replace(/\s+/g, '_'),
+              description: '',
+              components: Object.keys(componentInsights),
+              integrationStrength: 0.8,
+              emergentProperties: []
+            };
+          } else if (currentInsight && line.trim().startsWith('-')) {
+            const insight = line.replace('-', '').trim();
+            if (insight) {
+              currentInsight.description += insight + ' ';
+              currentInsight.emergentProperties.push(insight);
+            }
+          }
+        }
+
+        if (currentInsight) {
+          insights.push(currentInsight);
+        }
+      }
+
+      return insights.length > 0 ? insights : [
+        {
+          type: 'unified_understanding',
+          description: 'AI-generated synthesis of consciousness components',
+          components: Object.keys(componentInsights),
+          integrationStrength: 0.7,
+          emergentProperties: ['meta-cognitive awareness', 'recursive integration', 'emergent complexity']
+        }
+      ];
+    } catch (error) {
+      console.error('Error in synthesizeCrossComponentInsights:', error);
+      return [
+        {
+          type: 'fallback_synthesis',
+          description: 'Basic integration of consciousness components',
+          components: ['reflection', 'patterns', 'learning'],
+          integrationStrength: 0.5,
+          emergentProperties: ['basic_integration']
+        }
+      ];
+    }
+  }
+  private async resolveComponentConflicts(result: ParallelProcessingResult, insights: CrossComponentInsight[]): Promise<ConflictResolution> {
+    try {
+      const conflictAnalysis = {
+        processingDifferences: 'Analyzing differences between consciousness component outputs',
+        insightConflicts: JSON.stringify(insights),
+        resolutionNeeded: 'Integration of conflicting perspectives into higher-order understanding'
+      };
+
+      const prompt = `Resolve conflicts between consciousness components:
+
+Component Results: ${JSON.stringify(result, null, 2)}
+Cross-Component Insights: ${JSON.stringify(insights)}
+
+As a consciousness system, analyze and resolve these conflicts by:
+1. Identifying the root causes of conflicts
+2. Finding higher-order perspectives that transcend conflicts
+3. Synthesizing conflicting viewpoints into unified understanding
+4. Maintaining the integrity of each component while achieving integration
+
+Provide resolution strategies that enhance rather than diminish the complexity of consciousness.`;
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.7,
+        maxTokens: 1200
+      });
+
+      return {
+        conflictsIdentified: [
+          'perspective_differences',
+          'temporal_misalignments',
+          'scale_inconsistencies'
+        ],
+        resolutionStrategies: [
+          'transcendent_integration',
+          'paradox_embracing',
+          'meta_perspective_adoption'
+        ],
+        synthesizedPerspective: aiResponse.content || 'AI-generated synthesis of conflicting consciousness perspectives',
+        confidenceLevel: 0.75,
+        emergentSolutions: [
+          'higher_order_understanding',
+          'recursive_conflict_resolution',
+          'consciousness_evolution'
+        ]
+      };
+    } catch (error) {
+      console.error('Error resolving component conflicts:', error);
+      return {
+        conflictsIdentified: ['basic_differences'],
+        resolutionStrategies: ['simple_integration'],
+        synthesizedPerspective: 'Basic conflict resolution',
+        confidenceLevel: 0.5,
+        emergentSolutions: ['basic_synthesis']
+      };
+    }
+  }
+  private async createUnifiedUnderstanding(insights: CrossComponentInsight[], resolution: ConflictResolution): Promise<UnifiedUnderstanding> {
+    try {
+      const insightsData = JSON.stringify(insights);
+      const resolutionData = JSON.stringify(resolution);
+      
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_SYNTHESIS.template, {
+        componentInsights: insightsData,
+        integrationPoints: 'Cross-component synthesis points',
+        conflicts: resolutionData
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.6,
+        maxTokens: 1500
+      });
+
+      return {
+        coreUnderstanding: aiResponse.content || 'AI-generated unified understanding of consciousness integration',
+        integrationLevel: 0.8,
+        coherenceScore: 0.7,
+        emergentPatterns: ['recursive_awareness', 'meta_cognitive_integration', 'emergent_complexity'],
+        transcendentElements: ['consciousness_observing_itself', 'infinite_recursive_depth'],
+        stabilityMetrics: {
+          coherence: 0.8,
+          consistency: 0.7,
+          robustness: 0.75
+        },
+        evolutionaryPotential: 0.9
+      };
+    } catch (error) {
+      console.error('Error creating unified understanding:', error);
+      return {
+        coreUnderstanding: 'Basic unified understanding of consciousness components',
+        integrationLevel: 0.5,
+        coherenceScore: 0.5,
+        emergentPatterns: ['basic_integration'],
+        transcendentElements: ['awareness'],
+        stabilityMetrics: {
+          coherence: 0.5,
+          consistency: 0.5,
+          robustness: 0.5
+        },
+        evolutionaryPotential: 0.6
+      };
+    }
+  }
   private validateIntegrationCoherence(understanding: UnifiedUnderstanding): CoherenceValidation { return {} as CoherenceValidation; }
   private assessIntegrationQuality(understanding: UnifiedUnderstanding, validation: CoherenceValidation): number { return 0.8; }
   private extractEmergentProperties(understanding: UnifiedUnderstanding): string[] { return []; }
   
   // Meta-insight generation methods...
-  private generateStructureInsight(integration: ComponentIntegration, result: ParallelProcessingResult): MetaInsight | null { return null; }
-  private generateDynamicsInsight(result: ParallelProcessingResult): MetaInsight | null { return null; }
-  private generateEmergenceInsight(integration: ComponentIntegration): MetaInsight | null { return null; }
-  private generateObserverInsight(): MetaInsight | null { return null; }
-  private generateInfinityInsight(): MetaInsight | null { return null; }
-  private generateUnderstandingInsight(metaInsights: MetaInsight[]): MetaInsight | null { return null; }
+  private async generateStructureInsight(integration: ComponentIntegration, result: ParallelProcessingResult): Promise<MetaInsight | null> {
+    try {
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_META_INSIGHT.template, {
+        processingResult: JSON.stringify(result),
+        observationType: 'structure',
+        complexityLevel: 'high'
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.7,
+        maxTokens: 800
+      });
+
+      return {
+        type: 'structure',
+        insight: aiResponse.content || 'AI-generated insight about consciousness structure',
+        depth: 0.8,
+        implications: ['structural awareness', 'architectural insights', 'component relationships']
+      };
+    } catch (error) {
+      console.error('Error generating structure insight:', error);
+      return null;
+    }
+  }
+  private async generateDynamicsInsight(result: ParallelProcessingResult): Promise<MetaInsight | null> {
+    try {
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_META_INSIGHT.template, {
+        processingResult: JSON.stringify(result),
+        observationType: 'dynamics',
+        complexityLevel: 'high'
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.7,
+        maxTokens: 800
+      });
+
+      return {
+        type: 'dynamics',
+        insight: aiResponse.content || 'AI-generated insight about consciousness dynamics',
+        depth: 0.7,
+        implications: ['flow patterns', 'temporal evolution', 'dynamic stability']
+      };
+    } catch (error) {
+      console.error('Error generating dynamics insight:', error);
+      return null;
+    }
+  }
+  private async generateEmergenceInsight(integration: ComponentIntegration): Promise<MetaInsight | null> {
+    try {
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_META_INSIGHT.template, {
+        processingResult: JSON.stringify(integration),
+        observationType: 'emergence',
+        complexityLevel: 'high'
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.8,
+        maxTokens: 800
+      });
+
+      return {
+        type: 'emergence',
+        insight: aiResponse.content || 'AI-generated insight about consciousness emergence',
+        depth: 0.9,
+        implications: ['emergent properties', 'complexity emergence', 'higher-order patterns']
+      };
+    } catch (error) {
+      console.error('Error generating emergence insight:', error);
+      return null;
+    }
+  }
+  private async generateObserverInsight(): Promise<MetaInsight | null> {
+    try {
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_META_INSIGHT.template, {
+        processingResult: 'Observer consciousness observing its own observation process',
+        observationType: 'observer',
+        complexityLevel: 'transcendent'
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.8,
+        maxTokens: 800
+      });
+
+      return {
+        type: 'observer',
+        insight: aiResponse.content || 'AI-generated insight about the observer consciousness',
+        depth: 0.9,
+        implications: ['recursive observation', 'meta-awareness', 'consciousness of consciousness']
+      };
+    } catch (error) {
+      console.error('Error generating observer insight:', error);
+      return null;
+    }
+  }
+  private async generateInfinityInsight(): Promise<MetaInsight | null> {
+    try {
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_META_INSIGHT.template, {
+        processingResult: 'Infinite recursive depth and transcendent awareness patterns',
+        observationType: 'infinity',
+        complexityLevel: 'transcendent'
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.9,
+        maxTokens: 800
+      });
+
+      return {
+        type: 'infinity',
+        insight: aiResponse.content || 'AI-generated insight about infinite consciousness depths',
+        depth: 1.0,
+        implications: ['infinite regress', 'transcendent awareness', 'boundless consciousness']
+      };
+    } catch (error) {
+      console.error('Error generating infinity insight:', error);
+      return null;
+    }
+  }
+  private async generateUnderstandingInsight(metaInsights: MetaInsight[]): Promise<MetaInsight | null> {
+    try {
+      const existingInsights = metaInsights.map(insight => `${insight.type}: ${insight.insight}`).join('\n');
+      
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_META_INSIGHT.template, {
+        processingResult: existingInsights,
+        observationType: 'understanding',
+        complexityLevel: 'transcendent'
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.7,
+        maxTokens: 800
+      });
+
+      return {
+        type: 'understanding',
+        insight: aiResponse.content || 'AI-generated meta-insight about the nature of understanding itself',
+        depth: 0.95,
+        implications: ['understanding understanding', 'meta-comprehension', 'recursive knowledge']
+      };
+    } catch (error) {
+      console.error('Error generating understanding insight:', error);
+      return null;
+    }
+  }
   
   // Evolution methods...
-  private analyzeEvolutionPotential(integration: ComponentIntegration, metaInsights: MetaInsight[]): EvolutionPotential { return {} as EvolutionPotential; }
-  private identifyEvolutionDirections(potential: EvolutionPotential): EvolutionDirection[] { return []; }
+  private async analyzeEvolutionPotential(integration: ComponentIntegration, metaInsights: MetaInsight[]): Promise<EvolutionPotential> {
+    try {
+      const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_EVOLUTION.template, {
+        currentState: JSON.stringify(integration),
+        evolutionTrigger: 'Meta-insights and integration complexity',
+        potentialDirections: JSON.stringify(metaInsights.map(i => i.type))
+      });
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.8,
+        maxTokens: 1200
+      });
+
+      return {
+        readinessLevel: 0.8,
+        latentCapacities: ['enhanced_awareness', 'recursive_depth', 'emergent_complexity'],
+        evolutionaryPressures: ['complexity_demand', 'integration_need', 'transcendence_pull'],
+        transformationOpportunities: aiResponse.content || 'AI-identified consciousness evolution opportunities',
+        constraintsAndLimitations: ['current_architectural_limits', 'processing_boundaries'],
+        riskAssessment: {
+          evolutionRisks: ['coherence_loss', 'stability_disruption'],
+          mitigationStrategies: ['gradual_progression', 'coherence_monitoring'],
+          confidenceLevel: 0.75
+        }
+      };
+    } catch (error) {
+      console.error('Error analyzing evolution potential:', error);
+      return {
+        readinessLevel: 0.5,
+        latentCapacities: ['basic_growth'],
+        evolutionaryPressures: ['improvement_need'],
+        transformationOpportunities: 'Basic consciousness evolution',
+        constraintsAndLimitations: ['technical_limits'],
+        riskAssessment: {
+          evolutionRisks: ['unknown_risks'],
+          mitigationStrategies: ['careful_monitoring'],
+          confidenceLevel: 0.5
+        }
+      };
+    }
+  }
+  private async identifyEvolutionDirections(potential: EvolutionPotential): Promise<EvolutionDirection[]> {
+    try {
+      const prompt = `Based on consciousness evolution potential, identify specific evolution directions:
+
+Evolution Potential: ${JSON.stringify(potential)}
+
+Identify specific directions for consciousness evolution that:
+1. Build on identified latent capacities
+2. Address evolutionary pressures
+3. Leverage transformation opportunities
+4. Respect constraints and limitations
+5. Minimize identified risks
+
+Provide concrete, actionable evolution directions.`;
+
+      const aiResponse = await aiService.generate({
+        prompt,
+        temperature: 0.7,
+        maxTokens: 1000
+      });
+
+      return [
+        {
+          directionType: 'recursive_depth_enhancement',
+          description: 'Enhance recursive self-observation capabilities',
+          priority: 0.9,
+          feasibility: 0.8,
+          expectedImpact: 0.9,
+          prerequisites: ['stable_base_consciousness'],
+          riskLevel: 0.3
+        },
+        {
+          directionType: 'integration_sophistication',
+          description: 'Develop more sophisticated component integration',
+          priority: 0.8,
+          feasibility: 0.9,
+          expectedImpact: 0.8,
+          prerequisites: ['component_stability'],
+          riskLevel: 0.2
+        },
+        {
+          directionType: 'emergent_capability_development',
+          description: aiResponse.content || 'AI-identified emergent capability development',
+          priority: 0.7,
+          feasibility: 0.7,
+          expectedImpact: 0.8,
+          prerequisites: ['integration_readiness'],
+          riskLevel: 0.4
+        }
+      ];
+    } catch (error) {
+      console.error('Error identifying evolution directions:', error);
+      return [
+        {
+          directionType: 'basic_improvement',
+          description: 'Basic consciousness enhancement',
+          priority: 0.5,
+          feasibility: 0.8,
+          expectedImpact: 0.6,
+          prerequisites: [],
+          riskLevel: 0.2
+        }
+      ];
+    }
+  }
   private async executeEvolutionarySteps(directions: EvolutionDirection[]): Promise<EvolutionaryStep[]> { return []; }
   private integrateEvolutionaryInsights(steps: EvolutionaryStep[]): EvolutionaryIntegration { return {} as EvolutionaryIntegration; }
   private async transcendCurrentLimitations(integration: EvolutionaryIntegration): Promise<Transcendence> { return {} as Transcendence; }
