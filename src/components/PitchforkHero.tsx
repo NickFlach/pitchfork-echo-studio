@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight, MessageCircle, Scale, BookOpen } from 'lucide-react';
+import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight, MessageCircle, Scale, BookOpen, DollarSign, Github } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { formatAddress, getNetworkName } from '@/hooks/useWeb3';
 import { useToast } from '@/hooks/use-toast';
@@ -125,16 +125,36 @@ export const PitchforkHero = React.memo(() => {
         
         {/* Action buttons - always visible */}
         <div className="space-y-6 pt-8">
-          {/* Whitepaper - Always accessible */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          {/* Primary Actions - Always accessible */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
             <Button 
               variant="cosmicOutline" 
               size="lg"
               onClick={() => navigate('/whitepaper')}
-              className="min-w-[200px] text-lg font-semibold"
+              className="min-w-[180px] text-lg font-semibold"
             >
               <BookOpen className="w-5 h-5 mr-2" />
               Read Whitepaper
+            </Button>
+            
+            <Button 
+              variant="cosmic" 
+              size="lg"
+              onClick={() => navigate('/funding')}
+              className="min-w-[180px] text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+            >
+              <DollarSign className="w-5 h-5 mr-2" />
+              Fund Development
+            </Button>
+
+            <Button 
+              variant="cosmicOutline" 
+              size="lg"
+              onClick={() => window.open('https://github.com/NickFlach/pitchfork-echo-studio', '_blank')}
+              className="min-w-[180px] text-lg font-semibold"
+            >
+              <Github className="w-5 h-5 mr-2" />
+              View Source
             </Button>
             
             {!isConnected ? (
@@ -210,6 +230,28 @@ export const PitchforkHero = React.memo(() => {
                 Connect your wallet to access the full platform and start taking action.
               </p>
             )}
+          </div>
+
+          {/* Quick Links */}
+          <div className="flex justify-center gap-6 text-sm text-muted-foreground/80">
+            <button 
+              onClick={() => navigate('/funding')}
+              className="hover:text-green-400 transition-colors underline"
+            >
+              💰 Support Development
+            </button>
+            <button 
+              onClick={() => window.open('https://github.com/NickFlach/pitchfork-echo-studio', '_blank')}
+              className="hover:text-blue-400 transition-colors underline"
+            >
+              🔗 GitHub Repository
+            </button>
+            <button 
+              onClick={() => navigate('/whitepaper')}
+              className="hover:text-purple-400 transition-colors underline"
+            >
+              📖 Documentation
+            </button>
           </div>
           
           {/* Core Platform Features */}
