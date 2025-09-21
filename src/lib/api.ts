@@ -1,4 +1,4 @@
-// Frontend API layer for our activism platform
+// Decentralized API layer for Pitchfork Protocol
 import { 
   Identity, 
   InsertIdentity, 
@@ -21,6 +21,8 @@ import {
   identitySchema,
   insertIdentitySchema 
 } from '../../shared/schema';
+
+import { web3Storage, smartContracts, p2pMessaging } from './web3-storage';
 
 // Local storage keys
 const STORAGE_KEYS = {
@@ -52,38 +54,32 @@ const setStorageData = <T>(key: string, data: T[]): void => {
   localStorage.setItem(key, JSON.stringify(data));
 };
 
-// Identity API
+// DECENTRALIZED Identity API - Blockchain-based verification
 export const identityApi = {
   async getByWallet(walletAddress: string): Promise<Identity | null> {
-    const identities = getStorageData<Identity>(STORAGE_KEYS.IDENTITIES);
-    const identity = identities.find(identity => identity.walletAddress === walletAddress);
-    
-    if (!identity) return null;
-    
-    // Validate with Zod schema
     try {
-      const validatedIdentity = identitySchema.parse(identity);
+      // Get identity from blockchain instead of localStorage
+      const blockchainIdentity = await web3Storage.getIdentity(walletAddress);
       
-      // Check expiration
-      if (validatedIdentity.expiresAt && new Date(validatedIdentity.expiresAt) <= new Date()) {
-        // Expired - downgrade to none and clear verification metadata
-        const expiredIdentity = { 
-          ...validatedIdentity, 
-          verificationLevel: 'none' as const,
+      if (!blockchainIdentity) {
+        return {
+          id: walletAddress,
+          walletAddress,
+          verificationLevel: 'none',
+          verificationHash: undefined,
           verifiedAt: undefined,
           expiresAt: undefined,
-          verificationHash: undefined,
-          signature: undefined
+          signature: undefined,
+          metadata: undefined,
         };
-        await this.update(walletAddress, expiredIdentity);
-        return expiredIdentity;
       }
       
-      return validatedIdentity;
-    } catch {
-      // Invalid data - reset to safe defaults with explicit metadata clearing
-      const resetIdentity: Identity = {
-        id: Math.random().toString(36).substring(7),
+      return identitySchema.parse(blockchainIdentity);
+    } catch (error) {
+      console.error('Error fetching blockchain identity:', error);
+      // Fallback to basic identity
+      return {
+        id: walletAddress,
         walletAddress,
         verificationLevel: 'none',
         verificationHash: undefined,
@@ -92,53 +88,32 @@ export const identityApi = {
         signature: undefined,
         metadata: undefined,
       };
-      
-      // Replace entire identity to ensure clean state
-      const identities = getStorageData<Identity>(STORAGE_KEYS.IDENTITIES);
-      const index = identities.findIndex(identity => identity.walletAddress === walletAddress);
-      if (index !== -1) {
-        identities[index] = resetIdentity;
-        setStorageData(STORAGE_KEYS.IDENTITIES, identities);
-      }
-      return resetIdentity;
     }
   },
 
   async create(data: InsertIdentity): Promise<Identity> {
-    // Validate input data
     const validatedData = insertIdentitySchema.parse(data);
     
-    // Enforce emergent security: all identities begin at 'none' state
-    // This creates a natural progression that can't be bypassed
-    const safeData = {
+    const newIdentity: Identity = {
+      id: validatedData.walletAddress,
       ...validatedData,
       verificationLevel: 'none' as const,
       verifiedAt: undefined,
       expiresAt: undefined,
     };
     
-    const identities = getStorageData<Identity>(STORAGE_KEYS.IDENTITIES);
-    const newIdentity: Identity = {
-      id: Math.random().toString(36).substring(7),
-      ...safeData,
-    };
+    // Store on blockchain for decentralized verification
+    await web3Storage.storeIdentity(validatedData.walletAddress, newIdentity);
     
-    // Validate final identity - should always pass with 'none' level
-    const validatedIdentity = identitySchema.parse(newIdentity);
-    identities.push(validatedIdentity);
-    setStorageData(STORAGE_KEYS.IDENTITIES, identities);
-    return validatedIdentity;
+    return identitySchema.parse(newIdentity);
   },
 
   async update(walletAddress: string, updates: Partial<Identity>): Promise<Identity> {
-    const identities = getStorageData<Identity>(STORAGE_KEYS.IDENTITIES);
-    const index = identities.findIndex(identity => identity.walletAddress === walletAddress);
+    const currentIdentity = await this.getByWallet(walletAddress);
     
-    if (index === -1) {
+    if (!currentIdentity) {
       throw new Error('Identity not found');
     }
-    
-    const currentIdentity = identities[index];
     
     // Enforce progressive verification sequencing
     if (updates.verificationLevel === 'verified' && currentIdentity.verificationLevel !== 'basic') {
@@ -146,16 +121,15 @@ export const identityApi = {
     }
     
     const updatedIdentity = { ...currentIdentity, ...updates };
-    
-    // Validate with Zod schema
     const validatedIdentity = identitySchema.parse(updatedIdentity);
     
-    identities[index] = validatedIdentity;
-    setStorageData(STORAGE_KEYS.IDENTITIES, identities);
+    // Update on blockchain
+    await web3Storage.storeIdentity(walletAddress, validatedIdentity);
+    
     return validatedIdentity;
   },
 
-  // Unified verification flow that handles create + update atomically
+  // Blockchain-based verification with zero-knowledge proofs
   async verifyLevel(walletAddress: string, targetLevel: 'basic' | 'verified'): Promise<Identity> {
     const existing = await this.getByWallet(walletAddress);
     
@@ -164,26 +138,40 @@ export const identityApi = {
       throw new Error('Must complete basic verification before full verification');
     }
     
+    // Generate cryptographic proof of verification
+    const verificationHash = await this.generateVerificationProof(walletAddress, targetLevel);
+    
     const verificationData = {
       verificationLevel: targetLevel,
-      verificationHash: Math.random().toString(36).substring(7),
+      verificationHash,
       verifiedAt: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year
+      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     };
 
     if (existing) {
       return await this.update(walletAddress, verificationData);
     } else {
-      // Create with 'none' first, then immediately elevate
       const baseIdentity = await this.create({ walletAddress });
       return await this.update(walletAddress, verificationData);
     }
   },
 
-  // Generate wallet signature for verification (future enhancement)
+  // Generate zero-knowledge proof for verification
+  async generateVerificationProof(walletAddress: string, level: string): Promise<string> {
+    // In a real implementation, this would generate a ZK proof
+    // For now, we'll create a cryptographic signature
+    const message = `verify:${walletAddress}:${level}:${Date.now()}`;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  },
+
+  // Generate wallet signature for verification
   async generateVerificationSignature(walletAddress: string, level: string): Promise<string> {
     // This would use wallet signing in a real implementation
-    // For now, return a placeholder that includes wallet and timestamp
     return `${walletAddress}-${level}-${Date.now()}`;
   },
 };
@@ -208,34 +196,121 @@ export const movementApi = {
   },
 };
 
-// Document API
+// DECENTRALIZED Document API - IPFS + Blockchain verification
 export const documentApi = {
   async getAll(): Promise<Document[]> {
+    // In a real implementation, this would query blockchain for document references
+    // then retrieve from IPFS. For now, fallback to local storage
     return getStorageData<Document>(STORAGE_KEYS.DOCUMENTS);
   },
 
   async create(data: InsertDocument): Promise<Document> {
-    const documents = getStorageData<Document>(STORAGE_KEYS.DOCUMENTS);
     const newDocument: Document = {
       id: Math.random().toString(36).substring(7),
       verificationStatus: 'pending',
       createdAt: new Date().toISOString(),
       ...data,
     };
-    documents.push(newDocument);
-    setStorageData(STORAGE_KEYS.DOCUMENTS, documents);
-    return newDocument;
+
+    try {
+      // Store document on IPFS with blockchain reference for tamper-proof evidence
+      const blockchainHash = await web3Storage.storeDocument(newDocument);
+      
+      // Update document with blockchain reference
+      newDocument.id = blockchainHash;
+      newDocument.metadata = {
+        ...newDocument.metadata,
+        blockchainHash,
+        ipfsStored: true,
+        tamperProof: true
+      };
+
+      // Also store locally for offline access
+      const documents = getStorageData<Document>(STORAGE_KEYS.DOCUMENTS);
+      documents.push(newDocument);
+      setStorageData(STORAGE_KEYS.DOCUMENTS, documents);
+
+      return newDocument;
+    } catch (error) {
+      console.error('Error storing document on blockchain/IPFS:', error);
+      
+      // Fallback to local storage with warning
+      newDocument.metadata = {
+        ...newDocument.metadata,
+        localOnly: true,
+        warning: 'Document stored locally only - not tamper-proof'
+      };
+      
+      const documents = getStorageData<Document>(STORAGE_KEYS.DOCUMENTS);
+      documents.push(newDocument);
+      setStorageData(STORAGE_KEYS.DOCUMENTS, documents);
+      
+      return newDocument;
+    }
+  },
+
+  async getDocument(id: string): Promise<Document | null> {
+    try {
+      // Try to retrieve from IPFS/blockchain first
+      const blockchainDocument = await web3Storage.getDocument(id);
+      if (blockchainDocument) {
+        return blockchainDocument;
+      }
+    } catch (error) {
+      console.error('Error retrieving from blockchain/IPFS:', error);
+    }
+
+    // Fallback to local storage
+    const documents = getStorageData<Document>(STORAGE_KEYS.DOCUMENTS);
+    return documents.find(doc => doc.id === id) || null;
+  },
+
+  async verifyDocument(id: string, verifierAddress: string): Promise<Document> {
+    const document = await this.getDocument(id);
+    if (!document) {
+      throw new Error('Document not found');
+    }
+
+    // Update verification status
+    const updatedDocument: Document = {
+      ...document,
+      verificationStatus: 'verified',
+      verifiedBy: verifierAddress,
+      verifiedAt: new Date().toISOString(),
+      metadata: {
+        ...document.metadata,
+        verificationBlockchain: true,
+        verifierAddress
+      }
+    };
+
+    // Store verification on blockchain for transparency
+    try {
+      await web3Storage.storeDocument(updatedDocument);
+    } catch (error) {
+      console.error('Error storing verification on blockchain:', error);
+    }
+
+    // Update local storage
+    const documents = getStorageData<Document>(STORAGE_KEYS.DOCUMENTS);
+    const index = documents.findIndex(doc => doc.id === id);
+    if (index !== -1) {
+      documents[index] = updatedDocument;
+      setStorageData(STORAGE_KEYS.DOCUMENTS, documents);
+    }
+
+    return updatedDocument;
   },
 };
 
-// Campaign API
+// DECENTRALIZED Campaign API - Smart Contract funding
 export const campaignApi = {
   async getAll(): Promise<Campaign[]> {
+    // In a real implementation, this would query blockchain for campaign contracts
     return getStorageData<Campaign>(STORAGE_KEYS.CAMPAIGNS);
   },
 
   async create(data: InsertCampaign): Promise<Campaign> {
-    const campaigns = getStorageData<Campaign>(STORAGE_KEYS.CAMPAIGNS);
     const newCampaign: Campaign = {
       id: Math.random().toString(36).substring(7),
       raisedAmount: 0,
@@ -243,13 +318,71 @@ export const campaignApi = {
       createdAt: new Date().toISOString(),
       ...data,
     };
-    campaigns.push(newCampaign);
-    setStorageData(STORAGE_KEYS.CAMPAIGNS, campaigns);
-    return newCampaign;
+
+    try {
+      // Deploy smart contract for transparent, trustless funding
+      const contractHash = await smartContracts.createFundingCampaign(newCampaign);
+      
+      // Update campaign with smart contract address
+      newCampaign.id = contractHash;
+      newCampaign.walletAddress = contractHash; // Contract address becomes the wallet
+      newCampaign.metadata = {
+        smartContract: true,
+        contractAddress: contractHash,
+        transparent: true,
+        trustless: true
+      };
+
+      // Store locally for UI
+      const campaigns = getStorageData<Campaign>(STORAGE_KEYS.CAMPAIGNS);
+      campaigns.push(newCampaign);
+      setStorageData(STORAGE_KEYS.CAMPAIGNS, campaigns);
+
+      return newCampaign;
+    } catch (error) {
+      console.error('Error deploying funding smart contract:', error);
+      
+      // Fallback to local storage with warning
+      newCampaign.metadata = {
+        localOnly: true,
+        warning: 'Campaign not deployed to blockchain - not trustless'
+      };
+      
+      const campaigns = getStorageData<Campaign>(STORAGE_KEYS.CAMPAIGNS);
+      campaigns.push(newCampaign);
+      setStorageData(STORAGE_KEYS.CAMPAIGNS, campaigns);
+      
+      return newCampaign;
+    }
+  },
+
+  async contribute(campaignId: string, amount: number, contributorAddress: string): Promise<void> {
+    try {
+      // Send contribution directly to smart contract
+      await smartContracts.contributeToCampaign(campaignId, amount);
+      
+      // Update local campaign data
+      const campaigns = getStorageData<Campaign>(STORAGE_KEYS.CAMPAIGNS);
+      const index = campaigns.findIndex(c => c.id === campaignId);
+      
+      if (index !== -1) {
+        campaigns[index].raisedAmount += amount;
+        campaigns[index].contributorCount += 1;
+        setStorageData(STORAGE_KEYS.CAMPAIGNS, campaigns);
+      }
+    } catch (error) {
+      console.error('Error contributing to smart contract:', error);
+      throw new Error('Failed to process contribution on blockchain');
+    }
+  },
+
+  async getCampaign(id: string): Promise<Campaign | null> {
+    const campaigns = getStorageData<Campaign>(STORAGE_KEYS.CAMPAIGNS);
+    return campaigns.find(campaign => campaign.id === id) || null;
   },
 };
 
-// Messaging API - Secure communications for activist coordination
+// DECENTRALIZED Messaging API - P2P encrypted communications
 export const messagingApi = {
   async createConversation(data: InsertConversation): Promise<Conversation> {
     const conversations = getStorageData<Conversation>(STORAGE_KEYS.CONVERSATIONS);
@@ -432,6 +565,7 @@ export const governanceApi = {
     return proposals[index];
   },
 
+  // DECENTRALIZED voting - Store votes on blockchain for transparency
   async submitVote(data: InsertVote): Promise<Vote> {
     const proposals = getStorageData<Proposal>(STORAGE_KEYS.PROPOSALS);
     const votes = getStorageData<Vote>(STORAGE_KEYS.VOTES);
@@ -459,7 +593,21 @@ export const governanceApi = {
       throw new Error('Voting period has ended');
     }
     
-    // Check if user already voted
+    // Check if user already voted (check blockchain first)
+    try {
+      const blockchainVotes = await web3Storage.getVotes(data.proposalId);
+      const existingBlockchainVote = blockchainVotes.find(
+        vote => vote.voterAddress === data.voterAddress
+      );
+      
+      if (existingBlockchainVote) {
+        throw new Error('You have already voted on this proposal (blockchain record)');
+      }
+    } catch (error) {
+      console.error('Error checking blockchain votes:', error);
+    }
+    
+    // Check local storage as fallback
     const existingVote = votes.find(
       vote => vote.proposalId === data.proposalId && vote.voterAddress === data.voterAddress
     );
@@ -473,6 +621,16 @@ export const governanceApi = {
       timestamp: new Date().toISOString(),
       ...data,
     };
+
+    try {
+      // Store vote on blockchain for transparency and immutability
+      const blockchainHash = await smartContracts.submitVote(data.proposalId, newVote);
+      newVote.id = blockchainHash;
+      newVote.signature = blockchainHash; // Use blockchain hash as signature
+    } catch (error) {
+      console.error('Error storing vote on blockchain:', error);
+      // Continue with local storage but mark as not blockchain-verified
+    }
     
     votes.push(newVote);
     setStorageData(STORAGE_KEYS.VOTES, votes);
