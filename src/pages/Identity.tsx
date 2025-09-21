@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, CheckCircle, AlertCircle, Lock, Key, Eye, EyeOff } from 'lucide-react';
+import { Shield, CheckCircle, AlertCircle, Lock, Key, Eye, EyeOff, Check, AlertTriangle } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -16,27 +16,56 @@ const Identity = () => {
   const queryClient = useQueryClient();
 
   // Fetch existing identity
-  const { data: identity, isLoading } = useQuery({
+  const { data: identity, isLoading, error } = useQuery({
     queryKey: ['identity', account],
     queryFn: async () => {
       if (!account) return null;
-      return await identityApi.getByWallet(account);
+      console.log('Fetching identity for account:', account);
+      const result = await identityApi.getByWallet(account);
+      console.log('Identity result:', result);
+      return result;
     },
     enabled: !!account,
+    retry: 1, // Only retry once to avoid infinite loops
   });
+
+  // Show error state if there's an error
+  if (error && isConnected) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+          <Card className="w-full max-w-md">
+            <CardContent className="flex items-center justify-center p-8">
+              <div className="text-center space-y-4">
+                <AlertTriangle className="w-8 h-8 text-destructive mx-auto" />
+                <p className="text-muted-foreground">Error loading identity. Check console for details.</p>
+                <Button onClick={() => window.location.reload()} variant="outline">
+                  Retry
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   // Show loading state during initial fetch
   if (isLoading && isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
-        <Card className="w-full max-w-md">
-          <CardContent className="flex items-center justify-center p-8">
-            <div className="text-center space-y-4">
-              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="text-muted-foreground">Loading identity status...</p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gradient-subtle">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+          <Card className="w-full max-w-md">
+            <CardContent className="flex items-center justify-center p-8">
+              <div className="text-center space-y-4">
+                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <p className="text-muted-foreground">Loading identity status...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -85,16 +114,19 @@ const Identity = () => {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <Shield className="w-12 h-12 mx-auto text-primary mb-4" />
-            <CardTitle>Connect Your Wallet</CardTitle>
-            <CardDescription>
-              Connect your wallet to access identity verification features
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="min-h-screen bg-gradient-subtle">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
+              <Shield className="w-12 h-12 mx-auto text-primary mb-4" />
+              <CardTitle>Connect Your Wallet</CardTitle>
+              <CardDescription>
+                Connect your wallet to access identity verification features
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
       </div>
     );
   }

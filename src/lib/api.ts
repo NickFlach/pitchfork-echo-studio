@@ -62,6 +62,7 @@ export const identityApi = {
       const blockchainIdentity = await web3Storage.getIdentity(walletAddress);
       
       if (!blockchainIdentity) {
+        console.log('No blockchain identity found, creating default identity for:', walletAddress);
         return {
           id: walletAddress,
           walletAddress,
@@ -77,7 +78,8 @@ export const identityApi = {
       return identitySchema.parse(blockchainIdentity);
     } catch (error) {
       console.error('Error fetching blockchain identity:', error);
-      // Fallback to basic identity
+      console.log('Falling back to basic identity for:', walletAddress);
+      // Fallback to basic identity - this should always work
       return {
         id: walletAddress,
         walletAddress,
