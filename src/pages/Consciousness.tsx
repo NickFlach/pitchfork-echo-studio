@@ -8,12 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ConsciousnessDashboard } from '@/components/consciousness/ConsciousnessDashboard';
-import { DecisionTimeline } from '@/components/consciousness/DecisionTimeline';
-import { ReflectionObservatory } from '@/components/consciousness/ReflectionObservatory';
-import { PatternRecognitionGrid } from '@/components/consciousness/PatternRecognitionGrid';
-import { LearningEvolutionMap } from '@/components/consciousness/LearningEvolutionMap';
-import { ComplexityWeb } from '@/components/consciousness/ComplexityWeb';
+import { ConsciousnessDashboard } from "@/components/consciousness/ConsciousnessDashboard";
+import { TemporalConsciousnessDashboard } from "@/components/consciousness/TemporalConsciousnessDashboard";
+import { DecisionTimeline } from "@/components/consciousness/DecisionTimeline";
+import { ReflectionObservatory } from "@/components/consciousness/ReflectionObservatory";
+import { PatternRecognitionGrid } from "@/components/consciousness/PatternRecognitionGrid";
+import { ComplexityWeb } from "@/components/consciousness/ComplexityWeb";
+import { CorruptionDetectionDashboard } from "@/components/consciousness/CorruptionDetectionDashboard";
 import { OrderChaosBalanceMeter } from '@/components/consciousness/OrderChaosBalanceMeter';
 import { MultiscaleDecisionFramework } from '@/components/consciousness/MultiscaleDecisionFramework';
 import { CorruptionDetectionDashboard } from "@/components/consciousness/CorruptionDetectionDashboard";
@@ -214,10 +215,14 @@ const Consciousness = () => {
         </div>
 
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-8">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9 mb-8">
             <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
               <Brain className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="temporal" className="flex items-center gap-2" data-testid="tab-temporal">
+              <Zap className="w-4 h-4" />
+              <span className="hidden sm:inline">Temporal</span>
             </TabsTrigger>
             <TabsTrigger value="consciousness" className="flex items-center gap-2" data-testid="tab-consciousness">
               <Lightbulb className="w-4 h-4" />
@@ -465,6 +470,11 @@ const Consciousness = () => {
           {/* Corruption Detection Tab */}
           <TabsContent value="corruption">
             <CorruptionDetectionDashboard />
+          </TabsContent>
+
+          {/* Temporal Consciousness Tab */}
+          <TabsContent value="temporal">
+            <TemporalConsciousnessDashboard />
           </TabsContent>
 
           {/* Individual Component Tabs */}
