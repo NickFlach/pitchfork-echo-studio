@@ -1100,3 +1100,49 @@ export type CampaignStrategyPlan = z.infer<typeof campaignStrategyPlanSchema>;
 export type InsertCampaignStrategyPlan = z.infer<typeof insertCampaignStrategyPlanSchema>;
 export type ResourceProfile = z.infer<typeof resourceProfileSchema>;
 export type InsertResourceProfile = z.infer<typeof insertResourceProfileSchema>;
+
+// AI System Models
+
+// AI Provider enum for supported AI services
+export const AIProviderEnum = z.enum(['openai', 'claude', 'gemini', 'xai', 'litellm']);
+export type AIProvider = z.infer<typeof AIProviderEnum>;
+
+// AI Model Configuration for specific provider/model combinations
+export const aiModelConfigSchema = z.object({
+  provider: AIProviderEnum,
+  model: z.string(),
+  temperature: z.number().min(0).max(2).default(0.7),
+  maxTokens: z.number().min(1).max(100000).default(4000),
+});
+
+export const insertAIModelConfigSchema = aiModelConfigSchema;
+export type AIModelConfig = z.infer<typeof aiModelConfigSchema>;
+export type InsertAIModelConfig = z.infer<typeof insertAIModelConfigSchema>;
+
+// AI Routing Policy for fallback and retry strategies
+export const aiRoutingPolicySchema = z.object({
+  primary: AIProviderEnum,
+  fallbacks: z.array(AIProviderEnum),
+  timeoutMs: z.number().min(1000).max(300000).default(30000),
+  retry: z.object({
+    maxAttempts: z.number().min(1).max(10).default(3),
+    backoffMs: z.number().min(100).max(60000).default(1000),
+  }),
+});
+
+export const insertAIRoutingPolicySchema = aiRoutingPolicySchema;
+export type AIRoutingPolicy = z.infer<typeof aiRoutingPolicySchema>;
+export type InsertAIRoutingPolicy = z.infer<typeof insertAIRoutingPolicySchema>;
+
+// AI Settings for the entire system
+export const aiSettingsSchema = z.object({
+  id: z.string(),
+  mode: z.enum(['direct', 'litellm']).default('direct'),
+  routing: aiRoutingPolicySchema,
+  providerPrefs: z.record(AIProviderEnum, aiModelConfigSchema),
+  updatedAt: z.string(),
+});
+
+export const insertAISettingsSchema = aiSettingsSchema.omit({ id: true, updatedAt: true });
+export type AISettings = z.infer<typeof aiSettingsSchema>;
+export type InsertAISettings = z.infer<typeof insertAISettingsSchema>;

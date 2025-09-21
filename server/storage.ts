@@ -36,7 +36,9 @@ import {
   StrategyPattern,
   TacticalFramework,
   ResourceProfile,
-  InsertResourceProfile
+  InsertResourceProfile,
+  AISettings,
+  InsertAISettings
 } from '../shared/schema';
 
 export interface IStorage {
@@ -160,6 +162,10 @@ export interface IStorage {
   getResourceProfiles(): Promise<ResourceProfile[]>;
   getResourceProfile(id: string): Promise<ResourceProfile | null>;
   updateResourceProfile(id: string, updates: Partial<ResourceProfile>): Promise<ResourceProfile>;
+  
+  // AI Settings operations
+  getAISettings(): Promise<AISettings | null>;
+  updateAISettings(settings: InsertAISettings): Promise<AISettings>;
 }
 
 export class MemStorage implements IStorage {
@@ -183,6 +189,7 @@ export class MemStorage implements IStorage {
   private strategyPatterns: StrategyPattern[] = [];
   private tacticalFrameworks: TacticalFramework[] = [];
   private resourceProfiles: ResourceProfile[] = [];
+  private aiSettings: AISettings | null = null;
 
   // Identity operations
   async createIdentity(identity: InsertIdentity): Promise<Identity> {
@@ -766,6 +773,21 @@ export class MemStorage implements IStorage {
     
     this.resourceProfiles[index] = { ...this.resourceProfiles[index], ...updates };
     return this.resourceProfiles[index];
+  }
+
+  // AI Settings operations
+  async getAISettings(): Promise<AISettings | null> {
+    return this.aiSettings;
+  }
+
+  async updateAISettings(settings: InsertAISettings): Promise<AISettings> {
+    const newSettings: AISettings = {
+      id: 'ai-settings-singleton',
+      updatedAt: new Date().toISOString(),
+      ...settings,
+    };
+    this.aiSettings = newSettings;
+    return newSettings;
   }
 }
 
