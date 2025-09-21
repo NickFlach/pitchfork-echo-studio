@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { ethers } from 'ethers';
-import { Copy, ExternalLink, Heart, Shield, Zap } from 'lucide-react';
+import { Copy, ExternalLink, Heart, Shield, Zap, Github } from 'lucide-react';
 
 // Developer funding wallet address
 const DEVELOPER_WALLET = 'REDACTED_WALLET_ADDRESS';
@@ -223,6 +223,21 @@ export function DeveloperFunding() {
             <li>• Mobile app development for global accessibility</li>
             <li>• Server costs for development and testing environments</li>
           </ul>
+        </div>
+
+        {/* GitHub Link */}
+        <div className="text-center">
+          <Button
+            variant="outline"
+            onClick={() => window.open('https://github.com/NickFlach/pitchfork-echo-studio', '_blank')}
+            className="w-full max-w-md"
+          >
+            <Github className="h-4 w-4 mr-2" />
+            View Source Code on GitHub
+          </Button>
+          <p className="text-xs text-gray-600 mt-2">
+            Open source • Transparent development • Community contributions welcome
+          </p>
         </div>
       </CardContent>
     </Card>
