@@ -17,7 +17,9 @@ const Support = lazy(() => import("./pages/Support"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Governance = lazy(() => import("./pages/Governance"));
 const Leadership = lazy(() => import("./pages/Leadership"));
+
 const Consciousness = lazy(() => import("./pages/Consciousness"));
+
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading component
@@ -45,7 +47,11 @@ const App = () => (
               <Route path="/messages" element={<Messages />} />
               <Route path="/governance" element={<Governance />} />
               <Route path="/leadership" element={<Leadership />} />
+
               <Route path="/consciousness" element={<Consciousness />} />
+
+              <Route path="/funding" element={<Funding />} />
+
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
