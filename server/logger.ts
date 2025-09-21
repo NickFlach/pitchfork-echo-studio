@@ -1,4 +1,4 @@
-import * as config from './config.js';
+import config from './config.js';
 
 export enum LogLevel {
   DEBUG = 0,
@@ -26,7 +26,7 @@ export class Logger {
   private maxQueueSize = 1000;
 
   constructor() {
-    this.currentLogLevel = this.parseLogLevel(config.logLevel);
+    this.currentLogLevel = this.parseLogLevel(config.logLevel || 'info');
   }
 
   static getInstance(): Logger {
