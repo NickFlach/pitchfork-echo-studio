@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
 dotenv.config();
 
 const config = {
@@ -30,4 +30,4 @@ const config = {
     .map(origin => origin.trim()),
 };
 
-export default config;
+module.exports = config;
