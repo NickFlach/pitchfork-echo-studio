@@ -24,6 +24,8 @@ import {
   insertAISettingsSchema,
   aiSettingsSchema
 } from '../shared/schema';
+import { aiService } from './ai/AIServiceManager';
+import { AIRequest } from './ai/AIProviderAdapter';
 
 const router = express.Router();
 
@@ -769,6 +771,98 @@ router.put('/api/admin/ai-settings', async (req, res) => {
     } else {
       res.status(500).json({ error: 'Failed to update AI settings' });
     }
+  }
+});
+
+// AI Service API Routes
+router.post('/api/ai/generate', async (req, res) => {
+  try {
+    const requestSchema = z.object({
+      prompt: z.string().min(1),
+      systemPrompt: z.string().optional(),
+      config: aiModelConfigRequestSchema.optional(),
+    });
+
+    const validatedData = requestSchema.parse(req.body);
+    const aiRequest: AIRequest = {
+      prompt: validatedData.prompt,
+      systemPrompt: validatedData.systemPrompt,
+      config: validatedData.config,
+    };
+
+    const response = await aiService.generate(aiRequest);
+    res.json(response);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      console.error('AI generation error:', error);
+      res.status(500).json({ error: 'Failed to generate AI response', details: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  }
+});
+
+router.post('/api/ai/generate-stream', async (req, res) => {
+  try {
+    const requestSchema = z.object({
+      prompt: z.string().min(1),
+      systemPrompt: z.string().optional(),
+      config: aiModelConfigRequestSchema.optional(),
+    });
+
+    const validatedData = requestSchema.parse(req.body);
+    const aiRequest: AIRequest = {
+      prompt: validatedData.prompt,
+      systemPrompt: validatedData.systemPrompt,
+      config: validatedData.config,
+    };
+
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Cache-Control'
+    });
+
+    try {
+      for await (const chunk of aiService.generateStream(aiRequest)) {
+        res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+      }
+      res.write('data: [DONE]\n\n');
+    } catch (streamError) {
+      console.error('AI streaming error:', streamError);
+      res.write(`data: ${JSON.stringify({ error: 'Streaming failed', details: streamError instanceof Error ? streamError.message : 'Unknown error' })}\n\n`);
+    }
+    
+    res.end();
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      console.error('AI streaming setup error:', error);
+      res.status(500).json({ error: 'Failed to setup AI streaming', details: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  }
+});
+
+router.get('/api/ai/health', async (req, res) => {
+  try {
+    const health = await aiService.healthCheck();
+    res.json(health);
+  } catch (error) {
+    console.error('AI health check error:', error);
+    res.status(500).json({ error: 'Failed to check AI service health', details: error instanceof Error ? error.message : 'Unknown error' });
+  }
+});
+
+router.get('/api/ai/providers/status', async (req, res) => {
+  try {
+    const status = aiService.getProviderStatus();
+    res.json(status);
+  } catch (error) {
+    console.error('AI provider status error:', error);
+    res.status(500).json({ error: 'Failed to get provider status', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 

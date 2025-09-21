@@ -1,4 +1,4 @@
-import { AIModelConfig, AIProvider } from '../../shared/schema';
+import { AIModelConfig, AIModelConfigRequest, AIProvider } from '../../shared/schema';
 
 /**
  * Base interface for AI requests
@@ -6,9 +6,10 @@ import { AIModelConfig, AIProvider } from '../../shared/schema';
 export interface AIRequest {
   prompt: string;
   systemPrompt?: string;
-  config?: AIModelConfig;
+  config?: AIModelConfigRequest;
   context?: Record<string, any>;
   stream?: boolean;
+  signal?: AbortSignal;
 }
 
 /**
@@ -60,12 +61,12 @@ export abstract class AIProviderAdapter {
   /**
    * Make a request to the AI provider
    */
-  abstract makeRequest(request: AIRequest): Promise<AIResponse>;
+  abstract makeRequest(request: AIRequest, signal?: AbortSignal): Promise<AIResponse>;
 
   /**
    * Make a streaming request to the AI provider
    */
-  abstract makeStreamRequest(request: AIRequest): AsyncIterable<AIStreamResponse>;
+  abstract makeStreamRequest(request: AIRequest, signal?: AbortSignal): AsyncIterable<AIStreamResponse>;
 
   /**
    * Health check for the provider
@@ -113,11 +114,11 @@ export abstract class AIProviderAdapter {
     }
 
     if (request.config) {
-      if (request.config.temperature < 0 || request.config.temperature > 2) {
+      if (request.config.temperature !== undefined && (request.config.temperature < 0 || request.config.temperature > 2)) {
         throw new Error('Temperature must be between 0 and 2');
       }
 
-      if (request.config.maxTokens < 1 || request.config.maxTokens > 100000) {
+      if (request.config.maxTokens !== undefined && (request.config.maxTokens < 1 || request.config.maxTokens > 100000)) {
         throw new Error('Max tokens must be between 1 and 100000');
       }
     }
@@ -167,14 +168,28 @@ export class PlaceholderAIAdapter extends AIProviderAdapter {
     super(provider);
   }
 
-  async makeRequest(request: AIRequest): Promise<AIResponse> {
+  async makeRequest(request: AIRequest, signal?: AbortSignal): Promise<AIResponse> {
     this.validateRequest(request);
 
     const startTime = Date.now();
+    const effectiveSignal = signal || request.signal;
 
     try {
-      // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 500));
+      // Check if request is already aborted
+      if (effectiveSignal?.aborted) {
+        throw new Error('Request was aborted');
+      }
+
+      // Simulate processing time with abort support
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(resolve, 100 + Math.random() * 500);
+        if (effectiveSignal) {
+          effectiveSignal.addEventListener('abort', () => {
+            clearTimeout(timeout);
+            reject(new Error('Request was aborted'));
+          });
+        }
+      });
 
       const response: AIResponse = {
         content: `[${this.provider.toUpperCase()} PLACEHOLDER] Response to: "${request.prompt.substring(0, 50)}..."`,
@@ -200,15 +215,21 @@ export class PlaceholderAIAdapter extends AIProviderAdapter {
     }
   }
 
-  async* makeStreamRequest(request: AIRequest): AsyncIterable<AIStreamResponse> {
+  async* makeStreamRequest(request: AIRequest, signal?: AbortSignal): AsyncIterable<AIStreamResponse> {
     this.validateRequest(request);
 
+    const effectiveSignal = signal || request.signal;
     const words = `[${this.provider.toUpperCase()} STREAMING PLACEHOLDER] Response to: "${request.prompt.substring(0, 50)}..."`.split(' ');
     const requestId = `${this.provider}-stream-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     let content = '';
     
     for (let i = 0; i < words.length; i++) {
+      // Check if request is aborted
+      if (effectiveSignal?.aborted) {
+        throw new Error('Stream was aborted');
+      }
+
       const word = words[i];
       const delta = (i === 0 ? word : ' ' + word);
       content += delta;
@@ -222,8 +243,16 @@ export class PlaceholderAIAdapter extends AIProviderAdapter {
         requestId,
       };
 
-      // Simulate streaming delay
-      await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100));
+      // Simulate streaming delay with abort support
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(resolve, 50 + Math.random() * 100);
+        if (effectiveSignal) {
+          effectiveSignal.addEventListener('abort', () => {
+            clearTimeout(timeout);
+            reject(new Error('Stream was aborted'));
+          });
+        }
+      });
     }
 
     // Final chunk
