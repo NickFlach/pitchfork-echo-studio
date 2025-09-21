@@ -16,6 +16,194 @@ const Whitepaper = () => {
     });
   };
 
+  const handleDownload = (format: 'pdf' | 'text' = 'text') => {
+    const whitepaperContent = `# Fighting Back Against Greed and Corruption: A People's Guide to Digital Resistance
+
+*A White Paper for Regular Citizens Using Decentralized Tools*
+
+---
+
+## The Problem We Face
+
+### The Corruption Crisis
+
+We live in an age where:
+- **Corporate greed** drives environmental destruction and worker exploitation
+- **Government corruption** serves special interests over public welfare
+- **War crimes** happen while perpetrators escape accountability
+- **Human rights violations** are covered up by those in power
+- **Truth is suppressed** by those who profit from lies
+
+### Why Regular People Feel Powerless
+
+Traditional systems have failed us:
+- **Media censorship** silences whistleblowers
+- **Legal systems** favor the wealthy and connected
+- **Social platforms** can delete evidence overnight
+- **Government agencies** are captured by the industries they regulate
+- **Peaceful protests** are ignored or criminalized
+
+**You are not powerless.** Technology has given us new tools to fight back.
+
+---
+
+## The Power of Decentralized Resistance
+
+### What "Decentralized" Means
+
+Instead of relying on one company, government, or institution, decentralized systems:
+- **Spread power** across many participants
+- **Cannot be easily shut down** because there's no central point of failure
+- **Resist censorship** because no single entity controls the network
+- **Preserve evidence** permanently on blockchain technology
+- **Enable global coordination** without borders or permissions
+
+### Why This Matters for Justice
+
+When you use decentralized tools:
+- **Your evidence is permanent** - it can't be deleted or "lost"
+- **Your communications are private** - they can't be intercepted or monitored
+- **Your organizing is protected** - groups can't be easily disbanded
+- **Your funding is direct** - money goes straight to causes without intermediaries
+- **Your voice can't be silenced** - no single authority can censor you
+
+---
+
+## Your Digital Toolkit for Justice
+
+The Pitchfork Protocol provides six essential tools for peaceful resistance:
+
+### 🛡️ **Secure Identity**
+- **What it does**: Verifies who you are without revealing personal information
+- **Why you need it**: Prevents impersonation and builds trust while protecting privacy
+- **Real example**: Whistleblowers can prove their credibility without exposing themselves
+
+### 👥 **Organize**
+- **What it does**: Coordinates resistance movements and activist groups
+- **Why you need it**: Enables large-scale coordination without central leadership
+- **Real example**: Environmental activists organizing cleanup efforts across multiple cities
+
+### 💬 **Secure Messages**
+- **What it does**: Provides encrypted communication that can't be monitored
+- **Why you need it**: Protects sensitive discussions from surveillance
+- **Real example**: Journalists coordinating with sources in dangerous situations
+
+### ⚖️ **DAO Governance**
+- **What it does**: Enables democratic voting on important decisions
+- **Why you need it**: Ensures movements remain truly grassroots and democratic
+- **Real example**: Community groups voting on how to allocate resources
+
+### 📋 **Verify**
+- **What it does**: Documents and verifies evidence of corruption
+- **Why you need it**: Creates tamper-proof records that can't be "lost" or altered
+- **Real example**: Recording environmental damage or documenting human rights abuses
+
+### ❤️ **Support**
+- **What it does**: Funds justice movements and campaigns
+- **Why you need it**: Enables direct financial support without intermediaries taking cuts
+- **Real example**: Crowdfunding legal defense for wrongfully accused activists
+
+---
+
+## Getting Started Today
+
+### Your First 30 Minutes
+
+#### Step 1: Set Up Your Digital Wallet (5 minutes)
+1. Download a Web3 wallet like MetaMask
+2. Create a new wallet and **securely save your recovery phrase**
+3. Never share your recovery phrase with anyone
+
+#### Step 2: Connect to Pitchfork Protocol (2 minutes)
+1. Visit the Pitchfork Protocol application
+2. Click "Connect Wallet"
+3. Approve the connection in your wallet
+
+#### Step 3: Create Your Secure Identity (10 minutes)
+1. Navigate to "Secure Identity"
+2. Choose your verification level (start with "basic" for privacy)
+3. Complete the verification process
+4. Your identity is now cryptographically secured
+
+#### Step 4: Explore the Tools (13 minutes)
+- Spend 2-3 minutes exploring each tool
+- Read the descriptions and understand the capabilities
+- Don't feel pressured to use everything immediately
+
+---
+
+## Safety First: Protecting Yourself
+
+### Digital Security
+
+#### Wallet Security
+- **Never share your private keys or recovery phrase**
+- Use hardware wallets for large amounts
+- Keep your wallet software updated
+- Use strong, unique passwords
+
+#### Communication Security
+- Always use the encrypted messaging within the platform
+- Don't discuss sensitive matters on regular social media
+- Be aware that metadata can reveal patterns
+- Use VPNs when possible for additional privacy
+
+### The Choice Before Us
+
+We stand at a crossroads. We can:
+
+**Accept the status quo:**
+- Allow corruption to continue unchecked
+- Let the powerful silence the truth
+- Watch injustice triumph over justice
+- Leave a broken world for our children
+
+**Or we can fight back:**
+- Use technology to expose corruption
+- Build networks of resistance
+- Create accountability where none existed
+- Build a better world together
+
+---
+
+**The pitchforks are digital now. The revolution will be decentralized.**
+
+---
+
+*This white paper is a living document. Share it freely, adapt it to your local context, and most importantly—use it to fight back.*
+
+---
+
+For the complete whitepaper with detailed action guides, safety protocols, real-world case studies, and comprehensive instructions, visit: ${window.location.origin}/whitepaper
+`;
+
+    const filename = format === 'pdf' ? 'Fighting_Back_Whitepaper.pdf' : 'Fighting_Back_Whitepaper.txt';
+    const mimeType = format === 'pdf' ? 'application/pdf' : 'text/plain';
+    
+    if (format === 'pdf') {
+      toast({
+        title: "PDF Coming Soon",
+        description: "PDF download will be available soon. For now, downloading as text file.",
+        variant: "default",
+      });
+    }
+    
+    const blob = new Blob([whitepaperContent], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = format === 'pdf' ? 'Fighting_Back_Whitepaper.txt' : filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Download Started",
+      description: `Whitepaper download started successfully.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
@@ -35,7 +223,7 @@ const Whitepaper = () => {
               <Share2 className="w-4 h-4 mr-2" />
               Share
             </Button>
-            <Button variant="cosmic" size="sm">
+            <Button variant="cosmic" size="sm" onClick={() => handleDownload('pdf')}>
               <Download className="w-4 h-4 mr-2" />
               Download PDF
             </Button>
@@ -201,7 +389,7 @@ const Whitepaper = () => {
                 safety protocols, real-world case studies, and comprehensive instructions for building 
                 effective resistance movements.
               </p>
-              <Button variant="cosmic" className="mt-4">
+              <Button variant="cosmic" className="mt-4" onClick={() => handleDownload('text')}>
                 <Download className="w-4 h-4 mr-2" />
                 Download Complete Whitepaper
               </Button>
