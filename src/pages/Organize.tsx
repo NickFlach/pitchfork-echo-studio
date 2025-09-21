@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Users, MapPin, Calendar, Lock, Plus, MessageCircle, Vote } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 
-export const Organize = () => {
+const Organize = () => {
   const { isConnected } = useWeb3();
 
   const activeMovements = [
@@ -171,3 +171,5 @@ export const Organize = () => {
     </div>
   );
 };
+
+export default Organize;

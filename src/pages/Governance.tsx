@@ -25,7 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { governanceApi, identityApi } from '@/lib/api';
 import { Proposal, Vote } from '../../shared/schema';
 
-export const Governance = () => {
+const Governance = () => {
   const { isConnected, account } = useWeb3();
   const [activeTab, setActiveTab] = useState('proposals');
   const [showCreateProposal, setShowCreateProposal] = useState(false);
@@ -702,3 +702,5 @@ const DraftProposalCard = ({
     </Card>
   );
 };
+
+export default Governance;
