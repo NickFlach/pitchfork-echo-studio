@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wallet Connection Test</title>
+</head>
+<body>
+    <h1>Wallet Connection Test</h1>
+    <button id="connectBtn">Connect Wallet</button>
+    <div id="status"></div>
+    <div id="account"></div>
+    
+    <script>
+        const connectBtn = document.getElementById('connectBtn');
+        const status = document.getElementById('status');
+        const account = document.getElementById('account');
+        
+        connectBtn.addEventListener('click', async () => {
+            status.innerHTML = 'Connecting...';
+            
+            try {
+                // Check if MetaMask is installed
+                if (typeof window.ethereum === 'undefined') {
+                    status.innerHTML = 'MetaMask not detected!';
+                    return;
+                }
+                
+                console.log('Ethereum object:', window.ethereum);
+                
+                // Request account access
+                const accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts'
+                });
+                
+                console.log('Accounts:', accounts);
+                
+                if (accounts.length > 0) {
+                    status.innerHTML = 'Connected successfully!';
+                    account.innerHTML = `Account: ${accounts[0]}`;
+                } else {
+                    status.innerHTML = 'No accounts found';
+                }
+                
+            } catch (error) {
+                console.error('Connection error:', error);
+                status.innerHTML = `Error: ${error.message}`;
+            }
+        });
+        
+        // Check if already connected
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        status.innerHTML = 'Already connected!';
+                        account.innerHTML = `Account: ${accounts[0]}`;
+                    }
+                } catch (error) {
+                    console.error('Check connection error:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

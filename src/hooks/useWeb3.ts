@@ -1,9 +1,7 @@
-import { useContext } from 'react';
-import { useWeb3 as useWeb3Context } from '../contexts/Web3Context';
+import { useWeb3 } from '../contexts/Web3Context';
 
-export const useWeb3 = () => {
-  return useWeb3Context();
-};
+// Re-export the useWeb3 hook from Web3Context
+export { useWeb3 };
 
 export const formatAddress = (address: string): string => {
   if (!address) return '';
