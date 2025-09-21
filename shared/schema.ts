@@ -76,6 +76,7 @@ export const campaignSchema = z.object({
   endDate: z.string(),
   status: z.enum(['active', 'completed', 'cancelled']),
   urgent: z.boolean().default(false),
+  metadata: z.record(z.any()).optional(),
   createdAt: z.string(),
 });
 

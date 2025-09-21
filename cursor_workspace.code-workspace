@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"path": "../../Downloads/SIN (3)"
+		},
+		{
+			"path": "../../Downloads/PlanetaryQuantumNetwork"
+		},
+		{
+			"path": "../../Downloads/ParadoxResolver (2)"
+		},
+		{
+			"path": "../../Downloads/NinjaPortal"
+		},
+		{
+			"path": "../../Downloads/Spark-X"
+		},
+		{
+			"path": "../../Downloads/SpaceAgent (1)"
+		}
+	],
+	"settings": {
+		"powershell.cwd": "SIN (3)"
+	}
+}

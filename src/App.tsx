@@ -9,6 +9,7 @@ import { queryClient } from "@/lib/queryClient";
 
 // Lazy load components
 const Index = lazy(() => import("./pages/Index"));
+const Whitepaper = lazy(() => import("./pages/Whitepaper"));
 const Identity = lazy(() => import("./pages/Identity"));
 const Organize = lazy(() => import("./pages/Organize"));
 const Verify = lazy(() => import("./pages/Verify"));
@@ -35,6 +36,7 @@ const App = () => (
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/whitepaper" element={<Whitepaper />} />
               <Route path="/identity" element={<Identity />} />
               <Route path="/organize" element={<Organize />} />
               <Route path="/verify" element={<Verify />} />
