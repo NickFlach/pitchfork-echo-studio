@@ -2,19 +2,25 @@ import express from 'express';
 import cors from 'cors';
 import { storage } from './storage.js';
 import router from './routes.js';
+import config from './config.js';
+import { logger, logRequest, logApiCall } from './logger.js';
 
 const app = express();
-const PORT = process.env.API_PORT ? parseInt(process.env.API_PORT) : 3001;
+const PORT = config.apiPort;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://0.0.0.0:8080'],
+  origin: config.allowedOrigins,
   credentials: true
 }));
 app.use(express.json());
 
+// Request logging middleware
+app.use(logRequest);
+
 // Health check
 app.get('/health', (req, res) => {
+  logApiCall('/health', 'GET', { userAgent: req.get('User-Agent') });
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
@@ -25,14 +31,14 @@ app.use(router);
 async function initializeSampleData() {
   try {
     const agentId = 'default-agent';
-    
+
     // Check if data already exists
     const existingStates = await storage.getConsciousnessStates(agentId);
     if (existingStates.length > 0) {
-      console.log('✨ Sample consciousness data already exists');
+      logger.info('Sample consciousness data already exists');
       return;
     }
-    
+
     // Create initial consciousness state
     await storage.createConsciousnessState({
       agentId,
@@ -54,7 +60,7 @@ async function initializeSampleData() {
       duration: 5000,
       transitionTrigger: 'system-initialization'
     });
-    
+
     // Create a few more states for variety
     await storage.createConsciousnessState({
       agentId,
@@ -70,7 +76,7 @@ async function initializeSampleData() {
       duration: 3000,
       transitionTrigger: 'performance-monitoring'
     });
-    
+
     // Create sample decision record
     await storage.createDecisionRecord({
       agentId,
@@ -104,7 +110,7 @@ async function initializeSampleData() {
       outcomeRealized: false,
       learningExtracted: []
     });
-    
+
     // Create sample complexity map
     await storage.createComplexityMap({
       name: 'Consciousness System Architecture',
@@ -156,19 +162,21 @@ async function initializeSampleData() {
       ],
       version: 1
     });
-    
-    console.log('✨ Sample consciousness data initialized successfully');
+
+    logger.info('Sample consciousness data initialized successfully');
   } catch (error) {
-    console.log('📝 Sample data initialization skipped:', error.message);
+    logger.error('Sample data initialization failed', error);
   }
 }
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 API Server running at http://0.0.0.0:${PORT}`);
-  console.log(`📊 API endpoints available at http://0.0.0.0:${PORT}/api/*`);
-  console.log(`🔗 CORS enabled for http://localhost:8080 and http://0.0.0.0:8080`);
-  
+  logger.info('API Server started', {
+    port: PORT,
+    environment: config.nodeEnv,
+    allowedOrigins: config.allowedOrigins
+  });
+
   // Initialize sample data after server starts
   setTimeout(initializeSampleData, 1000);
 });
