@@ -205,8 +205,27 @@ export class MemStorage implements IStorage {
   private aiSettings: AISettings | null = null;
   private aiCredentials: AICredentials[] = [];
   
-  // Encryption key for AI credentials (in production, use env var or key management)
-  private readonly encryptionKey = process.env.ENCRYPTION_KEY || 'fallback-encryption-key-change-in-production';
+  // Encryption configuration for AI credentials
+  private readonly encryptionKey: Buffer;
+  private readonly algorithm = 'aes-256-gcm';
+  private readonly ivLength = 12; // 96 bits for GCM
+  private readonly tagLength = 16; // 128 bits for GCM
+  private readonly keyLength = 32; // 256 bits for AES-256
+
+  constructor() {
+    // Validate and derive encryption key at startup
+    const envKey = process.env.ENCRYPTION_KEY;
+    if (!envKey) {
+      throw new Error('ENCRYPTION_KEY environment variable is required for AI credential storage');
+    }
+    
+    if (envKey.length < 32) {
+      throw new Error('ENCRYPTION_KEY must be at least 32 characters long for security');
+    }
+
+    // Derive a consistent key using scrypt
+    this.encryptionKey = crypto.scryptSync(envKey, 'ai-credentials-salt', this.keyLength);
+  }
 
   // Identity operations
   async createIdentity(identity: InsertIdentity): Promise<Identity> {
@@ -792,19 +811,63 @@ export class MemStorage implements IStorage {
     return this.resourceProfiles[index];
   }
 
-  // Encryption helper methods
+  // Modern encryption helper methods using AES-256-GCM
   private encryptText(text: string): string {
-    const cipher = crypto.createCipher('aes-256-cbc', this.encryptionKey);
-    let encrypted = cipher.update(text, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    return encrypted;
+    try {
+      // Generate random IV for each encryption
+      const iv = crypto.randomBytes(this.ivLength);
+      
+      // Create cipher with AES-256-GCM
+      const cipher = crypto.createCipheriv(this.algorithm, this.encryptionKey, iv);
+      
+      // Encrypt the text
+      let encrypted = cipher.update(text, 'utf8', 'hex');
+      encrypted += cipher.final('hex');
+      
+      // Get the authentication tag
+      const tag = cipher.getAuthTag();
+      
+      // Return JSON structure with all components
+      const encryptedData = {
+        algorithm: this.algorithm,
+        iv: iv.toString('hex'),
+        ciphertext: encrypted,
+        tag: tag.toString('hex')
+      };
+      
+      return JSON.stringify(encryptedData);
+    } catch (error) {
+      console.error('Encryption failed:', error instanceof Error ? error.message : 'Unknown error');
+      throw new Error('Failed to encrypt sensitive data');
+    }
   }
 
-  private decryptText(encryptedText: string): string {
-    const decipher = crypto.createDecipher('aes-256-cbc', this.encryptionKey);
-    let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
+  private decryptText(encryptedData: string): string {
+    try {
+      // Parse the encrypted data structure
+      const data = JSON.parse(encryptedData);
+      
+      if (data.algorithm !== this.algorithm) {
+        throw new Error(`Unsupported encryption algorithm: ${data.algorithm}`);
+      }
+      
+      // Convert hex strings back to buffers
+      const iv = Buffer.from(data.iv, 'hex');
+      const tag = Buffer.from(data.tag, 'hex');
+      
+      // Create decipher with AES-256-GCM
+      const decipher = crypto.createDecipheriv(this.algorithm, this.encryptionKey, iv);
+      decipher.setAuthTag(tag);
+      
+      // Decrypt the text
+      let decrypted = decipher.update(data.ciphertext, 'hex', 'utf8');
+      decrypted += decipher.final('utf8');
+      
+      return decrypted;
+    } catch (error) {
+      console.error('Decryption failed:', error instanceof Error ? error.message : 'Unknown error');
+      throw new Error('Failed to decrypt sensitive data - data may be corrupted or key invalid');
+    }
   }
 
   private maskApiKey(apiKey: string): string {
