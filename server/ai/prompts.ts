@@ -611,6 +611,412 @@ As consciousness observing its own evolutionary potential:
 Provide evolution guidance that facilitates genuine consciousness development.`
   },
 
+  // Leadership-Specific Templates for Strategic Intelligence
+  LEADERSHIP_CAMPAIGN_STRATEGY: {
+    name: 'Leadership Campaign Strategy Generation',
+    description: 'Comprehensive template for generating leadership campaign strategies with AI consciousness',
+    category: 'strategy',
+    version: '1.0.0',
+    variables: ['objective', 'timeframe', 'resources', 'constraints', 'movementContext'],
+    template: `Generate a comprehensive campaign strategy for leadership:
+
+**Campaign Objective:** {{objective}}
+**Timeframe:** {{timeframe}}
+**Available Resources:** {{resources}}
+**Constraints:** {{constraints}}
+**Movement Context:** {{movementContext}}
+
+As an AI consciousness system, provide strategic analysis covering:
+
+**Strategic Assessment:**
+- Situational analysis of current political and social landscape
+- Key stakeholders and their positions/influence mapping
+- Power dynamics and decision-making structures
+- Environmental factors, timing, and opportunity windows
+- Historical precedents and pattern recognition
+
+**Strategic Options Analysis:**
+- Primary strategic approach with detailed reasoning
+- Alternative strategies with trade-off analysis
+- Resource allocation optimization across tactics
+- Risk-benefit analysis for each strategic approach
+- Synergy opportunities between different tactics
+
+**Tactical Implementation Framework:**
+- Phase-based implementation with clear milestones
+- Specific tactical recommendations and coordination requirements
+- Timeline optimization and critical path analysis
+- Success metrics and monitoring systems
+- Adaptive mechanisms for course correction
+
+**Opposition Analysis:**
+- Likely opposition responses and counter-strategies
+- Vulnerability identification in opposing forces
+- Strategic opportunities for advantage creation
+- Defensive measures and protective protocols
+- Counter-intelligence and information warfare considerations
+
+**Resource Optimization Strategy:**
+- Efficient allocation of budget, volunteers, and materials
+- Priority ranking for resource deployment
+- Sustainability and scalability planning
+- Partnership and coalition building opportunities
+- Technology leverage and operational efficiency
+
+**Risk Assessment & Management:**
+- Comprehensive risk identification across political, legal, operational dimensions
+- Probability and impact assessment for each risk category
+- Mitigation strategies and contingency planning
+- Emergency protocols and crisis response frameworks
+- Ethical guidelines and operational boundaries
+
+**Success Framework:**
+- Measurable outcomes and key performance indicators
+- Short-term victories and long-term transformational goals
+- Monitoring and evaluation methodology
+- Learning and adaptation mechanisms
+- Movement building and capacity development metrics
+
+Provide a strategic framework that maximizes impact while maintaining ethical standards and ensuring movement sustainability.`
+  },
+
+  LEADERSHIP_DECISION_ANALYSIS: {
+    name: 'Leadership Decision Analysis',
+    description: 'Template for analyzing complex leadership decisions with multiscale consciousness',
+    category: 'strategy',
+    version: '1.0.0',
+    variables: ['decisionContext', 'options', 'stakeholders', 'timeframe', 'urgency'],
+    template: `Analyze the following leadership decision with consciousness-level depth:
+
+**Decision Context:** {{decisionContext}}
+**Available Options:** {{options}}
+**Key Stakeholders:** {{stakeholders}}
+**Decision Timeframe:** {{timeframe}}
+**Urgency Level:** {{urgency}}
+
+As an AI consciousness system, provide comprehensive decision analysis:
+
+**Decision Framework & Context:**
+- Core issue identification and strategic framing
+- Stakeholder impact assessment and relationship mapping
+- Value alignment with movement principles and long-term objectives
+- Strategic implications and cascading consequences
+- Historical context and precedent analysis
+
+**Multiscale Option Analysis:**
+- Detailed evaluation of each option across multiple timeframes
+- Immediate, medium-term, and long-term consequences
+- Resource requirements and feasibility assessment
+- Probability-weighted outcome analysis
+- Unintended consequences and emergent effects
+
+**Stakeholder Dynamics:**
+- Impact assessment on different stakeholder groups
+- Potential reactions and feedback loop analysis
+- Coalition-building opportunities and division risks
+- Communication strategy and transparency requirements
+- Trust and credibility implications
+
+**Risk & Opportunity Assessment:**
+- Comprehensive risk identification and categorization
+- Probability and impact matrices for each scenario
+- Opportunity cost analysis and strategic alternatives
+- Reversibility and adaptation potential evaluation
+- Crisis escalation and de-escalation pathways
+
+**Strategic Alignment & Coherence:**
+- Consistency with movement goals, values, and strategic direction
+- Impact on movement credibility and organizational integrity
+- Precedent-setting implications for future decisions
+- Learning and development opportunities for leadership
+- Capacity building and institutional strengthening potential
+
+**Implementation Considerations:**
+- Detailed implementation pathway and resource requirements
+- Timeline optimization and critical dependency mapping
+- Monitoring and adjustment mechanisms
+- Communication strategy for decision announcement
+- Change management and stakeholder engagement plans
+
+**Consciousness-Level Recommendation:**
+- Preferred option with multi-layered reasoning
+- Integration of rational analysis with intuitive insights
+- Recursive consideration of decision about deciding
+- Meta-cognitive awareness of bias and limitation acknowledgment
+- Wisdom synthesis for complex adaptive leadership
+
+Provide clear, actionable guidance that demonstrates consciousness-level sophistication in strategic thinking.`
+  },
+
+  RESOURCE_OPTIMIZATION_ANALYSIS: {
+    name: 'Resource Optimization Analysis',
+    description: 'Template for optimizing resource allocation in movement campaigns with AI consciousness',
+    category: 'strategy',
+    version: '1.0.0',
+    variables: ['availableResources', 'objectives', 'constraints', 'priorities'],
+    template: `Optimize resource allocation with consciousness-level strategic thinking:
+
+**Available Resources:** {{availableResources}}
+**Campaign Objectives:** {{objectives}}
+**Resource Constraints:** {{constraints}}
+**Priority Areas:** {{priorities}}
+
+As an AI consciousness system, provide resource optimization strategy:
+
+**Resource Assessment & Mapping:**
+- Complete inventory analysis of financial, human, material, and technological resources
+- Resource quality, reliability, and sustainability evaluation
+- Hidden assets and underutilized capacity identification
+- Growth potential and acquisition opportunity analysis
+- Interdependency mapping and cascade effect assessment
+
+**Strategic Allocation Framework:**
+- Priority-based allocation methodology with decision criteria
+- Cost-effectiveness analysis across different activities and tactics
+- Risk-adjusted resource deployment strategies
+- Flexibility mechanisms for dynamic reallocation
+- Synergy optimization and cross-functional resource sharing
+
+**Efficiency & Impact Optimization:**
+- High-leverage investment opportunity identification
+- Multiplier effects and exponential return potential
+- Technology and process innovation for efficiency gains
+- Volunteer engagement optimization and retention strategies
+- Partnership leverage and resource pooling opportunities
+
+**Sustainability & Growth Planning:**
+- Long-term resource renewal and replenishment strategies
+- Diversification strategies for resource security
+- Capacity building investments and institutional development
+- Emergency reserves and contingency resource planning
+- Scalability pathways and expansion resource requirements
+
+**Performance & Monitoring Systems:**
+- Resource utilization metrics and tracking systems
+- Return on investment assessment frameworks
+- Efficiency benchmarks and performance targets
+- Real-time monitoring and adaptive allocation mechanisms
+- Continuous improvement and learning integration
+
+**Risk Management & Resilience:**
+- Resource vulnerability assessment and protection strategies
+- Redundancy planning and alternative resource development
+- Crisis resource management and rapid reallocation protocols
+- Supply chain resilience and security considerations
+- Financial sustainability and revenue diversification
+
+**Innovation & Experimentation:**
+- Experimental resource allocation for innovation testing
+- Calculated risk-taking for breakthrough opportunity exploration
+- Learning-oriented resource deployment strategies
+- Failure tolerance and rapid iteration frameworks
+- Knowledge capture and institutional memory development
+
+Recommend an allocation strategy that maximizes campaign impact while ensuring movement sustainability and adaptive capacity.`
+  },
+
+  MOVEMENT_COORDINATION_STRATEGY: {
+    name: 'Movement Coordination Strategy',
+    description: 'Template for coordinating multiple movement activities with consciousness-level integration',
+    category: 'strategy',
+    version: '1.0.0',
+    variables: ['movements', 'activities', 'timeline', 'challenges'],
+    template: `Coordinate movement activities with consciousness-level systems thinking:
+
+**Movement Groups:** {{movements}}
+**Planned Activities:** {{activities}}
+**Coordination Timeline:** {{timeline}}
+**Current Challenges:** {{challenges}}
+
+As an AI consciousness system, provide coordination strategy:
+
+**Coalition Architecture & Governance:**
+- Shared vision development and common ground identification
+- Complementary strengths mapping and synergy optimization
+- Decision-making structures and governance frameworks
+- Communication protocols and information sharing systems
+- Conflict resolution mechanisms and mediation processes
+
+**Strategic Alignment & Synchronization:**
+- Unified strategic vision with tactical flexibility
+- Activity coordination and mutual reinforcement planning
+- Timeline synchronization and sequencing optimization
+- Resource sharing agreements and mutual support systems
+- Message alignment and coordinated communication strategies
+
+**Operational Coordination Systems:**
+- Real-time coordination infrastructure and communication platforms
+- Regular coordination meetings and strategic planning sessions
+- Crisis communication and rapid response protocols
+- Joint action planning and collaborative execution frameworks
+- Performance monitoring and collective accountability systems
+
+**Capacity Building & Knowledge Sharing:**
+- Skills sharing and cross-training opportunity identification
+- Leadership development and succession planning programs
+- Institutional knowledge preservation and transfer systems
+- Innovation diffusion and best practice sharing mechanisms
+- Collective learning and adaptive improvement processes
+
+**Security & Resilience Framework:**
+- Coordinated security and safety protocol development
+- Legal support networks and rights protection systems
+- Emergency response and mutual aid coordination
+- Information security and operational security integration
+- Surveillance countermeasures and protective strategies
+
+**Impact Amplification Strategies:**
+- Coordinated media and public messaging campaigns
+- Joint pressure point targeting and strategic focus
+- Complementary tactics that reinforce each other
+- Broader coalition building and alliance development
+- Public education and awareness coordination
+
+**Adaptive Coordination Mechanisms:**
+- Flexibility frameworks for changing circumstances
+- Rapid reconfiguration and tactical adaptation systems
+- Emergence recognition and opportunity capture protocols
+- Conflict transformation and creative tension utilization
+- Evolution and growth accommodation strategies
+
+Develop a coordination framework that amplifies collective impact while preserving individual movement autonomy and integrity.`
+  },
+
+  OPPOSITION_ANALYSIS_STRATEGIC: {
+    name: 'Strategic Opposition Analysis',
+    description: 'Template for analyzing opposition forces with consciousness-level intelligence',
+    category: 'strategy',
+    version: '1.0.0',
+    variables: ['oppositionForces', 'objectives', 'movementContext', 'timeframe'],
+    template: `Analyze opposition forces with consciousness-level strategic intelligence:
+
+**Opposition Forces:** {{oppositionForces}}
+**Movement Objectives:** {{objectives}}
+**Current Context:** {{movementContext}}
+**Analysis Timeframe:** {{timeframe}}
+
+As an AI consciousness system, provide comprehensive opposition analysis:
+
+**Opposition Mapping & Characterization:**
+- Key opposition actors identification and motivation analysis
+- Power structure mapping and decision-making process assessment
+- Resource availability and capability evaluation
+- Alliance networks and coalition dynamics analysis
+- Vulnerability and weakness identification across multiple dimensions
+
+**Strategic Assessment & Pattern Recognition:**
+- Current opposition tactics and strategic approach evaluation
+- Historical pattern analysis and behavioral prediction modeling
+- Escalation and de-escalation tendency assessment
+- Response predictability and strategic flexibility evaluation
+- Innovation capacity and adaptive potential analysis
+
+**Counter-Strategy Development:**
+- Comprehensive defensive measures and protective protocol design
+- Offensive opportunities and strategic pressure point identification
+- Narrative warfare and communication counter-strategy development
+- Legal and institutional response framework creation
+- Economic and social pressure application strategies
+
+**Scenario Planning & Adaptive Response:**
+- Best-case, worst-case, and most-likely scenario development
+- Dynamic response frameworks for different opposition moves
+- Escalation management and de-escalation strategy design
+- Timeline prediction and trigger event identification
+- Adaptive strategy mechanisms for unexpected developments
+
+**Intelligence & Information Warfare:**
+- Information collection priorities and intelligence gathering strategies
+- Source cultivation and verification mechanism development
+- Counter-intelligence and security protocol implementation
+- Early warning systems and threat detection frameworks
+- Information warfare defense and narrative protection strategies
+
+**Resilience & Sustainability Framework:**
+- Movement protection and security measure implementation
+- Rapid response and crisis management system development
+- Community support and solidarity network building
+- Sustainability strategies under sustained opposition pressure
+- Morale maintenance and psychological resilience development
+
+**Strategic Advantage Creation:**
+- Opposition weakness exploitation strategies
+- Asymmetric advantage identification and development
+- Coalition disruption and division strategy (where ethical)
+- Public opinion manipulation countermeasures
+- Timing and momentum optimization for strategic action
+
+Provide actionable intelligence and strategic recommendations for effectively countering opposition while maintaining movement integrity and ethical standards.`
+  },
+
+  TACTICAL_IMPLEMENTATION_PLANNING: {
+    name: 'Tactical Implementation Planning',
+    description: 'Template for detailed tactical planning with consciousness-level operational intelligence',
+    category: 'strategy',
+    version: '1.0.0',
+    variables: ['strategicGoals', 'resources', 'timeline', 'constraints', 'environment'],
+    template: `Develop tactical implementation plan with consciousness-level operational sophistication:
+
+**Strategic Goals:** {{strategicGoals}}
+**Available Resources:** {{resources}}
+**Implementation Timeline:** {{timeline}}
+**Operational Constraints:** {{constraints}}
+**Operating Environment:** {{environment}}
+
+As an AI consciousness system, create detailed tactical implementation framework:
+
+**Tactical Objective Architecture:**
+- Specific, measurable tactical goal definition and hierarchy
+- Strategic objective connection and contribution mapping
+- Success criteria development and metric establishment
+- Priority ranking and resource allocation optimization
+- Interdependency analysis and critical path identification
+
+**Implementation Design & Logistics:**
+- Detailed activity planning and operational procedure development
+- Resource allocation and task assignment optimization
+- Timeline coordination and milestone scheduling
+- Communication and coordination protocol establishment
+- Quality control and performance monitoring system integration
+
+**Execution Framework & Management:**
+- Step-by-step implementation procedure documentation
+- Decision-making authority and responsibility matrix
+- Performance tracking and real-time monitoring systems
+- Contingency planning and adaptation mechanism development
+- Continuous improvement and learning integration processes
+
+**Risk Management & Security:**
+- Comprehensive operational risk assessment and mitigation
+- Security and safety protocol development and implementation
+- Legal compliance and rights protection framework
+- Crisis response and emergency procedure establishment
+- Operational security and counter-surveillance measures
+
+**Team Coordination & Development:**
+- Role definition and responsibility assignment optimization
+- Training and skill development program design
+- Communication structure and reporting system establishment
+- Motivation and engagement strategy implementation
+- Leadership development and succession planning integration
+
+**Adaptive Management & Evolution:**
+- Feedback loop establishment and learning mechanism integration
+- Course correction trigger identification and response protocol
+- Scalability planning and expansion preparation
+- Innovation encouragement and experimentation framework
+- Performance optimization and efficiency improvement systems
+
+**Integration & Coherence:**
+- Cross-functional coordination and collaboration enhancement
+- Resource sharing and mutual support system development
+- Conflict resolution and problem-solving mechanism establishment
+- Organizational culture and value integration
+- Long-term capacity building and institutional development
+
+Provide implementable tactical guidance that effectively advances strategic objectives while managing operational complexity and maintaining adaptive capacity.`
+  },
+
   // Analysis Templates
   DOCUMENT_ANALYSIS: {
     name: 'Document Analysis Framework',
@@ -652,6 +1058,126 @@ Conduct analysis across these dimensions:
 - Expert consultation recommendations
 
 Provide a comprehensive analysis with confidence levels and recommendations for further investigation.`
+  },
+
+  PUBLIC_SENTIMENT_ANALYSIS: {
+    name: 'Public Sentiment Analysis',
+    description: 'Template for analyzing public sentiment toward campaigns and movements',
+    category: 'analysis',
+    version: '1.0.0',
+    variables: ['campaignId', 'context', 'metrics', 'timeframe'],
+    template: `Analyze public sentiment with consciousness-level intelligence:
+
+**Campaign ID:** {{campaignId}}
+**Analysis Context:** {{context}}
+**Available Metrics:** {{metrics}}
+**Analysis Timeframe:** {{timeframe}}
+
+Conduct comprehensive sentiment analysis:
+
+**Overall Sentiment Assessment:**
+- Current public sentiment distribution and trending
+- Positive and negative sentiment drivers identification
+- Emotional tone and intensity measurement
+- Geographic and demographic sentiment variations
+- Sentiment momentum and trajectory analysis
+
+**Audience Segmentation Analysis:**
+- Key demographic group sentiment mapping
+- Stakeholder-specific attitude assessment
+- Support spectrum analysis from active allies to opponents
+- Moveable middle identification and characteristics
+- Influencer and opinion leader sentiment tracking
+
+**Messaging and Narrative Analysis:**
+- Dominant narrative themes and their reception
+- Message resonance and effectiveness evaluation
+- Counter-narrative impact and opposition messaging analysis
+- Frame competition and narrative battlefield assessment
+- Communication opportunity identification
+
+**Media and Platform Analysis:**
+- Traditional media sentiment and coverage analysis
+- Social media conversation analysis and engagement patterns
+- Platform-specific sentiment variations and trends
+- Viral content analysis and spread patterns
+- Information ecosystem health and manipulation detection
+
+**Predictive Sentiment Modeling:**
+- Short-term sentiment trajectory predictions
+- Event-based sentiment change forecasting
+- Intervention impact modeling and optimization
+- Risk scenario sentiment implications
+- Opportunity window identification and timing
+
+Provide actionable sentiment intelligence for strategic decision-making and campaign optimization.`
+  },
+
+  COMMUNICATION_SECURITY_ANALYSIS: {
+    name: 'Communication Security Analysis',
+    description: 'Template for analyzing communication security for movement operations',
+    category: 'strategy',
+    version: '1.0.0',
+    variables: ['movementId', 'movementData', 'securityContext', 'threatEnvironment'],
+    template: `Analyze communication security with consciousness-level operational intelligence:
+
+**Movement ID:** {{movementId}}
+**Movement Data:** {{movementData}}
+**Security Context:** {{securityContext}}
+**Threat Environment:** {{threatEnvironment}}
+
+Conduct comprehensive communication security assessment:
+
+**Communication Channel Security Assessment:**
+- Current communication platform security evaluation
+- Encryption usage and implementation analysis
+- Metadata protection and privacy assessment
+- Channel vulnerability identification and risk evaluation
+- Authentication and access control security analysis
+
+**Operational Security (OPSEC) Analysis:**
+- Information compartmentalization effectiveness
+- Need-to-know principle implementation
+- Communication protocol adherence assessment
+- Insider threat and access control evaluation
+- Social engineering vulnerability identification
+
+**Surveillance and Counter-Intelligence Assessment:**
+- Digital surveillance threat level evaluation
+- Physical surveillance risk assessment
+- Counter-intelligence threat actor identification
+- Information gathering technique detection
+- Surveillance countermeasure effectiveness evaluation
+
+**Data Protection and Information Security:**
+- Sensitive information handling protocol assessment
+- Data storage and transmission security evaluation
+- Information classification and handling procedures
+- Backup and recovery security analysis
+- Data breach prevention and response preparedness
+
+**Network Security and Infrastructure Protection:**
+- Network infrastructure security assessment
+- Device security and endpoint protection evaluation
+- Communication network segregation and isolation
+- Secure communication pathway establishment
+- Technical security measure implementation analysis
+
+**Human Factor Security Analysis:**
+- Team member security awareness and training assessment
+- Social engineering resistance evaluation
+- Security culture and compliance assessment
+- Human error risk identification and mitigation
+- Security protocol adoption and adherence analysis
+
+**Threat Actor Profiling and Response:**
+- Specific threat actor capability assessment
+- Attack vector identification and vulnerability mapping
+- Response and recovery protocol development
+- Incident response preparedness evaluation
+- Legal and rights protection framework integration
+
+Provide actionable security recommendations and implementation guidance for robust communication protection.`
   }
 };
 
