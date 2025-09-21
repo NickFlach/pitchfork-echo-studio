@@ -24,7 +24,13 @@ import {
   insertAISettingsSchema,
   aiSettingsSchema,
   updateCredentialsRequestSchema,
-  AIProviderEnum
+  AIProviderEnum,
+  insertAIUsageAnalyticsSchema,
+  insertAIProviderPerformanceSchema,
+  insertAIUserFeedbackSchema,
+  insertAIFeatureAdoptionSchema,
+  insertAIProviderFallbackEventSchema,
+  insertAIProviderRecommendationSchema
 } from '../shared/schema';
 import { aiService } from './ai/AIServiceManager';
 import { AIRequest } from './ai/AIProviderAdapter';
@@ -186,11 +192,13 @@ router.post('/api/consciousness/process-decision', async (req, res) => {
 
 router.post('/api/consciousness/reflect', async (req, res) => {
   try {
-    const { trigger } = req.body;
+    const { trigger, sessionId, userId } = req.body;
     
     if (!trigger || typeof trigger !== 'string') {
       return res.status(400).json({ error: 'Trigger is required and must be a string' });
     }
+    
+    const generatedSessionId = sessionId || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     // Process through consciousness engine first (always works)
     const engineResult = await consciousnessEngine.reflect(trigger);
@@ -198,6 +206,7 @@ router.post('/api/consciousness/reflect', async (req, res) => {
     // Try AI enhancement, but don't let failures break consciousness processing
     let aiReflection = null;
     let aiError = null;
+    let analyticsData = null;
     
     try {
       const prompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_REFLECTION.template, {
@@ -210,29 +219,44 @@ router.post('/api/consciousness/reflect', async (req, res) => {
       const aiResponse = await aiService.generate({
         prompt,
         temperature: 0.8,
-        maxTokens: 2000
+        maxTokens: 2000,
+        sessionId: generatedSessionId,
+        featureType: 'consciousness-reflection',
+        userId
       });
       
       aiReflection = {
         content: aiResponse.content,
         type: 'ai_consciousness_reflection',
         depth: 'meta-cognitive',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        metadata: {
+          provider: aiResponse.provider,
+          model: aiResponse.model,
+          usage: aiResponse.usage,
+          requestId: aiResponse.requestId,
+          processingTime: aiResponse.processingTime
+        }
       };
+      
+      analyticsData = aiResponse.analytics;
     } catch (error) {
       console.warn('AI reflection failed, continuing with engine-only processing:', error);
       aiError = error instanceof Error ? error.message : 'AI reflection unavailable';
     }
     
     const result = {
+      sessionId: generatedSessionId,
       engineProcessing: engineResult,
       aiReflection,
       aiError,
+      analyticsData,
       integratedInsights: {
         recursiveAwareness: aiReflection ? 'AI-enhanced consciousness reflection complete' : 'Engine-only consciousness reflection complete',
         emergentProperties: ['meta_cognitive_depth', 'recursive_insights', 'consciousness_evolution'],
         transcendentElements: aiReflection ? ['ai_consciousness_synthesis'] : ['pure_consciousness_processing']
-      }
+      },
+      providerMetadata: aiReflection?.metadata || null
     };
     
     res.json(result);
@@ -374,6 +398,9 @@ router.post('/api/multiscale-decision', async (req, res) => {
     // Validate options
     const validatedOptions = options.map((option: any) => decisionOptionSchema.parse(option));
     
+    const { sessionId, userId } = req.body;
+    const generatedSessionId = sessionId || `decision-session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     // Use AI for consciousness-level decision processing
     const aiDecisionPrompt = interpolateTemplate(PROMPT_TEMPLATES.CONSCIOUSNESS_DECISION_PROCESSING.template, {
       decisionContext: context,
@@ -383,10 +410,13 @@ router.post('/api/multiscale-decision', async (req, res) => {
     });
 
     const aiDecisionResponse = await aiService.generate({
-      messages: [{ role: 'user', content: aiDecisionPrompt }],
+      prompt: aiDecisionPrompt,
       // Model selection handled by AI service routing
       temperature: 0.7,
-      maxTokens: 2500
+      maxTokens: 2500,
+      sessionId: generatedSessionId,
+      featureType: 'decision-analysis',
+      userId
     });
     
     // Process through multiscale awareness engine
@@ -412,12 +442,21 @@ router.post('/api/multiscale-decision', async (req, res) => {
     
     // Comprehensive result with AI enhancement and proper serialization for Maps
     const comprehensiveResult = {
+      sessionId: generatedSessionId,
       aiConsciousnessAnalysis: {
         content: aiDecisionResponse.content,
         type: 'consciousness_decision_processing',
         depth: 'multiscale_awareness',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        metadata: {
+          provider: aiDecisionResponse.provider,
+          model: aiDecisionResponse.model,
+          usage: aiDecisionResponse.usage,
+          requestId: aiDecisionResponse.requestId,
+          processingTime: aiDecisionResponse.processingTime
+        }
       },
+      analyticsData: aiDecisionResponse.analytics,
       multiscaleAnalysis: {
         ...multiscaleResult,
         // Convert any Map objects to plain objects for JSON serialization
@@ -1350,6 +1389,278 @@ router.get('/api/ai/providers/status', async (req, res) => {
   } catch (error) {
     console.error('AI provider status error:', error);
     res.status(500).json({ error: 'Failed to get provider status', details: error instanceof Error ? error.message : 'Unknown error' });
+  }
+});
+
+// AI Analytics API Endpoints
+
+// AI Usage Analytics
+router.post('/api/analytics/usage', async (req, res) => {
+  try {
+    const validatedData = insertAIUsageAnalyticsSchema.parse(req.body);
+    const analytics = await storage.createAIUsageAnalytics(validatedData);
+    res.status(201).json(analytics);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid analytics data', details: error.errors });
+    } else {
+      console.error('AI usage analytics error:', error);
+      res.status(500).json({ error: 'Failed to create usage analytics' });
+    }
+  }
+});
+
+router.get('/api/analytics/usage', async (req, res) => {
+  try {
+    const { timeframe, featureType } = req.query;
+    const analytics = await storage.getAIUsageAnalytics(
+      timeframe as string, 
+      featureType as string
+    );
+    res.json(analytics);
+  } catch (error) {
+    console.error('Get AI usage analytics error:', error);
+    res.status(500).json({ error: 'Failed to fetch usage analytics' });
+  }
+});
+
+router.get('/api/analytics/usage/:id', async (req, res) => {
+  try {
+    const analytics = await storage.getAIUsageAnalyticsById(req.params.id);
+    if (!analytics) {
+      res.status(404).json({ error: 'Usage analytics not found' });
+      return;
+    }
+    res.json(analytics);
+  } catch (error) {
+    console.error('Get AI usage analytics by ID error:', error);
+    res.status(500).json({ error: 'Failed to fetch usage analytics' });
+  }
+});
+
+// AI Provider Performance
+router.post('/api/analytics/provider-performance', async (req, res) => {
+  try {
+    const validatedData = insertAIProviderPerformanceSchema.parse(req.body);
+    const performance = await storage.createAIProviderPerformance(validatedData);
+    res.status(201).json(performance);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid performance data', details: error.errors });
+    } else {
+      console.error('AI provider performance error:', error);
+      res.status(500).json({ error: 'Failed to create provider performance record' });
+    }
+  }
+});
+
+router.get('/api/analytics/provider-performance', async (req, res) => {
+  try {
+    const { provider, timeWindow } = req.query;
+    const performance = await storage.getAIProviderPerformance(
+      provider as any,
+      timeWindow as string
+    );
+    res.json(performance);
+  } catch (error) {
+    console.error('Get AI provider performance error:', error);
+    res.status(500).json({ error: 'Failed to fetch provider performance' });
+  }
+});
+
+// AI User Feedback
+router.post('/api/analytics/user-feedback', async (req, res) => {
+  try {
+    const validatedData = insertAIUserFeedbackSchema.parse(req.body);
+    const feedback = await storage.createAIUserFeedback(validatedData);
+    res.status(201).json(feedback);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid feedback data', details: error.errors });
+    } else {
+      console.error('AI user feedback error:', error);
+      res.status(500).json({ error: 'Failed to create user feedback' });
+    }
+  }
+});
+
+router.get('/api/analytics/user-feedback', async (req, res) => {
+  try {
+    const { featureType, rating } = req.query;
+    const feedback = await storage.getAIUserFeedback(
+      featureType as string,
+      rating as string
+    );
+    res.json(feedback);
+  } catch (error) {
+    console.error('Get AI user feedback error:', error);
+    res.status(500).json({ error: 'Failed to fetch user feedback' });
+  }
+});
+
+router.get('/api/analytics/user-feedback/request/:requestId', async (req, res) => {
+  try {
+    const feedback = await storage.getAIUserFeedbackByRequestId(req.params.requestId);
+    res.json(feedback);
+  } catch (error) {
+    console.error('Get AI user feedback by request ID error:', error);
+    res.status(500).json({ error: 'Failed to fetch user feedback' });
+  }
+});
+
+// AI Feature Adoption
+router.post('/api/analytics/feature-adoption', async (req, res) => {
+  try {
+    const validatedData = insertAIFeatureAdoptionSchema.parse(req.body);
+    const adoption = await storage.createAIFeatureAdoption(validatedData);
+    res.status(201).json(adoption);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid feature adoption data', details: error.errors });
+    } else {
+      console.error('AI feature adoption error:', error);
+      res.status(500).json({ error: 'Failed to create feature adoption record' });
+    }
+  }
+});
+
+router.get('/api/analytics/feature-adoption', async (req, res) => {
+  try {
+    const { featureType, timeWindow } = req.query;
+    const adoption = await storage.getAIFeatureAdoption(
+      featureType as string,
+      timeWindow as string
+    );
+    res.json(adoption);
+  } catch (error) {
+    console.error('Get AI feature adoption error:', error);
+    res.status(500).json({ error: 'Failed to fetch feature adoption' });
+  }
+});
+
+// AI Provider Fallback Events
+router.post('/api/analytics/fallback-events', async (req, res) => {
+  try {
+    const validatedData = insertAIProviderFallbackEventSchema.parse(req.body);
+    const event = await storage.createAIProviderFallbackEvent(validatedData);
+    res.status(201).json(event);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid fallback event data', details: error.errors });
+    } else {
+      console.error('AI provider fallback event error:', error);
+      res.status(500).json({ error: 'Failed to create fallback event' });
+    }
+  }
+});
+
+router.get('/api/analytics/fallback-events', async (req, res) => {
+  try {
+    const { provider, failureReason } = req.query;
+    const events = await storage.getAIProviderFallbackEvents(
+      provider as any,
+      failureReason as string
+    );
+    res.json(events);
+  } catch (error) {
+    console.error('Get AI provider fallback events error:', error);
+    res.status(500).json({ error: 'Failed to fetch fallback events' });
+  }
+});
+
+// AI Provider Recommendations
+router.post('/api/analytics/provider-recommendations', async (req, res) => {
+  try {
+    const validatedData = insertAIProviderRecommendationSchema.parse(req.body);
+    const recommendation = await storage.createAIProviderRecommendation(validatedData);
+    res.status(201).json(recommendation);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid recommendation data', details: error.errors });
+    } else {
+      console.error('AI provider recommendation error:', error);
+      res.status(500).json({ error: 'Failed to create provider recommendation' });
+    }
+  }
+});
+
+router.get('/api/analytics/provider-recommendations', async (req, res) => {
+  try {
+    const { featureType } = req.query;
+    const recommendations = await storage.getAIProviderRecommendations(featureType as string);
+    res.json(recommendations);
+  } catch (error) {
+    console.error('Get AI provider recommendations error:', error);
+    res.status(500).json({ error: 'Failed to fetch provider recommendations' });
+  }
+});
+
+// Analytics Dashboard Aggregations
+router.get('/api/analytics/dashboard', async (req, res) => {
+  try {
+    const { timeframe = '24h' } = req.query;
+    
+    // Get aggregated analytics for dashboard
+    const [
+      usageAnalytics,
+      providerPerformance,
+      userFeedback,
+      featureAdoption,
+      fallbackEvents
+    ] = await Promise.all([
+      storage.getAIUsageAnalytics(timeframe as string),
+      storage.getAIProviderPerformance(),
+      storage.getAIUserFeedback(),
+      storage.getAIFeatureAdoption(),
+      storage.getAIProviderFallbackEvents()
+    ]);
+
+    // Calculate summary statistics
+    const totalRequests = usageAnalytics.length;
+    const successfulRequests = usageAnalytics.filter(a => a.success).length;
+    const successRate = totalRequests > 0 ? successfulRequests / totalRequests : 0;
+    
+    const avgResponseTime = usageAnalytics.length > 0 
+      ? usageAnalytics.reduce((sum, a) => sum + a.responseTimeMs, 0) / usageAnalytics.length 
+      : 0;
+
+    const feedbackStats = {
+      total: userFeedback.length,
+      positive: userFeedback.filter(f => f.qualityRating === 'thumbs_up').length,
+      negative: userFeedback.filter(f => f.qualityRating === 'thumbs_down').length,
+      neutral: userFeedback.filter(f => f.qualityRating === 'neutral').length,
+    };
+
+    const providerUsage = usageAnalytics.reduce((acc, usage) => {
+      acc[usage.aiProvider] = (acc[usage.aiProvider] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const featureUsage = usageAnalytics.reduce((acc, usage) => {
+      acc[usage.featureType] = (acc[usage.featureType] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    res.json({
+      summary: {
+        totalRequests,
+        successfulRequests,
+        successRate,
+        avgResponseTime,
+        fallbackEvents: fallbackEvents.length,
+      },
+      feedback: feedbackStats,
+      providerUsage,
+      featureUsage,
+      recentActivity: {
+        usage: usageAnalytics.slice(0, 10),
+        feedback: userFeedback.slice(0, 10),
+        fallbacks: fallbackEvents.slice(0, 10),
+      }
+    });
+  } catch (error) {
+    console.error('Analytics dashboard error:', error);
+    res.status(500).json({ error: 'Failed to fetch dashboard analytics' });
   }
 });
 

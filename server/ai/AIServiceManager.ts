@@ -1,5 +1,6 @@
 import { AISettings, AIProvider, AIModelConfig } from '../../shared/schema';
 import { storage } from '../storage';
+import type { InsertAIUsageAnalytics } from '../../shared/schema';
 import { AIProviderAdapter, AIResponse, AIRequest, AIStreamResponse } from './AIProviderAdapter';
 import { OpenAIAdapter } from './providers/OpenAIAdapter';
 import { ClaudeAdapter } from './providers/ClaudeAdapter';
@@ -303,11 +304,89 @@ export class AIServiceManager {
   }
 
   /**
-   * Public generate method - main entry point for AI generation
-   * Applies routing policy with retry logic, timeouts, and fallback chain
+   * Enhanced generate method with analytics tracking and metadata collection
+   * Main entry point for AI generation with usage analytics
    */
-  async generate(request: AIRequest): Promise<AIResponse> {
-    return this.makeRequest(request);
+  async generate(request: AIRequest & {
+    sessionId?: string;
+    featureType?: 'consciousness-reflection' | 'leadership-strategy' | 'decision-analysis' | 'corruption-detection' | 'campaign-planning';
+    userId?: string;
+  }): Promise<AIResponse & { analytics?: any }> {
+    const startTime = Date.now();
+    const requestId = `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const sessionId = request.sessionId || `session-${Date.now()}`;
+    
+    let response: AIResponse;
+    let fallbackUsed = false;
+    let fallbackProvider: string | undefined;
+    let primaryProvider: string | undefined;
+    
+    try {
+      // Get current settings to determine primary provider
+      const settings = await this.getSettings();
+      primaryProvider = settings.routing.primary;
+      
+      // Make the actual request
+      response = await this.makeRequestWithAnalytics(request, requestId);
+      
+      // Check if a fallback was used by comparing actual provider vs primary
+      if (response.provider !== primaryProvider) {
+        fallbackUsed = true;
+        fallbackProvider = response.provider;
+      }
+      
+    } catch (error) {
+      // Create analytics for failed request
+      if (request.featureType) {
+        await this.createUsageAnalytics({
+          sessionId,
+          featureType: request.featureType,
+          aiProvider: primaryProvider as any || 'unknown',
+          modelUsed: 'unknown',
+          requestType: 'standard',
+          promptTokens: 0,
+          completionTokens: 0,
+          totalTokens: 0,
+          responseTimeMs: Date.now() - startTime,
+          success: false,
+          errorType: error instanceof Error ? error.message : 'Unknown error',
+          fallbackUsed: false,
+          userId: request.userId,
+        });
+      }
+      throw error;
+    }
+    
+    // Create success analytics
+    if (request.featureType) {
+      const analytics = await this.createUsageAnalytics({
+        sessionId,
+        featureType: request.featureType,
+        aiProvider: response.provider,
+        modelUsed: response.model,
+        requestType: 'standard',
+        promptTokens: response.usage?.promptTokens || 0,
+        completionTokens: response.usage?.completionTokens || 0,
+        totalTokens: response.usage?.totalTokens || 0,
+        responseTimeMs: Date.now() - startTime,
+        success: true,
+        fallbackUsed,
+        fallbackProvider: fallbackProvider as any,
+        userId: request.userId,
+        userContext: {
+          consciousnessLevel: this.inferConsciousnessLevel(request.featureType),
+          decisionComplexity: this.inferDecisionComplexity(request),
+          urgencyLevel: 'medium',
+        },
+      });
+      
+      return {
+        ...response,
+        analytics,
+      };
+    }
+    
+    return response;
   }
 
   /**
@@ -319,9 +398,16 @@ export class AIServiceManager {
   }
 
   /**
+   * Enhanced makeRequest with analytics tracking
+   */
+  async makeRequestWithAnalytics(request: AIRequest, requestId: string): Promise<AIResponse> {
+    return this.makeRequest(request, requestId);
+  }
+
+  /**
    * Make an AI request with automatic routing, fallback, and retry logic
    */
-  async makeRequest(request: AIRequest): Promise<AIResponse> {
+  async makeRequest(request: AIRequest, requestId?: string): Promise<AIResponse> {
     const settings = await this.getSettings();
     const { routing } = settings;
     
@@ -382,7 +468,14 @@ export class AIServiceManager {
           config: providerConfig,
         });
 
-        return await Promise.race([requestPromise, timeoutPromise]);
+        const response = await Promise.race([requestPromise, timeoutPromise]);
+        
+        // Enhance response with request metadata
+        return {
+          ...response,
+          requestId: requestId || response.requestId,
+          provider: provider, // Ensure provider is set correctly
+        };
         
       } catch (error) {
         lastError = error as Error;
@@ -462,6 +555,54 @@ export class AIServiceManager {
       providers: providerStatus,
       settings,
     };
+  }
+
+  /**
+   * Create usage analytics record
+   */
+  private async createUsageAnalytics(data: InsertAIUsageAnalytics) {
+    try {
+      return await storage.createAIUsageAnalytics(data);
+    } catch (error) {
+      console.warn('Failed to create usage analytics:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Infer consciousness level from feature type
+   */
+  private inferConsciousnessLevel(featureType?: string): 'reactive' | 'adaptive' | 'creative' | 'integrative' | 'transcendent' {
+    switch (featureType) {
+      case 'consciousness-reflection':
+        return 'transcendent';
+      case 'leadership-strategy':
+        return 'integrative';
+      case 'decision-analysis':
+        return 'creative';
+      case 'corruption-detection':
+        return 'adaptive';
+      default:
+        return 'reactive';
+    }
+  }
+
+  /**
+   * Infer decision complexity from request
+   */
+  private inferDecisionComplexity(request: AIRequest): 'simple' | 'moderate' | 'complex' | 'multiscale' {
+    const promptLength = request.prompt?.length || 0;
+    const hasContext = Boolean(request.context && Object.keys(request.context).length > 0);
+    const hasSystemPrompt = Boolean(request.systemPrompt);
+    
+    if (promptLength > 1000 && hasContext && hasSystemPrompt) {
+      return 'multiscale';
+    } else if (promptLength > 500 && (hasContext || hasSystemPrompt)) {
+      return 'complex';
+    } else if (promptLength > 200) {
+      return 'moderate';
+    }
+    return 'simple';
   }
 }
 

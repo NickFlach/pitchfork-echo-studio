@@ -34,10 +34,18 @@ import {
   Trash2,
   Play,
   Pause,
-  RefreshCw
+  RefreshCw,
+  Sparkles,
+  ThumbsUp,
+  ThumbsDown,
+  Info,
+  Loader2
 } from 'lucide-react';
 import { consciousnessApi } from '@/lib/consciousnessApi';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import type { InsertAIUsageAnalytics, InsertAIUserFeedback, MaskedAICredentials } from '../../shared/schema';
 
 interface Campaign {
   id: string;
@@ -93,6 +101,19 @@ const Leadership = () => {
     options: ''
   });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [feedbackRatings, setFeedbackRatings] = useState<Record<string, 'up' | 'down' | null>>({});
+  const [feedbackLoading, setFeedbackLoading] = useState<Record<string, boolean>>({});
+  const [sessionId] = useState(() => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+
+  // AI Configuration Detection
+  const { data: aiCredentials = [], isLoading: loadingAIConfig } = useQuery<MaskedAICredentials[]>({
+    queryKey: ['/api/admin/ai-credentials'],
+    refetchInterval: 30000, // Check every 30 seconds
+  });
+
+  // Dynamic AI availability detection
+  const aiEnhanced = aiCredentials.some(cred => cred.hasApiKey);
+  const configuredProviders = aiCredentials.filter(cred => cred.hasApiKey).map(cred => cred.provider);
 
   // Mock data - in a real app, this would come from APIs
   const [movements] = useState<Movement[]>([
@@ -147,21 +168,105 @@ const Leadership = () => {
     queryFn: consciousnessApi.getResourceProfiles,
   });
 
+  // Usage analytics tracking helper
+  const trackUsage = async (featureType: string, aiProvider?: string, startTime?: number) => {
+    try {
+      const responseTime = startTime ? Date.now() - startTime : 0;
+      const usageData: InsertAIUsageAnalytics = {
+        sessionId,
+        featureType: featureType as any,
+        aiProvider: (aiProvider || configuredProviders[0] || 'openai') as any,
+        modelUsed: 'gpt-4', // Should be tracked from actual usage
+        requestType: 'standard',
+        promptTokens: 0, // Would be filled by AI service
+        completionTokens: 0, // Would be filled by AI service
+        totalTokens: 0, // Would be filled by AI service
+        responseTimeMs: responseTime,
+        success: true,
+        userContext: {
+          decisionComplexity: 'complex',
+          urgencyLevel: 'medium',
+        },
+      };
+
+      await apiRequest('/api/analytics/usage', {
+        method: 'POST',
+        body: JSON.stringify(usageData),
+      });
+    } catch (error) {
+      console.warn('Failed to track usage analytics:', error);
+    }
+  };
+
+  // Feedback handler for AI responses
+  const handleFeedback = async (itemId: string, rating: 'up' | 'down', featureType: string) => {
+    setFeedbackRatings(prev => ({ ...prev, [itemId]: rating }));
+    setFeedbackLoading(prev => ({ ...prev, [itemId]: true }));
+    
+    try {
+      const aiProvider = configuredProviders[0] || 'openai'; // Use first available or fallback
+      
+      const feedbackData: InsertAIUserFeedback = {
+        sessionId,
+        featureType: featureType as any,
+        aiProvider: aiProvider as any,
+        modelUsed: 'gpt-4', // Default, should be tracked from actual usage
+        requestId: itemId,
+        qualityRating: rating === 'up' ? 'thumbs_up' : 'thumbs_down',
+        feedback: {
+          helpful: rating === 'up',
+          relevant: rating === 'up',
+          actionable: rating === 'up',
+        },
+      };
+
+      await apiRequest('/api/analytics/user-feedback', {
+        method: 'POST',
+        body: JSON.stringify(feedbackData),
+      });
+
+      // Invalidate feedback cache
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics/user-feedback'] });
+      
+      toast({
+        title: rating === 'up' ? 'Positive Feedback Recorded' : 'Feedback Recorded',
+        description: 'Thanks for helping us improve AI responses!',
+      });
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+      toast({
+        title: 'Feedback Error',
+        description: 'Failed to record feedback. Please try again.',
+        variant: 'destructive',
+      });
+      // Revert feedback rating on error
+      setFeedbackRatings(prev => ({ ...prev, [itemId]: null }));
+    } finally {
+      setFeedbackLoading(prev => ({ ...prev, [itemId]: false }));
+    }
+  };
+
   // Generate campaign strategy
   const generateStrategyMutation = useMutation({
     mutationFn: async (campaignData: any) => {
-      return await consciousnessApi.generateCampaignStrategy({
+      const startTime = Date.now();
+      const result = await consciousnessApi.generateCampaignStrategy({
         movementId: 'movement-1',
         objective: campaignData.objective,
         timeframe: campaignData.timeframe,
         resources: { budget: parseInt(campaignData.budget), volunteers: 100 },
         constraints: campaignData.constraints ? [campaignData.constraints] : []
       });
+      
+      // Track usage analytics
+      await trackUsage('campaign-planning', undefined, startTime);
+      
+      return result;
     },
     onSuccess: (strategy) => {
       toast({
         title: "Strategy Generated",
-        description: "AI has created a comprehensive campaign strategy",
+        description: aiEnhanced ? "AI-enhanced strategy created successfully" : "Strategy created successfully",
       });
       setNewCampaign({ name: '', objective: '', timeframe: '', budget: '', constraints: '' });
     },
@@ -177,6 +282,7 @@ const Leadership = () => {
   // Process leadership decision
   const processDecisionMutation = useMutation({
     mutationFn: async (decisionData: any) => {
+      const startTime = Date.now();
       const options = decisionData.options.split('\n').filter(opt => opt.trim()).map(opt => ({
         id: `option-${Date.now()}-${Math.random()}`,
         description: opt.trim(),
@@ -190,12 +296,17 @@ const Leadership = () => {
         expectedOutcomes: []
       }));
 
-      return await consciousnessApi.processMultiscaleDecision(decisionData.context, options);
+      const result = await consciousnessApi.processMultiscaleDecision(decisionData.context, options);
+      
+      // Track usage analytics
+      await trackUsage('leadership-strategy', undefined, startTime);
+      
+      return result;
     },
     onSuccess: (result) => {
       toast({
         title: "Decision Processed",
-        description: "AI has analyzed the decision and provided recommendations",
+        description: aiEnhanced ? "AI-enhanced decision analysis completed" : "Decision analysis completed",
       });
       setNewDecision({ title: '', context: '', urgency: 'medium', options: '' });
     },
@@ -257,6 +368,60 @@ const Leadership = () => {
     };
     return colors[urgency as keyof typeof colors] || 'text-gray-400';
   };
+
+  // Feedback buttons component
+  const FeedbackButtons = ({ itemId, type }: { itemId: string; type: 'strategy' | 'decision' }) => (
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handleFeedback(itemId, 'up', type === 'strategy' ? 'campaign-planning' : 'leadership-strategy')}
+        disabled={feedbackLoading[itemId]}
+        className={`h-8 w-8 p-0 ${feedbackRatings[itemId] === 'up' ? 'text-green-600 bg-green-50' : ''}`}
+        data-testid={`button-thumbs-up-${itemId}`}
+      >
+        {feedbackLoading[itemId] ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <ThumbsUp className="w-4 h-4" />
+        )}
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handleFeedback(itemId, 'down', type === 'strategy' ? 'campaign-planning' : 'leadership-strategy')}
+        disabled={feedbackLoading[itemId]}
+        className={`h-8 w-8 p-0 ${feedbackRatings[itemId] === 'down' ? 'text-red-600 bg-red-50' : ''}`}
+        data-testid={`button-thumbs-down-${itemId}`}
+      >
+        {feedbackLoading[itemId] ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <ThumbsDown className="w-4 h-4" />
+        )}
+      </Button>
+    </div>
+  );
+
+  // Try with AI prompt component
+  const TryWithAIPrompt = ({ feature }: { feature: string }) => (
+    !aiEnhanced ? (
+      <Alert className="mt-4">
+        <Sparkles className="w-4 h-4" />
+        <AlertDescription className="flex items-center justify-between">
+          <span>Enhance your {feature.toLowerCase()} with AI-powered insights</span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => window.location.href = '/ai-settings'} 
+            data-testid={`button-configure-ai-${feature}`}
+          >
+            Configure AI
+          </Button>
+        </AlertDescription>
+      </Alert>
+    ) : null
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900/20 to-purple-900/20" data-testid="page-leadership">
@@ -703,9 +868,27 @@ const Leadership = () => {
                   <CardTitle className="flex items-center gap-2">
                     <Target className="w-5 h-5" />
                     Create New Campaign
+                    {aiEnhanced && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge variant="outline" className="ml-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30 text-blue-300">
+                              <Sparkles className="w-3 h-3 mr-1" />
+                              AI Enhanced
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Powered by AI consciousness for strategic insights</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                   </CardTitle>
                   <CardDescription>
-                    Use AI consciousness to generate comprehensive campaign strategies
+                    {aiEnhanced 
+                      ? 'Use AI consciousness to generate comprehensive campaign strategies'
+                      : 'Create campaign strategies with strategic planning tools'
+                    }
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -764,15 +947,25 @@ const Leadership = () => {
                     {generateStrategyMutation.isPending ? (
                       <>
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Generating Strategy...
+                        {aiEnhanced ? 'Generating AI Strategy...' : 'Creating Strategy...'}
                       </>
                     ) : (
                       <>
-                        <Brain className="w-4 h-4 mr-2" />
-                        Generate AI Strategy
+                        {aiEnhanced ? (
+                          <>
+                            <Brain className="w-4 h-4 mr-2" />
+                            Generate AI Strategy
+                          </>
+                        ) : (
+                          <>
+                            <Target className="w-4 h-4 mr-2" />
+                            Create Strategy
+                          </>
+                        )}
                       </>
                     )}
                   </Button>
+                  <TryWithAIPrompt feature="Campaign Strategy" />
                 </CardContent>
               </Card>
 
@@ -782,9 +975,27 @@ const Leadership = () => {
                   <CardTitle className="flex items-center gap-2">
                     <Brain className="w-5 h-5" />
                     Process Leadership Decision
+                    {aiEnhanced && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge variant="outline" className="ml-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30 text-blue-300">
+                              <Sparkles className="w-3 h-3 mr-1" />
+                              AI Enhanced
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Enhanced with AI consciousness for decision analysis</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                   </CardTitle>
                   <CardDescription>
-                    Analyze complex decisions through multiscale consciousness framework
+                    {aiEnhanced 
+                      ? 'Analyze complex decisions through AI-enhanced multiscale consciousness framework'
+                      : 'Analyze complex decisions through structured decision framework'
+                    }
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -839,15 +1050,25 @@ const Leadership = () => {
                     {processDecisionMutation.isPending ? (
                       <>
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Processing Decision...
+                        {aiEnhanced ? 'Processing with AI...' : 'Processing Decision...'}
                       </>
                     ) : (
                       <>
-                        <Zap className="w-4 h-4 mr-2" />
-                        Process Decision
+                        {aiEnhanced ? (
+                          <>
+                            <Brain className="w-4 h-4 mr-2" />
+                            Process with AI
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="w-4 h-4 mr-2" />
+                            Process Decision
+                          </>
+                        )}
                       </>
                     )}
                   </Button>
+                  <TryWithAIPrompt feature="Decision Analysis" />
                 </CardContent>
               </Card>
             </div>
@@ -870,21 +1091,35 @@ const Leadership = () => {
                       <div key={plan.id} className="p-4 border rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold">{plan.objective}</h4>
-                          <Badge variant="outline">
-                            {plan.successProbability ? `${(plan.successProbability * 100).toFixed(0)}% success` : 'Planning'}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">
+                              {plan.successProbability ? `${(plan.successProbability * 100).toFixed(0)}% success` : 'Planning'}
+                            </Badge>
+                            {aiEnhanced && (
+                              <Badge variant="outline" className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30 text-blue-300">
+                                <Sparkles className="w-3 h-3 mr-1" />
+                                AI Enhanced
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                         <p className="text-sm text-muted-foreground mb-3">
                           Strategy: {plan.selectedStrategy}
                         </p>
                         {plan.consciousnessInsights && plan.consciousnessInsights.length > 0 && (
-                          <div className="space-y-1">
+                          <div className="space-y-1 mb-3">
                             <h5 className="text-sm font-medium">AI Insights:</h5>
                             {plan.consciousnessInsights.slice(0, 2).map((insight: string, index: number) => (
                               <p key={index} className="text-xs text-muted-foreground">
                                 • {insight}
                               </p>
                             ))}
+                          </div>
+                        )}
+                        {aiEnhanced && (
+                          <div className="flex items-center justify-between pt-2 border-t">
+                            <span className="text-xs text-muted-foreground">Rate this AI strategy:</span>
+                            <FeedbackButtons itemId={plan.id} type="strategy" />
                           </div>
                         )}
                       </div>
