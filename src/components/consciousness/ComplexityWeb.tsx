@@ -382,11 +382,11 @@ export const ComplexityWeb = ({ data, consciousnessData, decisionData, isLoading
       return prev.map(particle => {
         const dx = particle.targetX - particle.x;
         const dy = particle.targetY - particle.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const particleDistance = Math.sqrt(dx * dx + dy * dy);
         
-        if (distance > 1) {
-          particle.x += (dx / distance) * particle.speed;
-          particle.y += (dy / distance) * particle.speed;
+        if (particleDistance > 1) {
+          particle.x += (dx / particleDistance) * particle.speed;
+          particle.y += (dy / particleDistance) * particle.speed;
         }
         
         particle.life -= 1;
@@ -992,21 +992,21 @@ export const ComplexityWeb = ({ data, consciousnessData, decisionData, isLoading
                 const y = (e.clientY - rect.top) / rect.height;
                 
                 // Find nearest 3D node
-                let nearestNode = null;
-                let minDistance = Infinity;
+                let nearestNodeId = null;
+                let shortestDistance = Infinity;
                 
                 enhanced3DNodes.forEach(node => {
-                  const dx = x - (node.position.x + 0.5);
-                  const dy = y - (node.position.y + 0.5);
-                  const distance = Math.sqrt(dx * dx + dy * dy);
+                  const deltaX = x - (node.position.x + 0.5);
+                  const deltaY = y - (node.position.y + 0.5);
+                  const nodeDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                   
-                  if (distance < 0.08 && distance < minDistance) {
-                    minDistance = distance;
-                    nearestNode = node.id;
+                  if (nodeDistance < 0.08 && nodeDistance < shortestDistance) {
+                    shortestDistance = nodeDistance;
+                    nearestNodeId = node.id;
                   }
                 });
                 
-                setSelectedNode(nearestNode);
+                setSelectedNode(nearestNodeId);
               }}
               onMouseMove={(e) => {
                 if (e.buttons === 1) { // Left mouse button
