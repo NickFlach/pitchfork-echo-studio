@@ -17,7 +17,7 @@ const Support = lazy(() => import("./pages/Support"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Governance = lazy(() => import("./pages/Governance"));
 const Leadership = lazy(() => import("./pages/Leadership"));
-
+const Funding = lazy(() => import("./pages/Funding"));
 const Consciousness = lazy(() => import("./pages/Consciousness"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
