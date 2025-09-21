@@ -38,8 +38,13 @@ import {
   ResourceProfile,
   InsertResourceProfile,
   AISettings,
-  InsertAISettings
+  InsertAISettings,
+  AICredentials,
+  InsertAICredentials,
+  MaskedAICredentials,
+  AIProvider
 } from '../shared/schema';
+import * as crypto from 'crypto';
 
 export interface IStorage {
   // Identity operations
@@ -166,6 +171,14 @@ export interface IStorage {
   // AI Settings operations
   getAISettings(): Promise<AISettings | null>;
   updateAISettings(settings: InsertAISettings): Promise<AISettings>;
+  
+  // AI Credentials operations (secure)
+  createOrUpdateAICredentials(provider: AIProvider, apiKey: string, baseUrl?: string): Promise<AICredentials>;
+  getAICredentials(provider: AIProvider): Promise<AICredentials | null>;
+  getAllAICredentials(): Promise<AICredentials[]>;
+  getMaskedAICredentials(): Promise<MaskedAICredentials[]>;
+  deleteAICredentials(provider: AIProvider): Promise<boolean>;
+  hasAICredentials(provider: AIProvider): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -190,6 +203,10 @@ export class MemStorage implements IStorage {
   private tacticalFrameworks: TacticalFramework[] = [];
   private resourceProfiles: ResourceProfile[] = [];
   private aiSettings: AISettings | null = null;
+  private aiCredentials: AICredentials[] = [];
+  
+  // Encryption key for AI credentials (in production, use env var or key management)
+  private readonly encryptionKey = process.env.ENCRYPTION_KEY || 'fallback-encryption-key-change-in-production';
 
   // Identity operations
   async createIdentity(identity: InsertIdentity): Promise<Identity> {
@@ -775,6 +792,26 @@ export class MemStorage implements IStorage {
     return this.resourceProfiles[index];
   }
 
+  // Encryption helper methods
+  private encryptText(text: string): string {
+    const cipher = crypto.createCipher('aes-256-cbc', this.encryptionKey);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+  }
+
+  private decryptText(encryptedText: string): string {
+    const decipher = crypto.createDecipher('aes-256-cbc', this.encryptionKey);
+    let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  }
+
+  private maskApiKey(apiKey: string): string {
+    if (apiKey.length <= 8) return '•'.repeat(8);
+    return '•'.repeat(apiKey.length - 4) + apiKey.slice(-4);
+  }
+
   // AI Settings operations
   async getAISettings(): Promise<AISettings | null> {
     return this.aiSettings;
@@ -788,6 +825,75 @@ export class MemStorage implements IStorage {
     };
     this.aiSettings = newSettings;
     return newSettings;
+  }
+
+  // AI Credentials operations (secure)
+  async createOrUpdateAICredentials(provider: AIProvider, apiKey: string, baseUrl?: string): Promise<AICredentials> {
+    const now = new Date().toISOString();
+    const existingIndex = this.aiCredentials.findIndex(cred => cred.provider === provider);
+    
+    const credentialData: AICredentials = {
+      id: existingIndex >= 0 ? this.aiCredentials[existingIndex].id : Math.random().toString(36).substring(7),
+      provider,
+      apiKey: this.encryptText(apiKey),
+      baseUrl,
+      encryptedAt: now,
+      createdAt: existingIndex >= 0 ? this.aiCredentials[existingIndex].createdAt : now,
+      updatedAt: now,
+    };
+
+    if (existingIndex >= 0) {
+      this.aiCredentials[existingIndex] = credentialData;
+    } else {
+      this.aiCredentials.push(credentialData);
+    }
+
+    return credentialData;
+  }
+
+  async getAICredentials(provider: AIProvider): Promise<AICredentials | null> {
+    return this.aiCredentials.find(cred => cred.provider === provider) || null;
+  }
+
+  async getAllAICredentials(): Promise<AICredentials[]> {
+    return this.aiCredentials;
+  }
+
+  async getMaskedAICredentials(): Promise<MaskedAICredentials[]> {
+    return this.aiCredentials.map(cred => ({
+      id: cred.id,
+      provider: cred.provider,
+      apiKeyMask: this.maskApiKey(this.decryptText(cred.apiKey)),
+      baseUrl: cred.baseUrl,
+      hasApiKey: true,
+      createdAt: cred.createdAt,
+      updatedAt: cred.updatedAt,
+    }));
+  }
+
+  async deleteAICredentials(provider: AIProvider): Promise<boolean> {
+    const index = this.aiCredentials.findIndex(cred => cred.provider === provider);
+    if (index >= 0) {
+      this.aiCredentials.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+
+  async hasAICredentials(provider: AIProvider): Promise<boolean> {
+    return this.aiCredentials.some(cred => cred.provider === provider);
+  }
+
+  // Helper method to get decrypted API key for AI service usage
+  async getDecryptedAPIKey(provider: AIProvider): Promise<string | null> {
+    const credentials = await this.getAICredentials(provider);
+    if (!credentials) return null;
+    try {
+      return this.decryptText(credentials.apiKey);
+    } catch (error) {
+      console.error(`Failed to decrypt API key for provider ${provider}:`, error);
+      return null;
+    }
   }
 }
 
