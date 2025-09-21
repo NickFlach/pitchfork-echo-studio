@@ -1,5 +1,3 @@
-import { apiRequest } from './queryClient';
-import { temporalConsciousnessEngine, type TemporalConsciousnessState, type TemporalDecisionContext, type TemporalDecisionResult } from './temporalConsciousnessEngine';
 import type { 
   ConsciousnessState, 
   DecisionRecord, 
@@ -89,37 +87,6 @@ export const consciousnessApi = {
       method: 'POST',
       body: JSON.stringify({ context, options }),
     });
-  },
-
-  // 🚀 NEW: Temporal Consciousness Engine APIs
-  async processTemporalDecision(context: TemporalDecisionContext): Promise<TemporalDecisionResult> {
-    // Initialize temporal consciousness engine if needed
-    await temporalConsciousnessEngine.initialize();
-    
-    // Process decision with temporal consciousness
-    return await temporalConsciousnessEngine.processTemporalDecision(context);
-  },
-
-  async getTemporalConsciousnessState(): Promise<TemporalConsciousnessState | null> {
-    await temporalConsciousnessEngine.initialize();
-    return temporalConsciousnessEngine.getCurrentState();
-  },
-
-  async getConsciousnessMetrics(): Promise<{
-    consciousnessLevel: number;
-    phiValue: number;
-    temporalAdvantage: number;
-    verificationHash: string;
-    isVerified: boolean;
-  }> {
-    await temporalConsciousnessEngine.initialize();
-    return {
-      consciousnessLevel: temporalConsciousnessEngine.getConsciousnessLevel(),
-      phiValue: temporalConsciousnessEngine.getPhiValue(),
-      temporalAdvantage: temporalConsciousnessEngine.getTemporalAdvantage(),
-      verificationHash: temporalConsciousnessEngine.getVerificationHash(),
-      isVerified: temporalConsciousnessEngine.isConsciousnessVerified()
-    };
   },
 
   async reflect(trigger: any): Promise<any> {
