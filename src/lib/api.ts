@@ -380,19 +380,6 @@ export const campaignApi = {
     const campaigns = getStorageData<Campaign>(STORAGE_KEYS.CAMPAIGNS);
     return campaigns.find(campaign => campaign.id === id) || null;
   },
-
-  // Developer funding - direct donations to development wallet
-  async sendDeveloperDonation(amount: number, donorAddress: string): Promise<string> {
-    const DEVELOPER_WALLET = '0x7C29b9Bc9f7CA06DB45E5558c6DEe84f4dd01efb';
-    
-    try {
-      // This would use the smart contract service to send ETH directly
-      return await smartContracts.contributeToCampaign(DEVELOPER_WALLET, amount);
-    } catch (error) {
-      console.error('Error sending developer donation:', error);
-      throw new Error('Failed to send donation to developer wallet');
-    }
-  },
 };
 
 // DECENTRALIZED Messaging API - P2P encrypted communications
