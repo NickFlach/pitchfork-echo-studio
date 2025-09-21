@@ -6,6 +6,7 @@ import { formatAddress, getNetworkName } from '@/hooks/useWeb3';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import neoTokenLogo from '@/assets/neo-token-logo.png';
+import { Navigation } from '@/components/Navigation';
 export const PitchforkHero = React.memo(() => {
   const {
     isConnected,
@@ -94,8 +95,10 @@ export const PitchforkHero = React.memo(() => {
     title: 'Support',
     description: 'Fund justice'
   }], []);
-  return <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
-      <div className="text-center space-y-8 px-4">
+  return <div className="min-h-screen bg-gradient-subtle">
+      <Navigation showBackButton={false} showQuickNav={true} />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-8 px-4">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img src={neoTokenLogo} alt="Neo Token Logo" className="w-32 h-32 transition-cosmic hover:scale-110 glow-cosmic rounded-full" />

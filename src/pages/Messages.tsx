@@ -17,6 +17,7 @@ import { useWeb3 } from '@/hooks/useWeb3';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
+import { Navigation } from '@/components/Navigation';
 import { messagingApi } from '@/lib/api';
 import { encryption } from '@/lib/encryption';
 import { Conversation, Message } from '../../shared/schema';
@@ -171,8 +172,9 @@ const Messages = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle p-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-subtle">
+      <Navigation />
+      <div className="max-w-7xl mx-auto p-4">
         <div className="text-center space-y-4 pt-8 pb-8">
           <h1 className="text-4xl font-bold text-gradient-cosmic">Secure Messaging</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
