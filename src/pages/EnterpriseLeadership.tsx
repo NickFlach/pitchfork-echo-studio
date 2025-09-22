@@ -710,7 +710,7 @@ const EnterpriseLeadership = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {executiveProfiles.map((profile) => (
+                  {mockExecutiveProfiles.map((profile) => (
                     <div key={profile.id} className="p-4 border rounded-lg bg-muted/20">
                       <div className="flex items-center justify-between mb-3">
                         <div>
@@ -756,7 +756,7 @@ const EnterpriseLeadership = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {strategicInitiatives.map((initiative) => (
+                  {mockStrategicInitiatives.map((initiative) => (
                     <div key={initiative.id} className="p-4 border rounded-lg bg-muted/20">
                       <div className="flex items-center justify-between mb-3">
                         <div>
@@ -986,7 +986,6 @@ const EnterpriseLeadership = () => {
             isOpen={showUpgradeModal}
             onClose={() => setShowUpgradeModal(false)}
             featureId={upgradeFeatureId}
-            onUpgrade={handleUpgradeConversion}
           />
         )}
 
