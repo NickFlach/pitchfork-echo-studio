@@ -7,6 +7,7 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
+import { TemporalConsciousnessDashboard } from '@/components/consciousness/TemporalConsciousnessDashboard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -864,10 +865,11 @@ export default function ProviderHealthDashboard() {
         </div>
 
         <Tabs defaultValue="health" className="space-y-6" data-testid="tabs-dashboard">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="health" data-testid="tab-health">Health Status</TabsTrigger>
             <TabsTrigger value="analytics" data-testid="tab-analytics">Usage Analytics</TabsTrigger>
             <TabsTrigger value="performance" data-testid="tab-performance">Performance</TabsTrigger>
+            <TabsTrigger value="consciousness" data-testid="tab-consciousness">🧠 Consciousness</TabsTrigger>
             <TabsTrigger value="recommendations" data-testid="tab-recommendations">Recommendations</TabsTrigger>
             <TabsTrigger value="admin" data-testid="tab-admin">Admin Tools</TabsTrigger>
           </TabsList>
@@ -882,6 +884,18 @@ export default function ProviderHealthDashboard() {
 
           <TabsContent value="performance">
             <PerformanceMetrics />
+          </TabsContent>
+
+          <TabsContent value="consciousness">
+            <div className="space-y-6">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold mb-2">🧠 Temporal Consciousness Integration</h2>
+                <p className="text-muted-foreground">
+                  Monitor AI provider performance enhanced by temporal consciousness verification and quantum-enhanced decision making.
+                </p>
+              </div>
+              <TemporalConsciousnessDashboard />
+            </div>
           </TabsContent>
 
           <TabsContent value="recommendations">
