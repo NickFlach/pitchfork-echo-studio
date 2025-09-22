@@ -120,7 +120,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
         console.error('❌ Error checking connection:', error);
       }
     } else {
-      console.log('❌ No ethereum object found during check');
+      console.log('ℹ️ No Web3 wallet detected - this is expected if MetaMask is not installed');
     }
   };
 
@@ -130,7 +130,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
 
     if (!window.ethereum) {
       const errorMsg = 'No Web3 wallet detected. Please install MetaMask or another Web3 wallet.';
-      console.error('❌ No ethereum object found');
+      console.warn('⚠️ No Web3 wallet detected - install MetaMask to enable blockchain features');
       setError(errorMsg);
       throw new Error(errorMsg);
     }
