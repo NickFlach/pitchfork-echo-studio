@@ -95,6 +95,8 @@ const PROVIDER_INFO = {
     apiKeyUrl: 'https://platform.openai.com/api-keys',
     defaultModel: 'gpt-4',
     requiresApiKey: true,
+    requiresBaseUrl: false as const,
+    defaultBaseUrl: undefined as string | undefined,
     strengths: ['Creative thinking', 'Code generation', 'Conversational AI', 'Broad knowledge'],
     bestFor: ['Creative consciousness exploration', 'Innovative campaign strategies', 'Complex problem solving'],
     consciousnessUseCase: 'Excels at creative self-reflection and exploring novel perspectives on personal growth',
@@ -114,6 +116,8 @@ const PROVIDER_INFO = {
     apiKeyUrl: 'https://console.anthropic.com/settings/keys',
     defaultModel: 'claude-3-sonnet-20240229',
     requiresApiKey: true,
+    requiresBaseUrl: false as const,
+    defaultBaseUrl: undefined as string | undefined,
     strengths: ['Logical reasoning', 'Ethical analysis', 'Long-form analysis', 'Safety-focused'],
     bestFor: ['Deep consciousness reflection', 'Ethical decision-making', 'Strategic analysis'],
     consciousnessUseCase: 'Superior for deep philosophical reflection and ethical consciousness development',
@@ -128,6 +132,8 @@ const PROVIDER_INFO = {
     apiKeyUrl: 'https://aistudio.google.com/app/apikey',
     defaultModel: 'gemini-pro',
     requiresApiKey: true,
+    requiresBaseUrl: false as const,
+    defaultBaseUrl: undefined as string | undefined,
     strengths: ['Data analysis', 'Research synthesis', 'Factual accuracy', 'Multimodal capabilities'],
     bestFor: ['Research-based insights', 'Data-driven decisions', 'Information synthesis'],
     consciousnessUseCase: 'Ideal for research-backed consciousness insights and evidence-based personal development',
@@ -142,8 +148,8 @@ const PROVIDER_INFO = {
     apiKeyUrl: 'https://console.x.ai/team/api-keys',
     defaultModel: 'grok-beta',
     requiresApiKey: true,
-    requiresBaseUrl: true,
-    defaultBaseUrl: 'https://api.x.ai/v1',
+    requiresBaseUrl: true as const,
+    defaultBaseUrl: 'https://api.x.ai/v1' as const,
     strengths: ['Real-time information', 'Witty insights', 'Current events', 'Direct responses'],
     bestFor: ['Current context awareness', 'Real-time strategy', 'Timely insights'],
     consciousnessUseCase: 'Great for consciousness development in current world context and real-time insights',
@@ -158,8 +164,8 @@ const PROVIDER_INFO = {
     apiKeyUrl: 'https://docs.litellm.ai/docs/proxy/quick_start',
     defaultModel: 'gpt-4',
     requiresApiKey: true,
-    requiresBaseUrl: true,
-    defaultBaseUrl: 'http://localhost:4000',
+    requiresBaseUrl: true as const,
+    defaultBaseUrl: 'http://localhost:4000' as const,
     strengths: ['Model flexibility', 'Custom deployments', 'Cost optimization', 'Model switching'],
     bestFor: ['Custom workflows', 'Cost control', 'Model experimentation'],
     consciousnessUseCase: 'Flexible approach for experimenting with different consciousness exploration models',
@@ -241,7 +247,7 @@ export default function AISettings() {
       const { apiKeys, baseUrls, ...settingsData } = data;
       return apiRequest('/api/admin/ai-settings', {
         method: 'PUT',
-        body: settingsData,
+        body: JSON.stringify(settingsData),
       });
     },
     onSuccess: () => {
@@ -266,7 +272,7 @@ export default function AISettings() {
     mutationFn: async (credentials: { apiKeys?: Record<string, string>, baseUrls?: Record<string, string> }) => {
       return apiRequest('/api/admin/ai-credentials', {
         method: 'PUT',
-        body: credentials,
+        body: JSON.stringify(credentials),
       });
     },
     onSuccess: (response) => {
@@ -368,11 +374,11 @@ export default function AISettings() {
       const providerInfo = PROVIDER_INFO[provider as keyof typeof PROVIDER_INFO];
       return apiRequest('/api/ai/test', {
         method: 'POST',
-        body: {
+        body: JSON.stringify({
           provider,
           prompt: providerInfo.testPrompt,
           maxTokens: 100,
-        },
+        }),
       });
     },
     onSuccess: (result, provider) => {
@@ -484,7 +490,7 @@ export default function AISettings() {
           action: () => {
             // Set primary to best performing provider
             const bestProvider = Object.entries(providerStats)
-              .sort(([,a], [,b]) => (b.success / b.total) - (a.success / a.total))[0][0];
+              .sort(([,a], [,b]) => ((b as any).success / (b as any).total) - ((a as any).success / (a as any).total))[0][0];
             form.setValue('routing.primary', bestProvider as any);
           },
           actionText: 'Switch to best provider'
@@ -733,9 +739,9 @@ export default function AISettings() {
                               </FormLabel>
                               <Input
                                 placeholder={info.defaultBaseUrl}
-                                value={form.watch(`baseUrls.${provider}`) || ''}
+                                value={(form.watch('baseUrls') as any)?.[provider] || ''}
                                 onChange={(e) => 
-                                  form.setValue(`baseUrls.${provider}`, e.target.value)
+                                  form.setValue(`baseUrls.${provider}` as any, e.target.value)
                                 }
                                 data-testid={`input-base-url-${provider}`}
                               />
@@ -753,9 +759,9 @@ export default function AISettings() {
                             <div className="space-y-2">
                               <FormLabel>Model</FormLabel>
                               <Select
-                                value={form.watch(`providerPrefs.${provider}.model`) || info.defaultModel}
+                                value={(form.watch('providerPrefs') as any)?.[provider]?.model || info.defaultModel}
                                 onValueChange={(value) => 
-                                  form.setValue(`providerPrefs.${provider}.model`, value)
+                                  form.setValue(`providerPrefs.${provider}.model` as any, value)
                                 }
                                 data-testid={`select-model-${provider}`}
                               >

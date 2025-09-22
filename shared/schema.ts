@@ -102,7 +102,69 @@ export const insertDonationSchema = donationSchema.omit({ id: true, createdAt: t
 export type Donation = z.infer<typeof donationSchema>;
 export type InsertDonation = z.infer<typeof insertDonationSchema>;
 
-// ... [truncating repetitive content to save space - in reality, the full existing content would remain]
+// AI Settings Models
+export const AIProviderEnum = z.enum(['openai', 'claude', 'gemini', 'xai', 'litellm']);
+export type AIProvider = z.infer<typeof AIProviderEnum>;
+
+export const aiModelConfigSchema = z.object({
+  name: z.string(),
+  maxTokens: z.number().optional(),
+  temperature: z.number().min(0).max(2).optional(),
+  topP: z.number().min(0).max(1).optional(),
+  frequencyPenalty: z.number().min(-2).max(2).optional(),
+  presencePenalty: z.number().min(-2).max(2).optional(),
+  customParams: z.record(z.any()).optional(),
+});
+
+export type AIModelConfig = z.infer<typeof aiModelConfigSchema>;
+
+export const aiRetryConfigSchema = z.object({
+  maxAttempts: z.number().min(1).max(10).default(3),
+  backoffMs: z.number().min(100).max(60000).default(1000),
+});
+
+export const aiRoutingConfigSchema = z.object({
+  primary: AIProviderEnum,
+  fallbacks: z.array(AIProviderEnum).default([]),
+  timeoutMs: z.number().min(1000).max(120000).default(30000),
+  retry: aiRetryConfigSchema.optional(),
+});
+
+export const aiSettingsSchema = z.object({
+  id: z.string(),
+  mode: z.enum(['direct', 'litellm']).default('direct'),
+  routing: aiRoutingConfigSchema,
+  providerPrefs: z.record(AIProviderEnum, aiModelConfigSchema).optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const insertAISettingsSchema = aiSettingsSchema.omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+
+export type AISettings = z.infer<typeof aiSettingsSchema>;
+export type InsertAISettings = z.infer<typeof insertAISettingsSchema>;
+
+export const aiUsageAnalyticsSchema = z.object({
+  id: z.string(),
+  timestamp: z.string(),
+  aiProvider: AIProviderEnum,
+  model: z.string(),
+  featureType: z.string(),
+  success: z.boolean(),
+  responseTimeMs: z.number().optional(),
+  totalTokens: z.number().optional(),
+  inputTokens: z.number().optional(),
+  outputTokens: z.number().optional(),
+  error: z.string().optional(),
+  userId: z.string().optional(),
+  sessionId: z.string().optional(),
+});
+
+export type AIUsageAnalytics = z.infer<typeof aiUsageAnalyticsSchema>;
 
 // Smart Contract Blockchain Integration Types
 // Import comprehensive blockchain types
