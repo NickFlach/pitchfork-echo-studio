@@ -1,5 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { BrowserProvider, JsonRpcSigner, ethers } from 'ethers';
+
+// Conditional ethers import for Lovable/Replit compatibility
+let BrowserProvider: any = null;
+let JsonRpcSigner: any = null;
+let ethers: any = null;
+
+// Initialize ethers only if available
+const initEthers = async () => {
+  try {
+    if (typeof window !== 'undefined') {
+      const ethersModule = await import('ethers');
+      BrowserProvider = ethersModule.BrowserProvider;
+      JsonRpcSigner = ethersModule.JsonRpcSigner;
+      ethers = ethersModule.ethers;
+    }
+  } catch (error) {
+    console.warn('Ethers.js not available, Web3 features disabled');
+  }
+};
 
 export interface WalletInfo {
   name: string;
@@ -10,8 +28,8 @@ export interface WalletInfo {
 export interface Web3ContextType {
   isConnected: boolean;
   account: string | null;
-  provider: BrowserProvider | null;
-  signer: JsonRpcSigner | null;
+  provider: any | null; // BrowserProvider when available
+  signer: any | null; // JsonRpcSigner when available
   chainId: number | null;
   walletType: string | null;
   connectWallet: (walletType?: string) => Promise<void>;
