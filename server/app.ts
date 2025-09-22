@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { storage } from './storage.js';
-import router from './routes.js';
-import config from './config.js';
-import { logger, logRequest, logApiCall } from './logger.js';
+import { storage } from './storage';
+import router from './routes';
+import config from './config';
+import { logger, logRequest, logApiCall } from './logger';
 
 const app = express();
 const PORT = config.apiPort;
