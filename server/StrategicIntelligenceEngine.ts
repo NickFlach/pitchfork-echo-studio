@@ -693,14 +693,14 @@ export class StrategicIntelligenceEngine {
   private async gatherCampaignMetrics(campaignId: string): Promise<any> { return {}; }
   private async analyzePerformancePatterns(metrics: any): Promise<any> { return {}; }
   private async analyzeOppositionResponse(campaignId: string): Promise<any> { return {}; }
-  private async analyzePubl icSentiment(campaignId: string): Promise<any> { return {}; }
+  private async analyzePublicSentiment(campaignId: string): Promise<any> { return {}; }
   private async generateAdaptiveRecommendations(campaign: any, metrics: any, opposition: any, sentiment: any): Promise<any[]> { return []; }
   private updateRiskAssessment(campaign: any, metrics: any, opposition: any): any { return {}; }
   private generateTacticalAdjustments(adaptations: any[]): any[] { return []; }
   private generateEarlyWarnings(risk: any): any[] { return []; }
   private identifyOpportunityWindows(sentiment: any, opposition: any): any[] { return []; }
   
-  private async analyzeCommuni cationSecurity(movementId: string): Promise<any> { return {}; }
+  private async analyzeCommunicationSecurity(movementId: string): Promise<any> { return {}; }
   private async detectInfiltrationAttempts(movementId: string): Promise<any> { return {}; }
   private async detectSurveillanceActivities(movementId: string): Promise<any> { return {}; }
   private async assessOperationalSecurity(movementId: string): Promise<any> { return {}; }
@@ -1198,4 +1198,3 @@ interface CommunicationStrategy { channels: string[]; messages: string[]; timing
 interface CoordinationPlan { structure: string; roles: any[]; }
 interface ResourceAllocation { budget: any; personnel: any; materials: any; }
 
-export { StrategicIntelligenceEngine };

@@ -565,4 +565,3 @@ interface RiskAssessment {
   publicInterest: number;
 }
 
-export { CorruptionDetectionEngine };
