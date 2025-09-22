@@ -4,7 +4,6 @@ import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, Ch
 import { useWeb3 } from '@/hooks/useWeb3';
 import { formatAddress, getNetworkName } from '@/hooks/useWeb3';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
 import neoTokenLogo from '@/assets/neo-token-logo.png';
 import { Navigation } from '@/components/Navigation';
 
@@ -18,7 +17,7 @@ export const PitchforkHero = React.memo(() => {
     isConnecting
   } = useWeb3();
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const go = (path: string) => { window.location.href = path; };
 
   const handleWalletAction = useCallback(() => {
     if (isConnected) {
@@ -95,12 +94,12 @@ export const PitchforkHero = React.memo(() => {
           <div className="space-y-6 pt-8">
             {/* Primary Actions - Always accessible */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
-              <Button variant="cosmicOutline" size="lg" onClick={() => navigate('/whitepaper')} className="min-w-[180px] text-lg font-semibold">
+              <Button variant="cosmicOutline" size="lg" onClick={() => go('/whitepaper')} className="min-w-[180px] text-lg font-semibold">
                 <BookOpen className="w-5 h-5 mr-2" />
                 Read Whitepaper
               </Button>
               
-              <Button variant="cosmic" size="lg" onClick={() => navigate('/funding')} className="min-w-[180px] text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
+              <Button variant="cosmic" size="lg" onClick={() => go('/funding')} className="min-w-[180px] text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
                 <DollarSign className="w-5 h-5 mr-2" />
                 Fund Development
               </Button>
@@ -167,7 +166,7 @@ export const PitchforkHero = React.memo(() => {
             {/* Core Platform Features */}
             {isConnected && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-6 max-w-6xl mx-auto">
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => navigate('/identity')}>
+                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/identity')}>
                   <div className="flex items-center">
                     <Shield className="w-5 h-5 mr-3" />
                     <div className="text-left">
@@ -178,7 +177,7 @@ export const PitchforkHero = React.memo(() => {
                   <ChevronRight className="w-4 h-4" />
                 </Button>
                 
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => navigate('/organize')}>
+                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/organize')}>
                   <div className="flex items-center">
                     <Users className="w-5 h-5 mr-3" />
                     <div className="text-left">
@@ -189,7 +188,7 @@ export const PitchforkHero = React.memo(() => {
                   <ChevronRight className="w-4 h-4" />
                 </Button>
                 
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => navigate('/messages')}>
+                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/messages')}>
                   <div className="flex items-center">
                     <MessageCircle className="w-5 h-5 mr-3" />
                     <div className="text-left">
@@ -200,7 +199,7 @@ export const PitchforkHero = React.memo(() => {
                   <ChevronRight className="w-4 h-4" />
                 </Button>
 
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => navigate('/governance')}>
+                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/governance')}>
                   <div className="flex items-center">
                     <Scale className="w-5 h-5 mr-3" />
                     <div className="text-left">
@@ -211,7 +210,7 @@ export const PitchforkHero = React.memo(() => {
                   <ChevronRight className="w-4 h-4" />
                 </Button>
                 
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => navigate('/verify')}>
+                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/verify')}>
                   <div className="flex items-center">
                     <FileCheck className="w-5 h-5 mr-3" />
                     <div className="text-left">
@@ -222,7 +221,7 @@ export const PitchforkHero = React.memo(() => {
                   <ChevronRight className="w-4 h-4" />
                 </Button>
                 
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => navigate('/support')}>
+                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/support')}>
                   <div className="flex items-center">
                     <Heart className="w-5 h-5 mr-3" />
                     <div className="text-left">
