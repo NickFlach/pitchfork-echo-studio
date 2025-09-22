@@ -61,9 +61,9 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <GlobalUpgradePrompt />
           <BrowserRouter>
             <Suspense fallback={<LoadingSpinner />}>
+              <GlobalUpgradePrompt />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/whitepaper" element={<Whitepaper />} />

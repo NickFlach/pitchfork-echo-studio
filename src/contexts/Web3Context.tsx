@@ -1,5 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { BrowserProvider, JsonRpcSigner, ethers } from 'ethers';
+
+// Conditional ethers import for Lovable/Replit compatibility
+let BrowserProvider: any = null;
+let JsonRpcSigner: any = null;
+let ethers: any = null;
+
+// Initialize ethers only if available
+const initEthers = async () => {
+  try {
+    if (typeof window !== 'undefined') {
+      const ethersModule = await import('ethers');
+      BrowserProvider = ethersModule.BrowserProvider;
+      JsonRpcSigner = ethersModule.JsonRpcSigner;
+      ethers = ethersModule.ethers;
+    }
+  } catch (error) {
+    console.warn('Ethers.js not available, Web3 features disabled');
+  }
+};
 
 export interface WalletInfo {
   name: string;
@@ -10,8 +28,8 @@ export interface WalletInfo {
 export interface Web3ContextType {
   isConnected: boolean;
   account: string | null;
-  provider: BrowserProvider | null;
-  signer: JsonRpcSigner | null;
+  provider: any | null; // BrowserProvider when available
+  signer: any | null; // JsonRpcSigner when available
   chainId: number | null;
   walletType: string | null;
   connectWallet: (walletType?: string) => Promise<void>;
@@ -35,13 +53,18 @@ interface Web3ProviderProps {
 export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [account, setAccount] = useState<string | null>(null);
-  const [provider, setProvider] = useState<BrowserProvider | null>(null);
-  const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
+  const [provider, setProvider] = useState<any | null>(null);
+  const [signer, setSigner] = useState<any | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
   const [walletType, setWalletType] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [supportedChains] = useState<number[]>(config?.supportedChains || [1, 137, 56, 5, 11155111, 80001, 97]);
+
+  // Initialize ethers on component mount
+  useEffect(() => {
+    initEthers();
+  }, []);
 
   // Available wallet configurations
   const availableWallets: WalletInfo[] = [
@@ -120,7 +143,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
         console.error('❌ Error checking connection:', error);
       }
     } else {
-      console.log('❌ No ethereum object found during check');
+      console.log('ℹ️ No Web3 wallet detected - this is expected if MetaMask is not installed');
     }
   };
 
@@ -130,7 +153,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
 
     if (!window.ethereum) {
       const errorMsg = 'No Web3 wallet detected. Please install MetaMask or another Web3 wallet.';
-      console.error('❌ No ethereum object found');
+      console.warn('⚠️ No Web3 wallet detected - install MetaMask to enable blockchain features');
       setError(errorMsg);
       throw new Error(errorMsg);
     }
