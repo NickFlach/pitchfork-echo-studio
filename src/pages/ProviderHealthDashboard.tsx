@@ -7,7 +7,8 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { TemporalConsciousnessDashboard } from '@/components/consciousness/TemporalConsciousnessDashboard';
+// Temporarily commented out for build debugging
+// import { TemporalConsciousnessDashboard } from '@/components/consciousness/TemporalConsciousnessDashboard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -894,7 +895,15 @@ export default function ProviderHealthDashboard() {
                   Monitor AI provider performance enhanced by temporal consciousness verification and quantum-enhanced decision making.
                 </p>
               </div>
-              <TemporalConsciousnessDashboard />
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-center text-muted-foreground">
+                    Temporal Consciousness Dashboard temporarily disabled for build optimization.
+                    <br />
+                    Will be re-enabled once build issues are resolved.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
