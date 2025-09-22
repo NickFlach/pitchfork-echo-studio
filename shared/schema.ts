@@ -1655,3 +1655,452 @@ export type MultidimensionalReflection = z.infer<typeof multidimensionalReflecti
 export type InsertMultidimensionalReflection = z.infer<typeof insertMultidimensionalReflectionSchema>;
 export type ConsciousnessStatePrediction = z.infer<typeof consciousnessStatePredictionSchema>;
 export type InsertConsciousnessStatePrediction = z.infer<typeof insertConsciousnessStatePredictionSchema>;
+
+// Enterprise Leadership Tools Schemas
+
+// Executive Leadership Assessment
+export const executiveAssessmentSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  executiveId: z.string(),
+  assessmentType: z.enum(['360-feedback', 'leadership-style', 'emotional-intelligence', 'strategic-thinking', 'decision-making', 'communication-effectiveness']),
+  framework: z.enum(['disc', 'mbti', 'big-five', 'eq-2.0', 'hogan', 'leadership-circle', 'custom']),
+  assessmentData: z.object({
+    selfAssessment: z.record(z.string(), z.any()),
+    peerFeedback: z.array(z.object({
+      reviewerId: z.string(),
+      relationship: z.enum(['peer', 'direct-report', 'supervisor', 'board-member', 'customer', 'external-stakeholder']),
+      responses: z.record(z.string(), z.any()),
+      confidenceLevel: z.number().min(0).max(1),
+    })),
+    observationalData: z.array(z.object({
+      scenario: z.string(),
+      behaviors: z.array(z.string()),
+      effectiveness: z.number().min(0).max(1),
+      timestamp: z.string(),
+    })),
+  }),
+  aiInsights: z.object({
+    strengthsIdentified: z.array(z.object({
+      strength: z.string(),
+      evidence: z.array(z.string()),
+      confidence: z.number().min(0).max(1),
+      developmentPotential: z.enum(['maintain', 'leverage', 'amplify']),
+    })),
+    developmentAreas: z.array(z.object({
+      area: z.string(),
+      impact: z.enum(['low', 'medium', 'high', 'critical']),
+      evidence: z.array(z.string()),
+      recommendations: z.array(z.string()),
+      developmentPath: z.array(z.object({
+        milestone: z.string(),
+        timeframe: z.string(),
+        resources: z.array(z.string()),
+      })),
+    })),
+    leadershipStyle: z.object({
+      primaryStyle: z.string(),
+      adaptabilityScore: z.number().min(0).max(1),
+      contextualEffectiveness: z.record(z.string(), z.number()),
+      styleRecommendations: z.array(z.string()),
+    }),
+    blindSpots: z.array(z.object({
+      blindSpot: z.string(),
+      riskLevel: z.enum(['low', 'medium', 'high', 'critical']),
+      mitigationStrategies: z.array(z.string()),
+    })),
+  }),
+  recommendations: z.array(z.object({
+    category: z.enum(['skill-development', 'behavioral-change', 'coaching-focus', 'strategic-thinking', 'team-dynamics']),
+    recommendation: z.string(),
+    priority: z.enum(['low', 'medium', 'high', 'critical']),
+    timeframe: z.enum(['immediate', 'short-term', 'medium-term', 'long-term']),
+    successMetrics: z.array(z.string()),
+    resources: z.array(z.string()),
+  })),
+  developmentPlan: z.object({
+    goals: z.array(z.object({
+      goal: z.string(),
+      category: z.string(),
+      targetDate: z.string(),
+      milestones: z.array(z.string()),
+      success_criteria: z.array(z.string()),
+    })),
+    coachingFocus: z.array(z.string()),
+    learningResources: z.array(z.string()),
+    accountabilityMeasures: z.array(z.string()),
+  }),
+  timestamp: z.string(),
+  nextReviewDate: z.string(),
+  status: z.enum(['draft', 'active', 'completed', 'archived']),
+});
+
+// Strategic Planning Framework
+export const strategicPlanSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  planName: z.string(),
+  planType: z.enum(['annual', 'quarterly', 'project-based', 'crisis-response', 'transformation', 'innovation']),
+  timeHorizon: z.enum(['short-term', 'medium-term', 'long-term', 'generational']),
+  visionAlignment: z.object({
+    currentVision: z.string(),
+    proposedVision: z.string().optional(),
+    alignmentScore: z.number().min(0).max(1),
+    stakeholderBuyIn: z.record(z.string(), z.number()),
+  }),
+  strategicInitiatives: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    category: z.enum(['growth', 'efficiency', 'innovation', 'transformation', 'risk-mitigation', 'market-expansion']),
+    priority: z.enum(['critical', 'high', 'medium', 'low']),
+    resources: z.object({
+      budget: z.number(),
+      personnel: z.number(),
+      technology: z.array(z.string()),
+      external: z.array(z.string()),
+    }),
+    timeline: z.object({
+      startDate: z.string(),
+      endDate: z.string(),
+      milestones: z.array(z.object({
+        milestone: z.string(),
+        date: z.string(),
+        dependencies: z.array(z.string()),
+      })),
+    }),
+    riskAssessment: z.object({
+      risks: z.array(z.object({
+        risk: z.string(),
+        probability: z.number().min(0).max(1),
+        impact: z.enum(['low', 'medium', 'high', 'critical']),
+        mitigation: z.string(),
+      })),
+      overallRiskScore: z.number().min(0).max(1),
+    }),
+    successMetrics: z.array(z.object({
+      metric: z.string(),
+      target: z.string(),
+      measurement: z.string(),
+      frequency: z.enum(['daily', 'weekly', 'monthly', 'quarterly']),
+    })),
+  })),
+  aiScenarioAnalysis: z.object({
+    baseScenario: z.object({
+      description: z.string(),
+      probability: z.number().min(0).max(1),
+      outcomes: z.array(z.string()),
+      requiredActions: z.array(z.string()),
+    }),
+    alternativeScenarios: z.array(z.object({
+      scenario: z.string(),
+      probability: z.number().min(0).max(1),
+      triggers: z.array(z.string()),
+      implications: z.array(z.string()),
+      adaptationStrategies: z.array(z.string()),
+    })),
+    emergentOpportunities: z.array(z.object({
+      opportunity: z.string(),
+      timeWindow: z.string(),
+      requirements: z.array(z.string()),
+      expectedValue: z.number(),
+    })),
+  }),
+  stakeholderAnalysis: z.object({
+    stakeholders: z.array(z.object({
+      stakeholder: z.string(),
+      category: z.enum(['internal', 'external', 'regulatory', 'community', 'investor', 'customer']),
+      influence: z.enum(['low', 'medium', 'high', 'critical']),
+      interest: z.enum(['low', 'medium', 'high', 'critical']),
+      position: z.enum(['champion', 'supporter', 'neutral', 'skeptic', 'blocker']),
+      engagementStrategy: z.string(),
+      communication: z.array(z.string()),
+    })),
+    engagementPlan: z.object({
+      phases: z.array(z.object({
+        phase: z.string(),
+        stakeholders: z.array(z.string()),
+        approach: z.string(),
+        timeline: z.string(),
+      })),
+      riskMitigation: z.array(z.string()),
+    }),
+  }),
+  implementationFramework: z.object({
+    governance: z.object({
+      decisionRights: z.record(z.string(), z.array(z.string())),
+      escalationPath: z.array(z.string()),
+      reviewCadence: z.string(),
+    }),
+    changeManagement: z.object({
+      strategy: z.string(),
+      communications: z.array(z.string()),
+      training: z.array(z.string()),
+      supportSystems: z.array(z.string()),
+    }),
+    monitoringDashboard: z.object({
+      kpis: z.array(z.string()),
+      reportingFrequency: z.string(),
+      reviewMeetings: z.array(z.string()),
+    }),
+  }),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  status: z.enum(['draft', 'review', 'approved', 'active', 'on-hold', 'completed']),
+});
+
+// Team Consciousness Assessment
+export const teamConsciousnessAssessmentSchema = z.object({
+  id: z.string(),
+  teamId: z.string(),
+  organizationId: z.string(),
+  assessmentType: z.enum(['dynamics', 'communication', 'collaboration', 'decision-making', 'conflict-resolution', 'innovation']),
+  teamProfile: z.object({
+    teamSize: z.number(),
+    teamComposition: z.array(z.object({
+      role: z.string(),
+      experience: z.enum(['junior', 'mid-level', 'senior', 'expert']),
+      workingStyle: z.string(),
+      strengthsContributed: z.array(z.string()),
+    })),
+    teamDynamics: z.object({
+      cohesionScore: z.number().min(0).max(1),
+      trustLevel: z.number().min(0).max(1),
+      psychologicalSafety: z.number().min(0).max(1),
+      diversityIndex: z.number().min(0).max(1),
+    }),
+  }),
+  communicationAnalysis: z.object({
+    patterns: z.array(z.object({
+      pattern: z.string(),
+      frequency: z.number(),
+      effectiveness: z.number().min(0).max(1),
+      improvement_suggestions: z.array(z.string()),
+    })),
+    channels: z.record(z.string(), z.object({
+      usage: z.number().min(0).max(1),
+      effectiveness: z.number().min(0).max(1),
+      satisfaction: z.number().min(0).max(1),
+    })),
+    barriers: z.array(z.object({
+      barrier: z.string(),
+      impact: z.enum(['low', 'medium', 'high', 'critical']),
+      solutions: z.array(z.string()),
+    })),
+  }),
+  collaborationMetrics: z.object({
+    workflowEfficiency: z.number().min(0).max(1),
+    knowledgeSharing: z.number().min(0).max(1),
+    conflictResolution: z.number().min(0).max(1),
+    innovationIndex: z.number().min(0).max(1),
+    collectiveIntelligence: z.number().min(0).max(1),
+  }),
+  aiInsights: z.object({
+    strengthAreas: z.array(z.object({
+      area: z.string(),
+      description: z.string(),
+      evidence: z.array(z.string()),
+      leverageOpportunities: z.array(z.string()),
+    })),
+    improvementAreas: z.array(z.object({
+      area: z.string(),
+      currentState: z.string(),
+      desiredState: z.string(),
+      interventions: z.array(z.string()),
+      expectedOutcome: z.string(),
+    })),
+    teamPersonality: z.object({
+      dominantCharacteristics: z.array(z.string()),
+      workingPreferences: z.array(z.string()),
+      decisionMakingStyle: z.string(),
+      adaptabilityScore: z.number().min(0).max(1),
+    }),
+    recommendations: z.array(z.object({
+      category: z.enum(['structure', 'process', 'culture', 'skills', 'technology']),
+      recommendation: z.string(),
+      rationale: z.string(),
+      implementation: z.array(z.string()),
+      successIndicators: z.array(z.string()),
+    })),
+  }),
+  timestamp: z.string(),
+  nextAssessmentDate: z.string(),
+});
+
+// Leadership Development Tracking
+export const leadershipDevelopmentTrackingSchema = z.object({
+  id: z.string(),
+  executiveId: z.string(),
+  organizationId: z.string(),
+  developmentProgram: z.object({
+    programName: z.string(),
+    programType: z.enum(['executive-coaching', '360-development', 'mentoring', 'peer-learning', 'external-training', 'experiential']),
+    startDate: z.string(),
+    duration: z.string(),
+    objectives: z.array(z.string()),
+    successCriteria: z.array(z.string()),
+  }),
+  competencyMapping: z.object({
+    coreCompetencies: z.array(z.object({
+      competency: z.string(),
+      currentLevel: z.number().min(1).max(5),
+      targetLevel: z.number().min(1).max(5),
+      assessmentMethod: z.array(z.string()),
+      evidence: z.array(z.string()),
+      developmentActivities: z.array(z.string()),
+    })),
+    leadershipStyles: z.object({
+      primary: z.string(),
+      secondary: z.array(z.string()),
+      adaptabilityScore: z.number().min(0).max(1),
+      contextualEffectiveness: z.record(z.string(), z.number()),
+    }),
+    emergingCapabilities: z.array(z.object({
+      capability: z.string(),
+      emergenceIndicators: z.array(z.string()),
+      developmentPotential: z.number().min(0).max(1),
+      nurturingActions: z.array(z.string()),
+    })),
+  }),
+  progressTracking: z.object({
+    milestones: z.array(z.object({
+      milestone: z.string(),
+      targetDate: z.string(),
+      actualDate: z.string().optional(),
+      status: z.enum(['not-started', 'in-progress', 'completed', 'delayed']),
+      evidence: z.array(z.string()),
+      feedback: z.string().optional(),
+    })),
+    performanceMetrics: z.array(z.object({
+      metric: z.string(),
+      baseline: z.number(),
+      target: z.number(),
+      current: z.number(),
+      trend: z.enum(['improving', 'stable', 'declining']),
+      measurement_date: z.string(),
+    })),
+    feedback: z.array(z.object({
+      source: z.string(),
+      type: z.enum(['self-reflection', 'coach-feedback', 'peer-feedback', 'supervisor-feedback', '360-feedback']),
+      content: z.string(),
+      actionItems: z.array(z.string()),
+      timestamp: z.string(),
+    })),
+  }),
+  impactMeasurement: z.object({
+    individualImpact: z.object({
+      leadershipEffectiveness: z.number().min(0).max(1),
+      decisionQuality: z.number().min(0).max(1),
+      teamEngagement: z.number().min(0).max(1),
+      strategicThinking: z.number().min(0).max(1),
+    }),
+    organizationalImpact: z.object({
+      teamPerformance: z.number().min(0).max(1),
+      culturalInfluence: z.number().min(0).max(1),
+      innovationContribution: z.number().min(0).max(1),
+      businessResults: z.record(z.string(), z.number()),
+    }),
+    roiAnalysis: z.object({
+      developmentInvestment: z.number(),
+      measurableReturns: z.array(z.object({
+        return: z.string(),
+        value: z.number(),
+        methodology: z.string(),
+      })),
+      intangibleBenefits: z.array(z.string()),
+      overallRoi: z.number(),
+    }),
+  }),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  status: z.enum(['active', 'completed', 'on-hold', 'cancelled']),
+});
+
+// Enterprise Analytics Dashboard
+export const enterpriseAnalyticsSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  reportType: z.enum(['leadership-effectiveness', 'organizational-health', 'team-performance', 'strategic-progress', 'roi-analysis']),
+  timeframe: z.object({
+    startDate: z.string(),
+    endDate: z.string(),
+    granularity: z.enum(['daily', 'weekly', 'monthly', 'quarterly', 'annual']),
+  }),
+  leadershipMetrics: z.object({
+    averageLeadershipEffectiveness: z.number().min(0).max(1),
+    leadershipDevelopmentProgress: z.number().min(0).max(1),
+    executiveEngagement: z.number().min(0).max(1),
+    successionReadiness: z.number().min(0).max(1),
+    diversityMetrics: z.object({
+      genderBalance: z.number().min(0).max(1),
+      ethnicDiversity: z.number().min(0).max(1),
+      experienceRange: z.number().min(0).max(1),
+      cognitiveDiversity: z.number().min(0).max(1),
+    }),
+  }),
+  organizationalHealth: z.object({
+    cultureStrength: z.number().min(0).max(1),
+    employeeEngagement: z.number().min(0).max(1),
+    psychologicalSafety: z.number().min(0).max(1),
+    adaptabilityIndex: z.number().min(0).max(1),
+    innovationCapability: z.number().min(0).max(1),
+    communicationEffectiveness: z.number().min(0).max(1),
+  }),
+  strategicProgress: z.object({
+    initiativeCompletionRate: z.number().min(0).max(1),
+    goalAchievement: z.record(z.string(), z.number()),
+    strategicAlignment: z.number().min(0).max(1),
+    riskMitigation: z.number().min(0).max(1),
+    stakeholderSatisfaction: z.record(z.string(), z.number()),
+  }),
+  performanceTrends: z.array(z.object({
+    metric: z.string(),
+    trend: z.enum(['improving', 'stable', 'declining']),
+    rate: z.number(), // rate of change
+    projection: z.number(), // projected future value
+    confidence: z.number().min(0).max(1),
+  })),
+  aiInsights: z.object({
+    keyFindings: z.array(z.string()),
+    emergingPatterns: z.array(z.string()),
+    riskAlerts: z.array(z.object({
+      risk: z.string(),
+      severity: z.enum(['low', 'medium', 'high', 'critical']),
+      probability: z.number().min(0).max(1),
+      recommendedActions: z.array(z.string()),
+    })),
+    opportunities: z.array(z.object({
+      opportunity: z.string(),
+      potential: z.number().min(0).max(1),
+      timeframe: z.string(),
+      requirements: z.array(z.string()),
+    })),
+    recommendations: z.array(z.object({
+      recommendation: z.string(),
+      category: z.enum(['strategic', 'operational', 'cultural', 'developmental']),
+      priority: z.enum(['low', 'medium', 'high', 'critical']),
+      expectedImpact: z.string(),
+      implementation: z.array(z.string()),
+    })),
+  }),
+  generatedAt: z.string(),
+});
+
+// Insert schemas for enterprise features
+export const insertExecutiveAssessmentSchema = executiveAssessmentSchema.omit({ id: true, timestamp: true });
+export const insertStrategicPlanSchema = strategicPlanSchema.omit({ id: true, createdAt: true, updatedAt: true });
+export const insertTeamConsciousnessAssessmentSchema = teamConsciousnessAssessmentSchema.omit({ id: true, timestamp: true });
+export const insertLeadershipDevelopmentTrackingSchema = leadershipDevelopmentTrackingSchema.omit({ id: true, createdAt: true, updatedAt: true });
+export const insertEnterpriseAnalyticsSchema = enterpriseAnalyticsSchema.omit({ id: true, generatedAt: true });
+
+// Type exports for Enterprise Leadership Tools
+export type ExecutiveAssessment = z.infer<typeof executiveAssessmentSchema>;
+export type InsertExecutiveAssessment = z.infer<typeof insertExecutiveAssessmentSchema>;
+export type StrategicPlan = z.infer<typeof strategicPlanSchema>;
+export type InsertStrategicPlan = z.infer<typeof insertStrategicPlanSchema>;
+export type TeamConsciousnessAssessment = z.infer<typeof teamConsciousnessAssessmentSchema>;
+export type InsertTeamConsciousnessAssessment = z.infer<typeof insertTeamConsciousnessAssessmentSchema>;
+export type LeadershipDevelopmentTracking = z.infer<typeof leadershipDevelopmentTrackingSchema>;
+export type InsertLeadershipDevelopmentTracking = z.infer<typeof insertLeadershipDevelopmentTrackingSchema>;
+export type EnterpriseAnalytics = z.infer<typeof enterpriseAnalyticsSchema>;
+export type InsertEnterpriseAnalytics = z.infer<typeof insertEnterpriseAnalyticsSchema>;

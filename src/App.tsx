@@ -19,6 +19,7 @@ const Support = lazy(() => import("./pages/Support"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Governance = lazy(() => import("./pages/Governance"));
 const Leadership = lazy(() => import("./pages/Leadership"));
+const EnterpriseLeadership = lazy(() => import("./pages/EnterpriseLeadership"));
 const Funding = lazy(() => import("./pages/Funding"));
 const Consciousness = lazy(() => import("./pages/Consciousness"));
 const AISettings = lazy(() => import("./pages/AISettings"));
@@ -73,6 +74,7 @@ const App = () => (
                 <Route path="/messages" element={<Messages />} />
                 <Route path="/governance" element={<Governance />} />
                 <Route path="/leadership" element={<Leadership />} />
+                <Route path="/enterprise-leadership" element={<EnterpriseLeadership />} />
 
                 <Route path="/consciousness" element={<Consciousness />} />
 

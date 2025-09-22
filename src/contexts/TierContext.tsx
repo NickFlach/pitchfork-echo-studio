@@ -218,6 +218,133 @@ const TIER_FEATURES: TierFeature[] = [
     ],
     upgradePrompt: 'Anticipate opposition moves with AI strategic intelligence',
     roi: '200% better preparedness against opposition tactics'
+  },
+
+  // Enterprise Leadership Features
+  {
+    id: 'executive_coaching',
+    category: 'leadership',
+    name: 'Executive Coaching Workflows',
+    description: 'AI-enhanced executive assessment and coaching frameworks',
+    standardDescription: 'Basic leadership assessment forms and simple coaching templates',
+    aiEnhancedDescription: 'Comprehensive 360-degree assessments with AI insights, personalized development pathways, and cognitive coaching recommendations',
+    valueProposition: 'Transform executive development with Fortune 500-grade AI coaching intelligence',
+    standardCapabilities: [
+      'Basic assessment forms',
+      'Simple coaching templates',
+      'Manual feedback collection',
+      'Static development plans'
+    ],
+    aiEnhancedCapabilities: [
+      'AI-powered 360-degree assessments',
+      'Leadership style analysis and adaptation coaching',
+      'Blind spot identification and mitigation strategies',
+      'Personalized development pathways with milestone tracking',
+      'Executive decision-making enhancement templates',
+      'Cognitive bias detection and correction frameworks'
+    ],
+    upgradePrompt: 'Unlock Fortune 500-grade executive coaching with AI-powered assessment and development frameworks',
+    roi: 'Enterprise clients report 300% improvement in leadership effectiveness with AI coaching'
+  },
+  {
+    id: 'strategic_planning',
+    category: 'leadership', 
+    name: 'Strategic Planning Templates',
+    description: 'AI-powered organizational vision alignment and strategic initiative planning',
+    standardDescription: 'Basic planning templates and simple goal tracking',
+    aiEnhancedDescription: 'Comprehensive strategic frameworks with AI scenario analysis, stakeholder mapping, and risk assessment',
+    valueProposition: 'Create winning strategic plans with AI-powered scenario modeling and stakeholder intelligence',
+    standardCapabilities: [
+      'Basic planning templates',
+      'Simple goal tracking',
+      'Manual stakeholder lists',
+      'Static risk assessment'
+    ],
+    aiEnhancedCapabilities: [
+      'AI-powered scenario analysis and modeling',
+      'Dynamic stakeholder influence mapping',
+      'Risk assessment with probability modeling',
+      'Strategic initiative optimization',
+      'Vision-mission alignment scoring',
+      'Implementation roadmap automation'
+    ],
+    upgradePrompt: 'Generate Fortune 500-quality strategic plans with AI scenario analysis and stakeholder intelligence',
+    roi: 'Strategic plans created with AI guidance show 250% higher success rates'
+  },
+  {
+    id: 'team_consciousness',
+    category: 'leadership',
+    name: 'Team Consciousness Features',
+    description: 'Advanced team dynamics assessment and collective intelligence optimization',
+    standardDescription: 'Basic team surveys and simple collaboration metrics',
+    aiEnhancedDescription: 'Deep team consciousness analysis with communication optimization, conflict resolution, and collective intelligence enhancement',
+    valueProposition: 'Unlock your team\'s collective potential with AI-powered consciousness and collaboration insights',
+    standardCapabilities: [
+      'Basic team surveys',
+      'Simple collaboration tracking',
+      'Manual conflict logs',
+      'Static team reports'
+    ],
+    aiEnhancedCapabilities: [
+      'Team consciousness depth analysis',
+      'Communication pattern optimization',
+      'Conflict resolution AI mediation',
+      'Collective intelligence measurement',
+      'Group decision-making enhancement',
+      'Team personality and dynamics profiling'
+    ],
+    upgradePrompt: 'Transform team performance with AI-powered consciousness analysis and collective intelligence optimization',
+    roi: 'Teams using AI consciousness tools show 400% improvement in collaboration effectiveness'
+  },
+  {
+    id: 'leadership_development',
+    category: 'leadership',
+    name: 'Leadership Development Framework',
+    description: 'Comprehensive competency mapping and development tracking system',
+    standardDescription: 'Basic skill tracking and simple development plans',
+    aiEnhancedDescription: 'Advanced competency mapping with AI-powered development pathways, succession planning, and impact measurement',
+    valueProposition: 'Accelerate leadership development with AI-guided competency mapping and personalized growth pathways',
+    standardCapabilities: [
+      'Basic skill tracking',
+      'Simple development plans',
+      'Manual progress tracking',
+      'Static competency lists'
+    ],
+    aiEnhancedCapabilities: [
+      'AI-powered competency gap analysis',
+      'Personalized development pathway optimization',
+      'Leadership style adaptation coaching',
+      'Succession planning intelligence',
+      'Impact measurement and ROI tracking',
+      'Mentoring relationship optimization'
+    ],
+    upgradePrompt: 'Accelerate leadership development with AI-powered competency intelligence and personalized growth optimization',
+    roi: 'AI-guided leadership development accelerates executive readiness by 300%'
+  },
+  {
+    id: 'enterprise_analytics',
+    category: 'leadership',
+    name: 'Enterprise Analytics & Insights',
+    description: 'Comprehensive leadership effectiveness and organizational health dashboards',
+    standardDescription: 'Basic metrics tracking and simple performance reports',
+    aiEnhancedDescription: 'Advanced analytics with leadership effectiveness scoring, organizational health metrics, and predictive insights',
+    valueProposition: 'Make data-driven leadership decisions with Fortune 500-grade analytics and AI insights',
+    standardCapabilities: [
+      'Basic metrics tracking',
+      'Simple performance reports',
+      'Manual data analysis',
+      'Static dashboards'
+    ],
+    aiEnhancedCapabilities: [
+      'Leadership effectiveness scoring algorithms',
+      'Organizational health predictive modeling',
+      'Team performance analytics with AI insights',
+      'Strategic goal tracking and achievement measurement',
+      'ROI analysis for leadership development investments',
+      'Culture and engagement intelligence dashboards'
+    ],
+    upgradePrompt: 'Transform decision-making with Fortune 500-grade leadership analytics and AI-powered organizational insights',
+    roi: 'Organizations using AI analytics report 500% improvement in leadership decision quality'
   }
 ];
 
