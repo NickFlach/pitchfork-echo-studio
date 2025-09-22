@@ -58,16 +58,17 @@ const setStorageData = <T>(key: string, data: T[]): void => {
 export const identityApi = {
   async getByWallet(walletAddress: string): Promise<Identity | null> {
     try {
-      // Get identity from blockchain instead of localStorage
-      const blockchainIdentity = await web3Storage.getIdentity(walletAddress);
+      // Import Web3 storage dynamically to avoid circular dependencies
+      const { web3Storage } = await import('./web3-storage');
       
-      if (!blockchainIdentity) {
-        console.log('No blockchain identity found, creating default identity for:', walletAddress);
+      // Get identity from blockchain
+      const identity = await web3Storage.getIdentity(walletAddress);
+      if (!identity) {
+        // Return default structure for new wallets
         return {
-          id: walletAddress,
+          id: `identity_${walletAddress}`,
           walletAddress,
-          verificationLevel: 'none',
-          verificationHash: undefined,
+          verificationLevel: 'none' as const,
           verifiedAt: undefined,
           expiresAt: undefined,
           signature: undefined,
@@ -75,7 +76,7 @@ export const identityApi = {
         };
       }
       
-      return identitySchema.parse(blockchainIdentity);
+      return identity;
     } catch (error) {
       console.error('Error fetching blockchain identity:', error);
       console.log('Falling back to basic identity for:', walletAddress);
@@ -104,8 +105,15 @@ export const identityApi = {
       expiresAt: undefined,
     };
     
-    // Store on blockchain for decentralized verification
-    await web3Storage.storeIdentity(validatedData.walletAddress, newIdentity);
+    try {
+      // Store on blockchain for decentralized verification
+      const { web3Storage } = await import('./web3-storage');
+      await web3Storage.storeIdentity(validatedData.walletAddress, newIdentity);
+    } catch (error) {
+      console.error('Failed to store identity on blockchain:', error);
+      // Fallback to localStorage for development
+      localStorage.setItem(`identity_${validatedData.walletAddress}`, JSON.stringify(newIdentity));
+    }
     
     return identitySchema.parse(newIdentity);
   },
@@ -125,8 +133,15 @@ export const identityApi = {
     const updatedIdentity = { ...currentIdentity, ...updates };
     const validatedIdentity = identitySchema.parse(updatedIdentity);
     
-    // Update on blockchain
-    await web3Storage.storeIdentity(walletAddress, validatedIdentity);
+    try {
+      // Update on blockchain
+      const { web3Storage } = await import('./web3-storage');
+      await web3Storage.storeIdentity(walletAddress, validatedIdentity);
+    } catch (error) {
+      console.error('Failed to update identity on blockchain:', error);
+      // Fallback to localStorage for development
+      localStorage.setItem(`identity_${walletAddress}`, JSON.stringify(validatedIdentity));
+    }
     
     return validatedIdentity;
   },
