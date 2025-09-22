@@ -183,6 +183,7 @@ export const aiUserFeedbackSchema = z.object({
   aiProvider: AIProviderEnum.optional(),
   modelUsed: z.string().optional(),
   requestId: z.string().optional(),
+  qualityRating: z.number().optional(),
 });
 
 export type AIUserFeedback = z.infer<typeof aiUserFeedbackSchema>;
@@ -197,7 +198,6 @@ export const maskedAICredentialsSchema = z.object({
 
 export type MaskedAICredentials = z.infer<typeof maskedAICredentialsSchema>;
 
-// Consciousness Models
 export const consciousnessStateSchema = z.object({
   id: z.string().optional(),
   timestamp: z.string().optional(),
@@ -210,7 +210,7 @@ export const consciousnessStateSchema = z.object({
   orderChaosBalance: z.number().optional(),
   emergentInsights: z.array(z.string()).optional(),
   activePatternsRecognized: z.array(z.string()).optional(),
-  contextLayers: z.number().optional(),
+  contextLayers: z.array(z.string()).optional(),
   questioningLoops: z.array(z.record(z.any())).optional(),
 });
 
