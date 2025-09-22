@@ -21,13 +21,24 @@ export const UpgradePromptModal: React.FC<UpgradePromptModalProps> = ({
   onUpgrade,
   className
 }) => {
-  const navigate = useNavigate();
+  // Safe navigation hook that handles router context issues
+  let navigate: any = null;
+  try {
+    navigate = useNavigate();
+  } catch (error) {
+    console.warn('useNavigate called outside router context, navigation disabled');
+  }
 
   if (!prompt) return null;
 
   const handleUpgrade = () => {
     onUpgrade();
-    navigate('/ai-settings');
+    if (navigate) {
+      navigate('/ai-settings');
+    } else {
+      // Fallback navigation for when router context is not available
+      window.location.href = '/ai-settings';
+    }
   };
 
   const getUrgencyColor = (urgency?: 'low' | 'medium' | 'high') => {

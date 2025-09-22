@@ -53,13 +53,18 @@ interface Web3ProviderProps {
 export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [account, setAccount] = useState<string | null>(null);
-  const [provider, setProvider] = useState<BrowserProvider | null>(null);
-  const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
+  const [provider, setProvider] = useState<any | null>(null);
+  const [signer, setSigner] = useState<any | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
   const [walletType, setWalletType] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [supportedChains] = useState<number[]>(config?.supportedChains || [1, 137, 56, 5, 11155111, 80001, 97]);
+
+  // Initialize ethers on component mount
+  useEffect(() => {
+    initEthers();
+  }, []);
 
   // Available wallet configurations
   const availableWallets: WalletInfo[] = [
