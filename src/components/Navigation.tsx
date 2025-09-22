@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Home, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Web3ConnectButton from './Web3ConnectButton';
 
 interface NavigationProps {
   showBackButton?: boolean;
@@ -87,9 +88,12 @@ export const Navigation: React.FC<NavigationProps> = ({
             </div>
           )}
 
-          {/* Right side - Platform title */}
-          <div className="text-sm font-semibold text-gradient-cosmic">
-            Pitchfork Protocol
+          {/* Right side - Web3 Connect and Platform title */}
+          <div className="flex items-center gap-4">
+            <Web3ConnectButton />
+            <div className="text-sm font-semibold text-gradient-cosmic">
+              Pitchfork Protocol
+            </div>
           </div>
         </div>
       </div>

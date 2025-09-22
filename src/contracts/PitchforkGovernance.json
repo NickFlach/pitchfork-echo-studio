@@ -1,0 +1,115 @@
+{
+  "name": "PitchforkGovernance",
+  "address": "0x2345678901234567890123456789012345678901",
+  "network": "localhost",
+  "deployedAt": "2025-09-22T02:30:00.000Z",
+  "deployer": "0x0000000000000000000000000000000000000000",
+  "abi": [
+    {
+      "type": "function",
+      "name": "createProposal",
+      "inputs": [
+        {"name": "_title", "type": "string"},
+        {"name": "_description", "type": "string"},
+        {"name": "_votingDuration", "type": "uint256"},
+        {"name": "_quorumRequired", "type": "uint256"},
+        {"name": "_passingThreshold", "type": "uint256"}
+      ],
+      "outputs": [{"name": "", "type": "uint256"}],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "vote",
+      "inputs": [
+        {"name": "_proposalId", "type": "uint256"},
+        {"name": "_choice", "type": "uint8"},
+        {"name": "_reason", "type": "string"}
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "finalizeProposal",
+      "inputs": [{"name": "_proposalId", "type": "uint256"}],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "getProposal",
+      "inputs": [{"name": "_proposalId", "type": "uint256"}],
+      "outputs": [
+        {"name": "title", "type": "string"},
+        {"name": "description", "type": "string"},
+        {"name": "proposer", "type": "address"},
+        {"name": "votingStartTime", "type": "uint256"},
+        {"name": "votingEndTime", "type": "uint256"},
+        {"name": "yesVotes", "type": "uint256"},
+        {"name": "noVotes", "type": "uint256"},
+        {"name": "abstainVotes", "type": "uint256"},
+        {"name": "totalVotes", "type": "uint256"},
+        {"name": "status", "type": "uint8"}
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getVote",
+      "inputs": [
+        {"name": "_proposalId", "type": "uint256"},
+        {"name": "_voter", "type": "address"}
+      ],
+      "outputs": [
+        {"name": "hasVoted", "type": "bool"},
+        {"name": "choice", "type": "uint8"}
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getTotalProposals",
+      "inputs": [],
+      "outputs": [{"name": "", "type": "uint256"}],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isVotingActive",
+      "inputs": [{"name": "_proposalId", "type": "uint256"}],
+      "outputs": [{"name": "", "type": "bool"}],
+      "stateMutability": "view"
+    },
+    {
+      "type": "event",
+      "name": "ProposalCreated",
+      "inputs": [
+        {"name": "proposalId", "type": "uint256", "indexed": true},
+        {"name": "title", "type": "string", "indexed": false},
+        {"name": "proposer", "type": "address", "indexed": true},
+        {"name": "votingStartTime", "type": "uint256", "indexed": false},
+        {"name": "votingEndTime", "type": "uint256", "indexed": false}
+      ]
+    },
+    {
+      "type": "event",
+      "name": "VoteCast",
+      "inputs": [
+        {"name": "proposalId", "type": "uint256", "indexed": true},
+        {"name": "voter", "type": "address", "indexed": true},
+        {"name": "choice", "type": "uint8", "indexed": false},
+        {"name": "timestamp", "type": "uint256", "indexed": false}
+      ]
+    },
+    {
+      "type": "event",
+      "name": "ProposalStatusChanged",
+      "inputs": [
+        {"name": "proposalId", "type": "uint256", "indexed": true},
+        {"name": "oldStatus", "type": "uint8", "indexed": false},
+        {"name": "newStatus", "type": "uint8", "indexed": false}
+      ]
+    }
+  ]
+}
