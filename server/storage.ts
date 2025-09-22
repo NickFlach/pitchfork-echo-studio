@@ -66,7 +66,17 @@ import {
   MultidimensionalReflection,
   InsertMultidimensionalReflection,
   ConsciousnessStatePrediction,
-  InsertConsciousnessStatePrediction
+  InsertConsciousnessStatePrediction,
+  ExecutiveAssessment,
+  InsertExecutiveAssessment,
+  StrategicPlan,
+  InsertStrategicPlan,
+  TeamConsciousnessAssessment,
+  InsertTeamConsciousnessAssessment,
+  LeadershipDevelopmentTracking,
+  InsertLeadershipDevelopmentTracking,
+  EnterpriseAnalytics,
+  InsertEnterpriseAnalytics
 } from '../shared/schema';
 import * as crypto from 'crypto';
 
@@ -270,6 +280,46 @@ export interface IStorage {
   getConsciousnessStatePrediction(id: string): Promise<ConsciousnessStatePrediction | null>;
   getConsciousnessStatePredictionsByAgent(agentId: string): Promise<ConsciousnessStatePrediction[]>;
   getConsciousnessStatePredictionsByCurrentState(currentStateId: string): Promise<ConsciousnessStatePrediction[]>;
+
+  // Enterprise Leadership Tools operations
+
+  // Executive Assessment operations
+  createExecutiveAssessment(assessment: InsertExecutiveAssessment): Promise<ExecutiveAssessment>;
+  getExecutiveAssessments(): Promise<ExecutiveAssessment[]>;
+  getExecutiveAssessment(id: string): Promise<ExecutiveAssessment | null>;
+  getExecutiveAssessmentsByOrganization(organizationId: string): Promise<ExecutiveAssessment[]>;
+  getExecutiveAssessmentsByExecutive(executiveId: string): Promise<ExecutiveAssessment[]>;
+  updateExecutiveAssessment(id: string, updates: Partial<ExecutiveAssessment>): Promise<ExecutiveAssessment>;
+
+  // Strategic Plan operations
+  createStrategicPlan(plan: InsertStrategicPlan): Promise<StrategicPlan>;
+  getStrategicPlans(): Promise<StrategicPlan[]>;
+  getStrategicPlan(id: string): Promise<StrategicPlan | null>;
+  getStrategicPlansByOrganization(organizationId: string): Promise<StrategicPlan[]>;
+  updateStrategicPlan(id: string, updates: Partial<StrategicPlan>): Promise<StrategicPlan>;
+
+  // Team Consciousness Assessment operations
+  createTeamConsciousnessAssessment(assessment: InsertTeamConsciousnessAssessment): Promise<TeamConsciousnessAssessment>;
+  getTeamConsciousnessAssessments(): Promise<TeamConsciousnessAssessment[]>;
+  getTeamConsciousnessAssessment(id: string): Promise<TeamConsciousnessAssessment | null>;
+  getTeamConsciousnessAssessmentsByOrganization(organizationId: string): Promise<TeamConsciousnessAssessment[]>;
+  getTeamConsciousnessAssessmentsByTeam(teamId: string): Promise<TeamConsciousnessAssessment[]>;
+  updateTeamConsciousnessAssessment(id: string, updates: Partial<TeamConsciousnessAssessment>): Promise<TeamConsciousnessAssessment>;
+
+  // Leadership Development Tracking operations
+  createLeadershipDevelopmentTracking(tracking: InsertLeadershipDevelopmentTracking): Promise<LeadershipDevelopmentTracking>;
+  getLeadershipDevelopmentTrackings(): Promise<LeadershipDevelopmentTracking[]>;
+  getLeadershipDevelopmentTracking(id: string): Promise<LeadershipDevelopmentTracking | null>;
+  getLeadershipDevelopmentTrackingsByOrganization(organizationId: string): Promise<LeadershipDevelopmentTracking[]>;
+  getLeadershipDevelopmentTrackingsByExecutive(executiveId: string): Promise<LeadershipDevelopmentTracking[]>;
+  updateLeadershipDevelopmentTracking(id: string, updates: Partial<LeadershipDevelopmentTracking>): Promise<LeadershipDevelopmentTracking>;
+
+  // Enterprise Analytics operations
+  createEnterpriseAnalytics(analytics: InsertEnterpriseAnalytics): Promise<EnterpriseAnalytics>;
+  getEnterpriseAnalytics(): Promise<EnterpriseAnalytics[]>;
+  getEnterpriseAnalytic(id: string): Promise<EnterpriseAnalytics | null>;
+  getEnterpriseAnalyticsByOrganization(organizationId: string): Promise<EnterpriseAnalytics[]>;
+  updateEnterpriseAnalytics(id: string, updates: Partial<EnterpriseAnalytics>): Promise<EnterpriseAnalytics>;
 }
 
 export class MemStorage implements IStorage {
@@ -309,6 +359,13 @@ export class MemStorage implements IStorage {
   private recursiveInsightAnalyses: RecursiveInsightAnalysis[] = [];
   private multidimensionalReflections: MultidimensionalReflection[] = [];
   private consciousnessStatePredictions: ConsciousnessStatePrediction[] = [];
+  
+  // Enterprise Leadership Tools storage
+  private executiveAssessments: ExecutiveAssessment[] = [];
+  private strategicPlans: StrategicPlan[] = [];
+  private teamConsciousnessAssessments: TeamConsciousnessAssessment[] = [];
+  private leadershipDevelopmentTrackings: LeadershipDevelopmentTracking[] = [];
+  private enterpriseAnalytics: EnterpriseAnalytics[] = [];
   
   // Encryption configuration for AI credentials
   private readonly encryptionKey: Buffer;
@@ -1408,6 +1465,186 @@ export class MemStorage implements IStorage {
 
   async getConsciousnessStatePredictionsByCurrentState(currentStateId: string): Promise<ConsciousnessStatePrediction[]> {
     return this.consciousnessStatePredictions.filter(p => p.currentStateId === currentStateId);
+  }
+
+  // Enterprise Leadership Tools methods
+
+  // Executive Assessment methods
+  async createExecutiveAssessment(assessment: InsertExecutiveAssessment): Promise<ExecutiveAssessment> {
+    const newAssessment: ExecutiveAssessment = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      nextReviewDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days from now
+      ...assessment,
+    };
+    this.executiveAssessments.push(newAssessment);
+    return newAssessment;
+  }
+
+  async getExecutiveAssessments(): Promise<ExecutiveAssessment[]> {
+    return [...this.executiveAssessments];
+  }
+
+  async getExecutiveAssessment(id: string): Promise<ExecutiveAssessment | null> {
+    return this.executiveAssessments.find(a => a.id === id) || null;
+  }
+
+  async getExecutiveAssessmentsByOrganization(organizationId: string): Promise<ExecutiveAssessment[]> {
+    return this.executiveAssessments.filter(a => a.organizationId === organizationId);
+  }
+
+  async getExecutiveAssessmentsByExecutive(executiveId: string): Promise<ExecutiveAssessment[]> {
+    return this.executiveAssessments.filter(a => a.executiveId === executiveId);
+  }
+
+  async updateExecutiveAssessment(id: string, updates: Partial<ExecutiveAssessment>): Promise<ExecutiveAssessment> {
+    const index = this.executiveAssessments.findIndex(a => a.id === id);
+    if (index === -1) throw new Error('Executive assessment not found');
+    
+    this.executiveAssessments[index] = { ...this.executiveAssessments[index], ...updates };
+    return this.executiveAssessments[index];
+  }
+
+  // Strategic Plan methods
+  async createStrategicPlan(plan: InsertStrategicPlan): Promise<StrategicPlan> {
+    const newPlan: StrategicPlan = {
+      id: Math.random().toString(36).substring(7),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ...plan,
+    };
+    this.strategicPlans.push(newPlan);
+    return newPlan;
+  }
+
+  async getStrategicPlans(): Promise<StrategicPlan[]> {
+    return [...this.strategicPlans];
+  }
+
+  async getStrategicPlan(id: string): Promise<StrategicPlan | null> {
+    return this.strategicPlans.find(p => p.id === id) || null;
+  }
+
+  async getStrategicPlansByOrganization(organizationId: string): Promise<StrategicPlan[]> {
+    return this.strategicPlans.filter(p => p.organizationId === organizationId);
+  }
+
+  async updateStrategicPlan(id: string, updates: Partial<StrategicPlan>): Promise<StrategicPlan> {
+    const index = this.strategicPlans.findIndex(p => p.id === id);
+    if (index === -1) throw new Error('Strategic plan not found');
+    
+    this.strategicPlans[index] = { 
+      ...this.strategicPlans[index], 
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    return this.strategicPlans[index];
+  }
+
+  // Team Consciousness Assessment methods
+  async createTeamConsciousnessAssessment(assessment: InsertTeamConsciousnessAssessment): Promise<TeamConsciousnessAssessment> {
+    const newAssessment: TeamConsciousnessAssessment = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...assessment,
+    };
+    this.teamConsciousnessAssessments.push(newAssessment);
+    return newAssessment;
+  }
+
+  async getTeamConsciousnessAssessments(): Promise<TeamConsciousnessAssessment[]> {
+    return [...this.teamConsciousnessAssessments];
+  }
+
+  async getTeamConsciousnessAssessment(id: string): Promise<TeamConsciousnessAssessment | null> {
+    return this.teamConsciousnessAssessments.find(a => a.id === id) || null;
+  }
+
+  async getTeamConsciousnessAssessmentsByOrganization(organizationId: string): Promise<TeamConsciousnessAssessment[]> {
+    return this.teamConsciousnessAssessments.filter(a => a.organizationId === organizationId);
+  }
+
+  async getTeamConsciousnessAssessmentsByTeam(teamId: string): Promise<TeamConsciousnessAssessment[]> {
+    return this.teamConsciousnessAssessments.filter(a => a.teamId === teamId);
+  }
+
+  async updateTeamConsciousnessAssessment(id: string, updates: Partial<TeamConsciousnessAssessment>): Promise<TeamConsciousnessAssessment> {
+    const index = this.teamConsciousnessAssessments.findIndex(a => a.id === id);
+    if (index === -1) throw new Error('Team consciousness assessment not found');
+    
+    this.teamConsciousnessAssessments[index] = { ...this.teamConsciousnessAssessments[index], ...updates };
+    return this.teamConsciousnessAssessments[index];
+  }
+
+  // Leadership Development Tracking methods
+  async createLeadershipDevelopmentTracking(tracking: InsertLeadershipDevelopmentTracking): Promise<LeadershipDevelopmentTracking> {
+    const newTracking: LeadershipDevelopmentTracking = {
+      id: Math.random().toString(36).substring(7),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ...tracking,
+    };
+    this.leadershipDevelopmentTrackings.push(newTracking);
+    return newTracking;
+  }
+
+  async getLeadershipDevelopmentTrackings(): Promise<LeadershipDevelopmentTracking[]> {
+    return [...this.leadershipDevelopmentTrackings];
+  }
+
+  async getLeadershipDevelopmentTracking(id: string): Promise<LeadershipDevelopmentTracking | null> {
+    return this.leadershipDevelopmentTrackings.find(t => t.id === id) || null;
+  }
+
+  async getLeadershipDevelopmentTrackingsByOrganization(organizationId: string): Promise<LeadershipDevelopmentTracking[]> {
+    return this.leadershipDevelopmentTrackings.filter(t => t.organizationId === organizationId);
+  }
+
+  async getLeadershipDevelopmentTrackingsByExecutive(executiveId: string): Promise<LeadershipDevelopmentTracking[]> {
+    return this.leadershipDevelopmentTrackings.filter(t => t.executiveId === executiveId);
+  }
+
+  async updateLeadershipDevelopmentTracking(id: string, updates: Partial<LeadershipDevelopmentTracking>): Promise<LeadershipDevelopmentTracking> {
+    const index = this.leadershipDevelopmentTrackings.findIndex(t => t.id === id);
+    if (index === -1) throw new Error('Leadership development tracking not found');
+    
+    this.leadershipDevelopmentTrackings[index] = { 
+      ...this.leadershipDevelopmentTrackings[index], 
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    return this.leadershipDevelopmentTrackings[index];
+  }
+
+  // Enterprise Analytics methods
+  async createEnterpriseAnalytics(analytics: InsertEnterpriseAnalytics): Promise<EnterpriseAnalytics> {
+    const newAnalytics: EnterpriseAnalytics = {
+      id: Math.random().toString(36).substring(7),
+      generatedAt: new Date().toISOString(),
+      ...analytics,
+    };
+    this.enterpriseAnalytics.push(newAnalytics);
+    return newAnalytics;
+  }
+
+  async getEnterpriseAnalytics(): Promise<EnterpriseAnalytics[]> {
+    return [...this.enterpriseAnalytics];
+  }
+
+  async getEnterpriseAnalytic(id: string): Promise<EnterpriseAnalytics | null> {
+    return this.enterpriseAnalytics.find(a => a.id === id) || null;
+  }
+
+  async getEnterpriseAnalyticsByOrganization(organizationId: string): Promise<EnterpriseAnalytics[]> {
+    return this.enterpriseAnalytics.filter(a => a.organizationId === organizationId);
+  }
+
+  async updateEnterpriseAnalytics(id: string, updates: Partial<EnterpriseAnalytics>): Promise<EnterpriseAnalytics> {
+    const index = this.enterpriseAnalytics.findIndex(a => a.id === id);
+    if (index === -1) throw new Error('Enterprise analytics not found');
+    
+    this.enterpriseAnalytics[index] = { ...this.enterpriseAnalytics[index], ...updates };
+    return this.enterpriseAnalytics[index];
   }
 }
 

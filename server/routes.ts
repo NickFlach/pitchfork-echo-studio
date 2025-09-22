@@ -60,7 +60,12 @@ import {
   insertConsciousnessPatternAnalysisSchema,
   insertRecursiveInsightAnalysisSchema,
   insertMultidimensionalReflectionSchema,
-  insertConsciousnessStatePredictionSchema
+  insertConsciousnessStatePredictionSchema,
+  insertExecutiveAssessmentSchema,
+  insertStrategicPlanSchema,
+  insertTeamConsciousnessAssessmentSchema,
+  insertLeadershipDevelopmentTrackingSchema,
+  insertEnterpriseAnalyticsSchema
 } from '../shared/schema';
 import { aiService } from './ai/AIServiceManager';
 import { AIRequest } from './ai/AIProviderAdapter';
@@ -2916,6 +2921,538 @@ router.post('/api/consciousness/pattern-analysis',
       console.error('Consciousness pattern analysis error:', error);
       res.status(500).json({ 
         error: 'Pattern analysis failed',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal processing error'
+      });
+    }
+  }
+);
+
+// =============================================================================
+// ENTERPRISE LEADERSHIP TOOLS API ENDPOINTS
+// =============================================================================
+
+// Executive Assessments API
+router.get('/api/enterprise/executive-assessments', async (req, res) => {
+  try {
+    const { organizationId, executiveId } = req.query;
+    
+    let assessments;
+    if (organizationId) {
+      assessments = await storage.getExecutiveAssessmentsByOrganization(organizationId as string);
+    } else if (executiveId) {
+      assessments = await storage.getExecutiveAssessmentsByExecutive(executiveId as string);
+    } else {
+      assessments = await storage.getExecutiveAssessments();
+    }
+    
+    res.json(assessments);
+  } catch (error) {
+    console.error('Failed to fetch executive assessments:', error);
+    res.status(500).json({ error: 'Failed to fetch executive assessments' });
+  }
+});
+
+router.get('/api/enterprise/executive-assessments/:id', async (req, res) => {
+  try {
+    const assessment = await storage.getExecutiveAssessment(req.params.id);
+    if (!assessment) {
+      return res.status(404).json({ error: 'Executive assessment not found' });
+    }
+    res.json(assessment);
+  } catch (error) {
+    console.error('Failed to fetch executive assessment:', error);
+    res.status(500).json({ error: 'Failed to fetch executive assessment' });
+  }
+});
+
+router.post('/api/enterprise/executive-assessments', async (req, res) => {
+  try {
+    const validatedData = insertExecutiveAssessmentSchema.parse(req.body);
+    const assessment = await storage.createExecutiveAssessment(validatedData);
+    res.status(201).json(assessment);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      console.error('Failed to create executive assessment:', error);
+      res.status(500).json({ error: 'Failed to create executive assessment' });
+    }
+  }
+});
+
+router.put('/api/enterprise/executive-assessments/:id', async (req, res) => {
+  try {
+    const assessment = await storage.updateExecutiveAssessment(req.params.id, req.body);
+    res.json(assessment);
+  } catch (error) {
+    if (error.message === 'Executive assessment not found') {
+      res.status(404).json({ error: 'Executive assessment not found' });
+    } else {
+      console.error('Failed to update executive assessment:', error);
+      res.status(500).json({ error: 'Failed to update executive assessment' });
+    }
+  }
+});
+
+// Strategic Plans API
+router.get('/api/enterprise/strategic-plans', async (req, res) => {
+  try {
+    const { organizationId } = req.query;
+    
+    let plans;
+    if (organizationId) {
+      plans = await storage.getStrategicPlansByOrganization(organizationId as string);
+    } else {
+      plans = await storage.getStrategicPlans();
+    }
+    
+    res.json(plans);
+  } catch (error) {
+    console.error('Failed to fetch strategic plans:', error);
+    res.status(500).json({ error: 'Failed to fetch strategic plans' });
+  }
+});
+
+router.get('/api/enterprise/strategic-plans/:id', async (req, res) => {
+  try {
+    const plan = await storage.getStrategicPlan(req.params.id);
+    if (!plan) {
+      return res.status(404).json({ error: 'Strategic plan not found' });
+    }
+    res.json(plan);
+  } catch (error) {
+    console.error('Failed to fetch strategic plan:', error);
+    res.status(500).json({ error: 'Failed to fetch strategic plan' });
+  }
+});
+
+router.post('/api/enterprise/strategic-plans', async (req, res) => {
+  try {
+    const validatedData = insertStrategicPlanSchema.parse(req.body);
+    const plan = await storage.createStrategicPlan(validatedData);
+    res.status(201).json(plan);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      console.error('Failed to create strategic plan:', error);
+      res.status(500).json({ error: 'Failed to create strategic plan' });
+    }
+  }
+});
+
+router.put('/api/enterprise/strategic-plans/:id', async (req, res) => {
+  try {
+    const plan = await storage.updateStrategicPlan(req.params.id, req.body);
+    res.json(plan);
+  } catch (error) {
+    if (error.message === 'Strategic plan not found') {
+      res.status(404).json({ error: 'Strategic plan not found' });
+    } else {
+      console.error('Failed to update strategic plan:', error);
+      res.status(500).json({ error: 'Failed to update strategic plan' });
+    }
+  }
+});
+
+// Team Consciousness Assessments API
+router.get('/api/enterprise/team-assessments', async (req, res) => {
+  try {
+    const { organizationId, teamId } = req.query;
+    
+    let assessments;
+    if (organizationId) {
+      assessments = await storage.getTeamConsciousnessAssessmentsByOrganization(organizationId as string);
+    } else if (teamId) {
+      assessments = await storage.getTeamConsciousnessAssessmentsByTeam(teamId as string);
+    } else {
+      assessments = await storage.getTeamConsciousnessAssessments();
+    }
+    
+    res.json(assessments);
+  } catch (error) {
+    console.error('Failed to fetch team assessments:', error);
+    res.status(500).json({ error: 'Failed to fetch team assessments' });
+  }
+});
+
+router.get('/api/enterprise/team-assessments/:id', async (req, res) => {
+  try {
+    const assessment = await storage.getTeamConsciousnessAssessment(req.params.id);
+    if (!assessment) {
+      return res.status(404).json({ error: 'Team assessment not found' });
+    }
+    res.json(assessment);
+  } catch (error) {
+    console.error('Failed to fetch team assessment:', error);
+    res.status(500).json({ error: 'Failed to fetch team assessment' });
+  }
+});
+
+router.post('/api/enterprise/team-assessments', async (req, res) => {
+  try {
+    const validatedData = insertTeamConsciousnessAssessmentSchema.parse(req.body);
+    const assessment = await storage.createTeamConsciousnessAssessment(validatedData);
+    res.status(201).json(assessment);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      console.error('Failed to create team assessment:', error);
+      res.status(500).json({ error: 'Failed to create team assessment' });
+    }
+  }
+});
+
+router.put('/api/enterprise/team-assessments/:id', async (req, res) => {
+  try {
+    const assessment = await storage.updateTeamConsciousnessAssessment(req.params.id, req.body);
+    res.json(assessment);
+  } catch (error) {
+    if (error.message === 'Team consciousness assessment not found') {
+      res.status(404).json({ error: 'Team assessment not found' });
+    } else {
+      console.error('Failed to update team assessment:', error);
+      res.status(500).json({ error: 'Failed to update team assessment' });
+    }
+  }
+});
+
+// Leadership Development Tracking API
+router.get('/api/enterprise/leadership-development', async (req, res) => {
+  try {
+    const { organizationId, executiveId } = req.query;
+    
+    let trackings;
+    if (organizationId) {
+      trackings = await storage.getLeadershipDevelopmentTrackingsByOrganization(organizationId as string);
+    } else if (executiveId) {
+      trackings = await storage.getLeadershipDevelopmentTrackingsByExecutive(executiveId as string);
+    } else {
+      trackings = await storage.getLeadershipDevelopmentTrackings();
+    }
+    
+    res.json(trackings);
+  } catch (error) {
+    console.error('Failed to fetch leadership development tracking:', error);
+    res.status(500).json({ error: 'Failed to fetch leadership development tracking' });
+  }
+});
+
+router.get('/api/enterprise/leadership-development/:id', async (req, res) => {
+  try {
+    const tracking = await storage.getLeadershipDevelopmentTracking(req.params.id);
+    if (!tracking) {
+      return res.status(404).json({ error: 'Leadership development tracking not found' });
+    }
+    res.json(tracking);
+  } catch (error) {
+    console.error('Failed to fetch leadership development tracking:', error);
+    res.status(500).json({ error: 'Failed to fetch leadership development tracking' });
+  }
+});
+
+router.post('/api/enterprise/leadership-development', async (req, res) => {
+  try {
+    const validatedData = insertLeadershipDevelopmentTrackingSchema.parse(req.body);
+    const tracking = await storage.createLeadershipDevelopmentTracking(validatedData);
+    res.status(201).json(tracking);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      console.error('Failed to create leadership development tracking:', error);
+      res.status(500).json({ error: 'Failed to create leadership development tracking' });
+    }
+  }
+});
+
+router.put('/api/enterprise/leadership-development/:id', async (req, res) => {
+  try {
+    const tracking = await storage.updateLeadershipDevelopmentTracking(req.params.id, req.body);
+    res.json(tracking);
+  } catch (error) {
+    if (error.message === 'Leadership development tracking not found') {
+      res.status(404).json({ error: 'Leadership development tracking not found' });
+    } else {
+      console.error('Failed to update leadership development tracking:', error);
+      res.status(500).json({ error: 'Failed to update leadership development tracking' });
+    }
+  }
+});
+
+// Enterprise Analytics API
+router.get('/api/enterprise/analytics', async (req, res) => {
+  try {
+    const { organizationId } = req.query;
+    
+    let analytics;
+    if (organizationId) {
+      analytics = await storage.getEnterpriseAnalyticsByOrganization(organizationId as string);
+    } else {
+      analytics = await storage.getEnterpriseAnalytics();
+    }
+    
+    res.json(analytics);
+  } catch (error) {
+    console.error('Failed to fetch enterprise analytics:', error);
+    res.status(500).json({ error: 'Failed to fetch enterprise analytics' });
+  }
+});
+
+router.get('/api/enterprise/analytics/:id', async (req, res) => {
+  try {
+    const analytic = await storage.getEnterpriseAnalytic(req.params.id);
+    if (!analytic) {
+      return res.status(404).json({ error: 'Enterprise analytics not found' });
+    }
+    res.json(analytic);
+  } catch (error) {
+    console.error('Failed to fetch enterprise analytics:', error);
+    res.status(500).json({ error: 'Failed to fetch enterprise analytics' });
+  }
+});
+
+router.post('/api/enterprise/analytics', async (req, res) => {
+  try {
+    const validatedData = insertEnterpriseAnalyticsSchema.parse(req.body);
+    const analytics = await storage.createEnterpriseAnalytics(validatedData);
+    res.status(201).json(analytics);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      console.error('Failed to create enterprise analytics:', error);
+      res.status(500).json({ error: 'Failed to create enterprise analytics' });
+    }
+  }
+});
+
+router.put('/api/enterprise/analytics/:id', async (req, res) => {
+  try {
+    const analytics = await storage.updateEnterpriseAnalytics(req.params.id, req.body);
+    res.json(analytics);
+  } catch (error) {
+    if (error.message === 'Enterprise analytics not found') {
+      res.status(404).json({ error: 'Enterprise analytics not found' });
+    } else {
+      console.error('Failed to update enterprise analytics:', error);
+      res.status(500).json({ error: 'Failed to update enterprise analytics' });
+    }
+  }
+});
+
+// AI-Enhanced Enterprise Endpoints with Security Protection
+
+// AI-Enhanced Executive Assessment
+router.post('/api/enterprise/ai-enhanced-assessment',
+  rateLimitAI,
+  protectAIEndpoint,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const securityContext = extractSecurityContext(req);
+      
+      const { executiveId, assessmentType, context, options } = req.body;
+      
+      if (!executiveId || !assessmentType) {
+        return res.status(400).json({ 
+          error: 'executiveId and assessmentType are required'
+        });
+      }
+      
+      const startTime = Date.now();
+      
+      // Generate AI-enhanced assessment using existing consciousness endpoints
+      const prompt = `Analyze executive leadership effectiveness for ${assessmentType} assessment:
+        Context: ${context || 'Standard leadership assessment'}
+        Options: ${JSON.stringify(options || {})}
+        
+        Provide detailed insights on:
+        1. Leadership strengths and development areas
+        2. Decision-making patterns and effectiveness
+        3. Team impact and stakeholder management
+        4. Strategic thinking capabilities
+        5. Emotional intelligence indicators
+        6. Communication and influence styles
+        
+        Format as structured assessment with actionable recommendations.`;
+      
+      const aiRequest: AIRequest = {
+        prompt,
+        maxTokens: 2000,
+        temperature: 0.7,
+        systemMessage: "You are an expert executive leadership assessment AI. Provide professional, actionable insights based on data analysis."
+      };
+      
+      const result = await aiService.generate(aiRequest);
+      
+      const duration = Date.now() - startTime;
+      trackAIUsage(150, req);
+      
+      res.json({
+        assessmentId: `ai-assessment-${Date.now()}`,
+        executiveId,
+        assessmentType,
+        aiInsights: result.content,
+        metadata: {
+          provider: result.provider,
+          model: result.model,
+          tokensUsed: result.tokensUsed
+        },
+        securityInfo: {
+          userId: securityContext.userId,
+          processingTime: duration,
+          costEstimate: 150
+        }
+      });
+      
+    } catch (error) {
+      console.error('AI-enhanced assessment error:', error);
+      res.status(500).json({ 
+        error: 'Assessment analysis failed',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal processing error'
+      });
+    }
+  }
+);
+
+// AI-Enhanced Strategic Planning
+router.post('/api/enterprise/ai-strategic-planning',
+  rateLimitAI,
+  protectAIEndpoint,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const securityContext = extractSecurityContext(req);
+      
+      const { organizationId, objectives, timeframe, constraints, resources } = req.body;
+      
+      if (!organizationId || !objectives) {
+        return res.status(400).json({ 
+          error: 'organizationId and objectives are required'
+        });
+      }
+      
+      const startTime = Date.now();
+      
+      const prompt = `Create comprehensive strategic plan for organization:
+        Objectives: ${JSON.stringify(objectives)}
+        Timeframe: ${timeframe || '1 year'}
+        Constraints: ${JSON.stringify(constraints || [])}
+        Resources: ${JSON.stringify(resources || {})}
+        
+        Provide:
+        1. Strategic initiatives with clear priorities
+        2. Resource allocation recommendations
+        3. Risk assessment and mitigation strategies
+        4. Success metrics and KPIs
+        5. Implementation roadmap with milestones
+        6. Stakeholder alignment strategies
+        
+        Format as actionable strategic plan with specific recommendations.`;
+      
+      const aiRequest: AIRequest = {
+        prompt,
+        maxTokens: 3000,
+        temperature: 0.6,
+        systemMessage: "You are a strategic planning expert AI. Provide comprehensive, actionable strategic plans."
+      };
+      
+      const result = await aiService.generate(aiRequest);
+      
+      const duration = Date.now() - startTime;
+      trackAIUsage(200, req);
+      
+      res.json({
+        planId: `ai-strategic-plan-${Date.now()}`,
+        organizationId,
+        strategicPlan: result.content,
+        metadata: {
+          provider: result.provider,
+          model: result.model,
+          tokensUsed: result.tokensUsed
+        },
+        securityInfo: {
+          userId: securityContext.userId,
+          processingTime: duration,
+          costEstimate: 200
+        }
+      });
+      
+    } catch (error) {
+      console.error('AI strategic planning error:', error);
+      res.status(500).json({ 
+        error: 'Strategic planning failed',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal processing error'
+      });
+    }
+  }
+);
+
+// AI-Enhanced Team Assessment
+router.post('/api/enterprise/ai-team-assessment',
+  rateLimitAI,
+  protectAIEndpoint,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const securityContext = extractSecurityContext(req);
+      
+      const { teamId, assessmentData, focusAreas } = req.body;
+      
+      if (!teamId || !assessmentData) {
+        return res.status(400).json({ 
+          error: 'teamId and assessmentData are required'
+        });
+      }
+      
+      const startTime = Date.now();
+      
+      const prompt = `Analyze team consciousness and effectiveness:
+        Team Data: ${JSON.stringify(assessmentData)}
+        Focus Areas: ${JSON.stringify(focusAreas || ['collaboration', 'communication', 'performance'])}
+        
+        Provide insights on:
+        1. Team consciousness and collective awareness
+        2. Collaboration patterns and effectiveness
+        3. Communication flow and clarity
+        4. Decision-making processes
+        5. Conflict resolution capabilities
+        6. Innovation and creativity factors
+        7. Performance optimization opportunities
+        
+        Include specific recommendations for team development.`;
+      
+      const aiRequest: AIRequest = {
+        prompt,
+        maxTokens: 2500,
+        temperature: 0.7,
+        systemMessage: "You are a team dynamics expert AI. Analyze team consciousness and provide actionable insights."
+      };
+      
+      const result = await aiService.generate(aiRequest);
+      
+      const duration = Date.now() - startTime;
+      trackAIUsage(175, req);
+      
+      res.json({
+        assessmentId: `ai-team-assessment-${Date.now()}`,
+        teamId,
+        teamInsights: result.content,
+        metadata: {
+          provider: result.provider,
+          model: result.model,
+          tokensUsed: result.tokensUsed
+        },
+        securityInfo: {
+          userId: securityContext.userId,
+          processingTime: duration,
+          costEstimate: 175
+        }
+      });
+      
+    } catch (error) {
+      console.error('AI team assessment error:', error);
+      res.status(500).json({ 
+        error: 'Team assessment failed',
         message: process.env.NODE_ENV === 'development' ? error.message : 'Internal processing error'
       });
     }
