@@ -62,17 +62,38 @@ export class CorruptionDetectionEngine {
         {
           id: 'report-corruption',
           description: 'Report as potential corruption case',
-          parameters: { severity: 'high', confidence: 0.8 }
+          parameters: { severity: 'high', confidence: 0.8 },
+          estimatedEffort: 8,
+          riskLevel: 'high',
+          reversibility: 0.2,
+          timeHorizon: 'immediate',
+          stakeholders: ['legal-team', 'investigators', 'compliance-officers', 'whistleblowers'],
+          prerequisites: ['evidence-verification', 'legal-review', 'source-protection'],
+          expectedOutcomes: ['investigation-initiated', 'legal-action', 'public-awareness', 'accountability']
         },
         {
           id: 'flag-suspicious',
           description: 'Flag as suspicious activity requiring investigation',
-          parameters: { severity: 'medium', confidence: 0.6 }
+          parameters: { severity: 'medium', confidence: 0.6 },
+          estimatedEffort: 5,
+          riskLevel: 'medium',
+          reversibility: 0.7,
+          timeHorizon: 'short-term',
+          stakeholders: ['investigators', 'compliance-team', 'management'],
+          prerequisites: ['initial-review', 'data-analysis'],
+          expectedOutcomes: ['further-investigation', 'monitoring-enhanced', 'pattern-identification']
         },
         {
           id: 'clear-document',
           description: 'Mark as clear of corruption indicators',
-          parameters: { severity: 'low', confidence: 0.3 }
+          parameters: { severity: 'low', confidence: 0.3 },
+          estimatedEffort: 2,
+          riskLevel: 'low',
+          reversibility: 0.9,
+          timeHorizon: 'immediate',
+          stakeholders: ['compliance-team', 'management'],
+          prerequisites: ['thorough-review', 'multiple-validation'],
+          expectedOutcomes: ['case-closed', 'resources-freed', 'clean-certification']
         }
       ],
       'high'
