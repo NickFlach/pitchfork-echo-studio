@@ -1,8 +1,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Home, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Web3ConnectButton from './Web3ConnectButton';
+
+interface NavigationItem {
+  path: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  group?: 'core' | 'consciousness' | 'system';
+}
 
 interface NavigationProps {
   showBackButton?: boolean;
@@ -10,29 +17,39 @@ interface NavigationProps {
   showQuickNav?: boolean;
 }
 
-// Safe Navigation component that doesn't depend on React Router
+// Navigation component with React Router integration
 export const Navigation: React.FC<NavigationProps> = ({ 
   showBackButton = true, 
   showHomeButton = true,
   showQuickNav = false 
 }) => {
-  const quickNavItems = [
-    { path: '/identity', icon: Shield, label: 'Identity' },
-    { path: '/organize', icon: Users, label: 'Organize' },
-    { path: '/messages', icon: MessageCircle, label: 'Messages' },
-    { path: '/governance', icon: Scale, label: 'Governance' },
-    { path: '/verify', icon: FileCheck, label: 'Verify' },
-    { path: '/support', icon: Heart, label: 'Support' },
-    { path: '/whitepaper', icon: BookOpen, label: 'Whitepaper' },
-    { path: '/consciousness', icon: Brain, label: 'Consciousness' },
-    { path: '/leadership', icon: UserCheck, label: 'Leadership' },
-    { path: '/enterprise-leadership', icon: Building, label: 'Enterprise' },
-    { path: '/funding', icon: DollarSign, label: 'Funding' },
-    { path: '/ai-settings', icon: Settings, label: 'AI Settings' },
-    { path: '/provider-health', icon: Activity, label: 'Provider Health' },
+  const navigate = useNavigate();
+
+  // Organized navigation items by functional groups
+  const coreNavItems: NavigationItem[] = [
+    { path: '/identity', icon: Shield, label: 'Identity', group: 'core' },
+    { path: '/organize', icon: Users, label: 'Organize', group: 'core' },
+    { path: '/messages', icon: MessageCircle, label: 'Messages', group: 'core' },
+    { path: '/governance', icon: Scale, label: 'Governance', group: 'core' },
+    { path: '/verify', icon: FileCheck, label: 'Verify', group: 'core' },
+    { path: '/support', icon: Heart, label: 'Support', group: 'core' },
   ];
 
-  const currentPath = window.location.pathname;
+  const consciousnessNavItems: NavigationItem[] = [
+    { path: '/whitepaper', icon: BookOpen, label: 'Whitepaper', group: 'consciousness' },
+    { path: '/consciousness', icon: Brain, label: 'Consciousness', group: 'consciousness' },
+    { path: '/leadership', icon: UserCheck, label: 'Leadership', group: 'consciousness' },
+    { path: '/enterprise-leadership', icon: Building, label: 'Enterprise', group: 'consciousness' },
+  ];
+
+  const systemNavItems: NavigationItem[] = [
+    { path: '/funding', icon: DollarSign, label: 'Funding', group: 'system' },
+    { path: '/ai-settings', icon: Settings, label: 'AI Settings', group: 'system' },
+    { path: '/provider-health', icon: Activity, label: 'Provider Health', group: 'system' },
+  ];
+
+  // Combine all navigation items for backward compatibility
+  const allNavItems = [...coreNavItems, ...consciousnessNavItems, ...systemNavItems];
 
   return (
     <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-primary/20 z-10">
@@ -44,7 +61,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               <Button 
                 variant="ghost" 
                 size="sm"
-                onClick={() => window.history.back()}
+                onClick={() => navigate(-1)}
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -55,7 +72,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               <Button 
                 variant="ghost" 
                 size="sm"
-                onClick={() => window.location.href = '/'}
+                onClick={() => navigate('/')}
                 className="flex items-center gap-2"
               >
                 <Home className="w-4 h-4" />
@@ -67,15 +84,15 @@ export const Navigation: React.FC<NavigationProps> = ({
           {/* Center - Quick navigation (optional) */}
           {showQuickNav && (
             <div className="hidden md:flex items-center gap-1">
-              {quickNavItems.map((item) => {
+              {allNavItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = currentPath === item.path;
+                const isActive = window.location.pathname === item.path;
                 return (
                   <Button
                     key={item.path}
                     variant={isActive ? "cosmic" : "ghost"}
                     size="sm"
-                    onClick={() => window.location.href = item.path}
+                    onClick={() => navigate(item.path)}
                     className="flex items-center gap-1"
                   >
                     <Icon className="w-4 h-4" />
