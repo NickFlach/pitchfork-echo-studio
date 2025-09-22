@@ -50,6 +50,7 @@ async function initializeSampleData() {
       orderChaosBalance: 0.6,
       connectedStates: [],
       contextLayers: ['syntax', 'architecture', 'user-experience'],
+      focusAreas: ['decision-quality', 'pattern-recognition', 'system-awareness'],
       questioningLoops: [
         {
           question: 'How can I improve decision quality?',
@@ -72,6 +73,7 @@ async function initializeSampleData() {
       orderChaosBalance: 0.3,
       connectedStates: [],
       contextLayers: ['performance', 'optimization'],
+      focusAreas: ['performance-optimization', 'system-efficiency'],
       questioningLoops: [],
       duration: 3000,
       transitionTrigger: 'performance-monitoring'
