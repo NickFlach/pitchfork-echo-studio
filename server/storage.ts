@@ -1333,6 +1333,10 @@ export class MemStorage implements IStorage {
     return this.crossModelValidationRequests.find(r => r.id === id) || null;
   }
 
+  async getCrossModelValidationRequestsBySession(sessionId: string): Promise<CrossModelValidationRequest[]> {
+    return this.crossModelValidationRequests.filter(r => r.sessionId === sessionId);
+  }
+
   async getCrossModelValidationRequestsByUser(userId: string): Promise<CrossModelValidationRequest[]> {
     return this.crossModelValidationRequests.filter(r => r.userId === userId);
   }
@@ -1474,8 +1478,8 @@ export class MemStorage implements IStorage {
     const newAssessment: ExecutiveAssessment = {
       id: Math.random().toString(36).substring(7),
       timestamp: new Date().toISOString(),
-      nextReviewDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days from now
       ...assessment,
+      nextReviewDate: assessment.nextReviewDate || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days from now
     };
     this.executiveAssessments.push(newAssessment);
     return newAssessment;
