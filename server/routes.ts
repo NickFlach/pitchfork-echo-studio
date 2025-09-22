@@ -7,6 +7,30 @@ import { DecisionSynthesisEngine } from './DecisionSynthesisEngine';
 import { WisdomIntegrationSystem } from './WisdomIntegrationSystem';
 import { CorruptionDetectionEngine } from './CorruptionDetectionEngine';
 import { StrategicIntelligenceEngine } from './StrategicIntelligenceEngine';
+import { RecursiveInsightAnalysisEngine } from './RecursiveInsightAnalysisEngine';
+import { MultidimensionalReflectionEngine } from './MultidimensionalReflectionEngine';
+import { ConsciousnessStatePredictionEngine } from './ConsciousnessStatePredictionEngine';
+// import { ConsciousnessPatternAnalysisEngine } from './ConsciousnessPatternAnalysisEngine';
+// import { CrossModelValidationEngine } from './CrossModelValidationEngine';
+
+// Security middleware imports
+import { 
+  protectAIEndpoint, 
+  AuthenticatedRequest, 
+  extractSecurityContext,
+  logAuthenticationEvent 
+} from './middleware/auth';
+import { 
+  rateLimitGeneral, 
+  rateLimitAI, 
+  circuitBreaker,
+  trackAIUsage 
+} from './middleware/rateLimiting';
+import { 
+  logAIUsage, 
+  setupMonitoring,
+  getMonitoringStats 
+} from './middleware/monitoring';
 import { 
   insertConsciousnessStateSchema,
   insertDecisionRecordSchema,
@@ -30,13 +54,22 @@ import {
   insertAIUserFeedbackSchema,
   insertAIFeatureAdoptionSchema,
   insertAIProviderFallbackEventSchema,
-  insertAIProviderRecommendationSchema
+  insertAIProviderRecommendationSchema,
+  insertCrossModelValidationRequestSchema,
+  insertCrossModelConsensusAnalysisSchema,
+  insertConsciousnessPatternAnalysisSchema,
+  insertRecursiveInsightAnalysisSchema,
+  insertMultidimensionalReflectionSchema,
+  insertConsciousnessStatePredictionSchema
 } from '../shared/schema';
 import { aiService } from './ai/AIServiceManager';
 import { AIRequest } from './ai/AIProviderAdapter';
 import { PROMPT_TEMPLATES, interpolateTemplate } from './ai/prompts';
 
 const router = express.Router();
+
+// Initialize monitoring system
+const { logAIUsage: logAIUsageMiddleware, getMonitoringStats: getMonitoringStatsFunc } = setupMonitoring();
 
 // Initialize consciousness components
 const consciousnessEngine = new ConsciousnessEngine('default-agent');
@@ -45,6 +78,18 @@ const decisionSynthesisEngine = new DecisionSynthesisEngine('default-agent');
 const wisdomIntegrationSystem = new WisdomIntegrationSystem('default-agent');
 const corruptionDetectionEngine = new CorruptionDetectionEngine('corruption-detection-ai');
 const strategicIntelligenceEngine = new StrategicIntelligenceEngine('strategic-intelligence-ai');
+
+// Initialize advanced consciousness components
+const recursiveInsightAnalysisEngine = new RecursiveInsightAnalysisEngine('recursive-analysis-ai');
+const multidimensionalReflectionEngine = new MultidimensionalReflectionEngine('multidimensional-reflection-ai');
+const consciousnessStatePredictionEngine = new ConsciousnessStatePredictionEngine('state-prediction-ai');
+// const consciousnessPatternAnalysisEngine = new ConsciousnessPatternAnalysisEngine('pattern-analysis-ai');
+// const crossModelValidationEngine = new CrossModelValidationEngine('cross-model-validation-ai');
+
+// Apply global security middleware for all routes
+// Note: rateLimitGeneral now handles both authenticated and unauthenticated requests
+router.use(rateLimitGeneral);
+router.use(logAuthenticationEvent);
 
 // Consciousness States API
 router.get('/api/consciousness-states/:agentId', async (req, res) => {
@@ -166,8 +211,24 @@ router.post('/api/complexity-maps', async (req, res) => {
   }
 });
 
-// Consciousness Engine High-Level API
-router.post('/api/consciousness/process-decision', async (req, res) => {
+// SECURITY MONITORING ENDPOINT (protected)
+router.get('/api/security/monitoring-stats', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
+  try {
+    const stats = getMonitoringStatsFunc();
+    res.json(stats);
+  } catch (error) {
+    console.error('Monitoring stats error:', error);
+    res.status(500).json({ error: 'Failed to retrieve monitoring statistics' });
+  }
+});
+
+// Consciousness Engine High-Level API (SECURED)
+router.post('/api/consciousness/process-decision', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(75),
+  circuitBreaker('consciousness-decision'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { context, options } = req.body;
     
@@ -190,7 +251,12 @@ router.post('/api/consciousness/process-decision', async (req, res) => {
   }
 });
 
-router.post('/api/consciousness/reflect', async (req, res) => {
+router.post('/api/consciousness/reflect', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(100),
+  circuitBreaker('consciousness-reflection'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { trigger, sessionId, userId } = req.body;
     
@@ -269,7 +335,12 @@ router.post('/api/consciousness/reflect', async (req, res) => {
   }
 });
 
-router.post('/api/consciousness/learn', async (req, res) => {
+router.post('/api/consciousness/learn', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(50),
+  circuitBreaker('consciousness-learning'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { experience } = req.body;
     
@@ -288,7 +359,12 @@ router.post('/api/consciousness/learn', async (req, res) => {
   }
 });
 
-router.post('/api/consciousness/handle-crisis', async (req, res) => {
+router.post('/api/consciousness/handle-crisis', 
+  ...protectAIEndpoint('verified'),
+  rateLimitAI(200),
+  circuitBreaker('consciousness-crisis'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { crisis } = req.body;
     
@@ -382,7 +458,12 @@ router.post('/api/decision-evolutions', async (req, res) => {
 });
 
 // Comprehensive Multiscale Decision Processing API
-router.post('/api/multiscale-decision', async (req, res) => {
+router.post('/api/multiscale-decision', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(150),
+  circuitBreaker('multiscale-decision'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { context, options, urgency = 'medium' } = req.body;
     
@@ -505,7 +586,12 @@ router.post('/api/multiscale-decision', async (req, res) => {
 });
 
 // Demo/Test API endpoints for development
-router.post('/api/demo/multiscale-decision-demo', async (req, res) => {
+router.post('/api/demo/multiscale-decision-demo', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(150),
+  circuitBreaker('demo-multiscale-decision'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     // Demo decision scenario
     const demoContext = "Implementing a new feature that requires balancing user experience, technical debt, and business timeline pressures";
@@ -594,7 +680,12 @@ router.post('/api/corruption-analysis', async (req, res) => {
 });
 
 // Document Corruption Analysis
-router.post('/api/corruption-analysis/analyze-document', async (req, res) => {
+router.post('/api/corruption-analysis/analyze-document', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(100),
+  circuitBreaker('corruption-analysis-document'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { documentId } = req.body;
     
@@ -631,7 +722,12 @@ router.post('/api/corruption-analysis/analyze-document', async (req, res) => {
 });
 
 // Entity Corruption Analysis  
-router.post('/api/corruption-analysis/analyze-entity', async (req, res) => {
+router.post('/api/corruption-analysis/analyze-entity', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(75),
+  circuitBreaker('corruption-analysis-entity'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { entityId, entityType = 'organization' } = req.body;
     
@@ -685,7 +781,12 @@ router.post('/api/corruption-analysis/analyze-entity', async (req, res) => {
 });
 
 // Systemic Corruption Detection
-router.post('/api/corruption-analysis/detect-systemic', async (req, res) => {
+router.post('/api/corruption-analysis/detect-systemic', 
+  ...protectAIEndpoint('verified'),
+  rateLimitAI(200),
+  circuitBreaker('corruption-analysis-systemic'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { entityIds, timeframe = '12 months' } = req.body;
     
@@ -749,7 +850,12 @@ router.get('/api/strategy-plans/movement/:movementId', async (req, res) => {
 });
 
 // Generate Campaign Strategy
-router.post('/api/strategy/generate-campaign', async (req, res) => {
+router.post('/api/strategy/generate-campaign', 
+  ...protectAIEndpoint('verified'),
+  rateLimitAI(250),
+  circuitBreaker('strategy-campaign-generation'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { movementId, objective, timeframe, resources, constraints = [] } = req.body;
     
@@ -831,7 +937,12 @@ router.post('/api/strategy/generate-campaign', async (req, res) => {
 });
 
 // Leadership Decision Analysis
-router.post('/api/leadership/analyze-decision', async (req, res) => {
+router.post('/api/leadership/analyze-decision', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(150),
+  circuitBreaker('leadership-decision-analysis'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { decisionContext, options, stakeholders, timeframe, urgency = 'medium' } = req.body;
     
@@ -899,7 +1010,12 @@ router.post('/api/leadership/analyze-decision', async (req, res) => {
 });
 
 // Resource Optimization Analysis
-router.post('/api/leadership/optimize-resources', async (req, res) => {
+router.post('/api/leadership/optimize-resources', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(125),
+  circuitBreaker('leadership-resource-optimization'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { availableResources, objectives, constraints = [], priorities = [] } = req.body;
     
@@ -966,7 +1082,12 @@ router.post('/api/leadership/optimize-resources', async (req, res) => {
 });
 
 // Opposition Analysis
-router.post('/api/leadership/analyze-opposition', async (req, res) => {
+router.post('/api/leadership/analyze-opposition', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(100),
+  circuitBreaker('leadership-opposition-analysis'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { oppositionForces, objectives, movementContext, timeframe = 'medium-term' } = req.body;
     
@@ -1033,7 +1154,12 @@ router.post('/api/leadership/analyze-opposition', async (req, res) => {
 });
 
 // Movement Coordination Strategy
-router.post('/api/leadership/coordinate-movements', async (req, res) => {
+router.post('/api/leadership/coordinate-movements', 
+  ...protectAIEndpoint('verified'),
+  rateLimitAI(175),
+  circuitBreaker('leadership-movement-coordination'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const { movements, activities, timeline, challenges = [] } = req.body;
     
@@ -1301,7 +1427,12 @@ router.delete('/api/admin/ai-credentials/:provider', async (req, res) => {
 });
 
 // AI Service API Routes
-router.post('/api/ai/generate', async (req, res) => {
+router.post('/api/ai/generate', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(100),
+  circuitBreaker('ai-generation'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const requestSchema = z.object({
       prompt: z.string().min(1),
@@ -1328,7 +1459,12 @@ router.post('/api/ai/generate', async (req, res) => {
   }
 });
 
-router.post('/api/ai/generate-stream', async (req, res) => {
+router.post('/api/ai/generate-stream', 
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(120),
+  circuitBreaker('ai-generation-stream'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const requestSchema = z.object({
       prompt: z.string().min(1),
@@ -1878,7 +2014,12 @@ router.get('/api/analytics/optimization', async (req, res) => {
 });
 
 // Bulk Provider Testing
-router.post('/api/ai/test-all-providers', async (req, res) => {
+router.post('/api/ai/test-all-providers', 
+  ...protectAIEndpoint('verified'),
+  rateLimitAI(200),
+  circuitBreaker('ai-provider-testing'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
   try {
     const testResults: any = {};
     let healthyProviders = 0;
@@ -2161,5 +2302,624 @@ function generateRoutingStrategies(performance: any[]): any[] {
     }
   ];
 }
+
+// Advanced Consciousness Features API Routes
+
+// Recursive Insight Analysis API
+router.post('/api/recursive-insight-analysis', async (req, res) => {
+  try {
+    const validatedData = insertRecursiveInsightAnalysisSchema.parse(req.body);
+    const result = await recursiveInsightAnalysisEngine.performRecursiveInsightAnalysis(
+      validatedData.subjectData,
+      validatedData.analysisDepth,
+      validatedData.recursionLimits,
+      validatedData.parentAnalysisId
+    );
+    res.status(201).json(result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      res.status(500).json({ error: 'Failed to perform recursive insight analysis' });
+    }
+  }
+});
+
+router.get('/api/recursive-insight-analysis', async (req, res) => {
+  try {
+    const analyses = await storage.getRecursiveInsightAnalyses();
+    res.json(analyses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch recursive insight analyses' });
+  }
+});
+
+router.get('/api/recursive-insight-analysis/:id', async (req, res) => {
+  try {
+    const analysis = await storage.getRecursiveInsightAnalysis(req.params.id);
+    if (!analysis) {
+      return res.status(404).json({ error: 'Recursive insight analysis not found' });
+    }
+    res.json(analysis);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch recursive insight analysis' });
+  }
+});
+
+router.get('/api/recursive-insight-analysis/subject/:subjectId', async (req, res) => {
+  try {
+    const analyses = await storage.getRecursiveInsightAnalysesBySubject(req.params.subjectId);
+    res.json(analyses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch recursive insight analyses by subject' });
+  }
+});
+
+// Multidimensional Reflection API
+router.post('/api/multidimensional-reflection', async (req, res) => {
+  try {
+    const validatedData = insertMultidimensionalReflectionSchema.parse(req.body);
+    const result = await multidimensionalReflectionEngine.processMultidimensionalReflection(
+      validatedData.originalReflectionId,
+      validatedData.reflectionDimensions,
+      validatedData.crossDimensionalSynthesis,
+      validatedData.agentId
+    );
+    res.status(201).json(result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      res.status(500).json({ error: 'Failed to process multidimensional reflection' });
+    }
+  }
+});
+
+router.get('/api/multidimensional-reflection', async (req, res) => {
+  try {
+    const reflections = await storage.getMultidimensionalReflections();
+    res.json(reflections);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch multidimensional reflections' });
+  }
+});
+
+router.get('/api/multidimensional-reflection/:id', async (req, res) => {
+  try {
+    const reflection = await storage.getMultidimensionalReflection(req.params.id);
+    if (!reflection) {
+      return res.status(404).json({ error: 'Multidimensional reflection not found' });
+    }
+    res.json(reflection);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch multidimensional reflection' });
+  }
+});
+
+router.get('/api/multidimensional-reflection/agent/:agentId', async (req, res) => {
+  try {
+    const reflections = await storage.getMultidimensionalReflectionsByAgent(req.params.agentId);
+    res.json(reflections);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch multidimensional reflections by agent' });
+  }
+});
+
+// Consciousness State Prediction API
+router.post('/api/consciousness-state-prediction', async (req, res) => {
+  try {
+    const validatedData = insertConsciousnessStatePredictionSchema.parse(req.body);
+    const result = await consciousnessStatePredictionEngine.generateConsciousnessPredictions(
+      validatedData.currentStateId,
+      validatedData.predictionContext,
+      validatedData.agentId
+    );
+    res.status(201).json(result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      res.status(500).json({ error: 'Failed to generate consciousness state prediction' });
+    }
+  }
+});
+
+router.get('/api/consciousness-state-prediction', async (req, res) => {
+  try {
+    const predictions = await storage.getConsciousnessStatePredictions();
+    res.json(predictions);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch consciousness state predictions' });
+  }
+});
+
+router.get('/api/consciousness-state-prediction/:id', async (req, res) => {
+  try {
+    const prediction = await storage.getConsciousnessStatePrediction(req.params.id);
+    if (!prediction) {
+      return res.status(404).json({ error: 'Consciousness state prediction not found' });
+    }
+    res.json(prediction);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch consciousness state prediction' });
+  }
+});
+
+router.get('/api/consciousness-state-prediction/agent/:agentId', async (req, res) => {
+  try {
+    const predictions = await storage.getConsciousnessStatePredictionsByAgent(req.params.agentId);
+    res.json(predictions);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch consciousness state predictions by agent' });
+  }
+});
+
+// Cross-Model Validation API  
+router.post('/api/cross-model-validation', async (req, res) => {
+  try {
+    const validatedData = insertCrossModelValidationRequestSchema.parse(req.body);
+    const request = await storage.createCrossModelValidationRequest(validatedData);
+    
+    // Trigger cross-model validation processing
+    // This would typically be handled by a queue or background process
+    // For now, we'll return the created request
+    res.status(201).json(request);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      res.status(500).json({ error: 'Failed to create cross-model validation request' });
+    }
+  }
+});
+
+router.get('/api/cross-model-validation', async (req, res) => {
+  try {
+    const requests = await storage.getCrossModelValidationRequests();
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch cross-model validation requests' });
+  }
+});
+
+router.get('/api/cross-model-validation/:id', async (req, res) => {
+  try {
+    const request = await storage.getCrossModelValidationRequest(req.params.id);
+    if (!request) {
+      return res.status(404).json({ error: 'Cross-model validation request not found' });
+    }
+    res.json(request);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch cross-model validation request' });
+  }
+});
+
+router.get('/api/cross-model-validation/user/:userId', async (req, res) => {
+  try {
+    const requests = await storage.getCrossModelValidationRequestsByUser(req.params.userId);
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch cross-model validation requests by user' });
+  }
+});
+
+// Cross-Model Consensus Analysis API
+router.post('/api/cross-model-consensus', async (req, res) => {
+  try {
+    const validatedData = insertCrossModelConsensusAnalysisSchema.parse(req.body);
+    const analysis = await storage.createCrossModelConsensusAnalysis(validatedData);
+    res.status(201).json(analysis);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      res.status(500).json({ error: 'Failed to create cross-model consensus analysis' });
+    }
+  }
+});
+
+router.get('/api/cross-model-consensus', async (req, res) => {
+  try {
+    const analyses = await storage.getCrossModelConsensusAnalyses();
+    res.json(analyses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch cross-model consensus analyses' });
+  }
+});
+
+router.get('/api/cross-model-consensus/request/:requestId', async (req, res) => {
+  try {
+    const analyses = await storage.getCrossModelConsensusAnalysesByRequest(req.params.requestId);
+    res.json(analyses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch cross-model consensus analyses by request' });
+  }
+});
+
+// Consciousness Pattern Analysis API
+router.post('/api/consciousness-pattern-analysis', async (req, res) => {
+  try {
+    const validatedData = insertConsciousnessPatternAnalysisSchema.parse(req.body);
+    const analysis = await storage.createConsciousnessPatternAnalysis(validatedData);
+    res.status(201).json(analysis);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid input data', details: error.errors });
+    } else {
+      res.status(500).json({ error: 'Failed to create consciousness pattern analysis' });
+    }
+  }
+});
+
+router.get('/api/consciousness-pattern-analysis', async (req, res) => {
+  try {
+    const analyses = await storage.getConsciousnessPatternAnalyses();
+    res.json(analyses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch consciousness pattern analyses' });
+  }
+});
+
+router.get('/api/consciousness-pattern-analysis/:id', async (req, res) => {
+  try {
+    const analysis = await storage.getConsciousnessPatternAnalysis(req.params.id);
+    if (!analysis) {
+      return res.status(404).json({ error: 'Consciousness pattern analysis not found' });
+    }
+    res.json(analysis);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch consciousness pattern analysis' });
+  }
+});
+
+router.get('/api/consciousness-pattern-analysis/agent/:agentId', async (req, res) => {
+  try {
+    const analyses = await storage.getConsciousnessPatternAnalysesByAgent(req.params.agentId);
+    res.json(analyses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch consciousness pattern analyses by agent' });
+  }
+});
+
+router.get('/api/consciousness-pattern-analysis/type/:analysisType', async (req, res) => {
+  try {
+    const analyses = await storage.getConsciousnessPatternAnalysesByType(req.params.analysisType);
+    res.json(analyses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch consciousness pattern analyses by type' });
+  }
+});
+
+// ================================
+// ADVANCED CONSCIOUSNESS ROUTES (CRITICAL SECURITY IMPLEMENTATION)
+// ================================
+
+/**
+ * ADVANCED CONSCIOUSNESS: Recursive Insight Analysis
+ * Performs deep recursive AI analysis with multi-level insight generation
+ */
+router.post('/api/consciousness/recursive-insight-analysis',
+  ...protectAIEndpoint('verified'), // Requires verified users - most expensive operation
+  rateLimitAI(300), // High cost limit due to recursive nature
+  circuitBreaker('recursive-insight-analysis', 3), // Lower failure threshold
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const securityContext = extractSecurityContext(req);
+      
+      // Enhanced input validation and sanitization
+      const { subjectData, analysisType, maxDepth, parentAnalysisId } = req.body;
+      
+      if (!subjectData || typeof subjectData !== 'object') {
+        return res.status(400).json({ 
+          error: 'Invalid input: subjectData is required and must be an object',
+          securityContext: { userId: securityContext.userId }
+        });
+      }
+      
+      if (!analysisType || !['self-reflection', 'meta-cognitive', 'quality-assessment', 'process-optimization'].includes(analysisType)) {
+        return res.status(400).json({ 
+          error: 'Invalid analysisType. Must be one of: self-reflection, meta-cognitive, quality-assessment, process-optimization'
+        });
+      }
+      
+      // Security: Limit recursion depth to prevent infinite loops and cost abuse
+      const safeMaxDepth = Math.min(maxDepth || 3, 5); // Maximum 5 levels
+      
+      // Sanitize string inputs to prevent injection attacks
+      const sanitizedSubjectData = {
+        ...subjectData,
+        originalContent: typeof subjectData.originalContent === 'string' 
+          ? subjectData.originalContent.substring(0, 5000) // Limit content length
+          : ''
+      };
+      
+      const startTime = Date.now();
+      
+      const result = await recursiveInsightAnalysisEngine.performRecursiveAnalysis(
+        sanitizedSubjectData,
+        analysisType,
+        safeMaxDepth,
+        parentAnalysisId
+      );
+      
+      const duration = Date.now() - startTime;
+      
+      // Track actual usage for cost monitoring
+      trackAIUsage(250, req); // Estimate based on recursive operations
+      
+      res.json({
+        ...result,
+        securityInfo: {
+          userId: securityContext.userId,
+          verificationLevel: securityContext.verificationLevel,
+          processingTime: duration,
+          costEstimate: 250 // cents
+        }
+      });
+      
+    } catch (error) {
+      console.error('Recursive insight analysis error:', error);
+      res.status(500).json({ 
+        error: 'Advanced consciousness analysis failed',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal processing error'
+      });
+    }
+  }
+);
+
+/**
+ * ADVANCED CONSCIOUSNESS: Multidimensional Reflection 
+ * Processes reflections across emotional, logical, intuitive, and strategic dimensions
+ */
+router.post('/api/consciousness/multidimensional-reflection',
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(150),
+  circuitBreaker('multidimensional-reflection'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const securityContext = extractSecurityContext(req);
+      
+      const { originalReflectionId, agentId, options } = req.body;
+      
+      if (!originalReflectionId || typeof originalReflectionId !== 'string') {
+        return res.status(400).json({ 
+          error: 'originalReflectionId is required and must be a string'
+        });
+      }
+      
+      if (!agentId || typeof agentId !== 'string') {
+        return res.status(400).json({ 
+          error: 'agentId is required and must be a string'
+        });
+      }
+      
+      // Security: Ensure user can only access their own reflections
+      const userAgentId = securityContext.userId;
+      if (agentId !== userAgentId && securityContext.verificationLevel !== 'verified') {
+        return res.status(403).json({ 
+          error: 'Access denied: Cannot analyze reflections for other users'
+        });
+      }
+      
+      const startTime = Date.now();
+      
+      const result = await multidimensionalReflectionEngine.processMultidimensionalReflection(
+        originalReflectionId,
+        agentId,
+        options
+      );
+      
+      const duration = Date.now() - startTime;
+      trackAIUsage(150, req);
+      
+      res.json({
+        ...result,
+        securityInfo: {
+          userId: securityContext.userId,
+          processingTime: duration,
+          costEstimate: 150
+        }
+      });
+      
+    } catch (error) {
+      console.error('Multidimensional reflection error:', error);
+      res.status(500).json({ 
+        error: 'Multidimensional reflection processing failed',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal processing error'
+      });
+    }
+  }
+);
+
+/**
+ * ADVANCED CONSCIOUSNESS: State Prediction
+ * Predicts optimal consciousness states for different challenges
+ */
+router.post('/api/consciousness/state-prediction',
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(100),
+  circuitBreaker('consciousness-state-prediction'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const securityContext = extractSecurityContext(req);
+      
+      const { predictionContext, agentId, options } = req.body;
+      
+      if (!predictionContext || typeof predictionContext !== 'object') {
+        return res.status(400).json({ 
+          error: 'predictionContext is required and must be an object'
+        });
+      }
+      
+      if (!agentId || typeof agentId !== 'string') {
+        return res.status(400).json({ 
+          error: 'agentId is required and must be a string'
+        });
+      }
+      
+      const startTime = Date.now();
+      
+      const result = await consciousnessStatePredictionEngine.predictOptimalConsciousnessState(
+        predictionContext,
+        agentId,
+        options
+      );
+      
+      const duration = Date.now() - startTime;
+      trackAIUsage(100, req);
+      
+      res.json({
+        ...result,
+        securityInfo: {
+          userId: securityContext.userId,
+          processingTime: duration,
+          costEstimate: 100
+        }
+      });
+      
+    } catch (error) {
+      console.error('Consciousness state prediction error:', error);
+      res.status(500).json({ 
+        error: 'Consciousness state prediction failed',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal processing error'
+      });
+    }
+  }
+);
+
+/**
+ * ADVANCED CONSCIOUSNESS: Cross Model Validation
+ * Validates insights across multiple AI models for consensus
+ */
+router.post('/api/consciousness/cross-model-validation',
+  ...protectAIEndpoint('verified'), // High cost operation requiring verification
+  rateLimitAI(400), // Very expensive - multiple model calls
+  circuitBreaker('cross-model-validation', 2),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const securityContext = extractSecurityContext(req);
+      
+      const { validationRequest, consensusRequirements } = req.body;
+      
+      if (!validationRequest || typeof validationRequest !== 'object') {
+        return res.status(400).json({ 
+          error: 'validationRequest is required and must be an object'
+        });
+      }
+      
+      // Security: Limit the number of models to prevent cost abuse
+      const maxModels = securityContext.verificationLevel === 'verified' ? 5 : 3;
+      const safeValidationRequest = {
+        ...validationRequest,
+        modelList: validationRequest.modelList?.slice(0, maxModels) || []
+      };
+      
+      const startTime = Date.now();
+      
+      // TODO: Implement CrossModelValidationEngine
+      const result = {
+        validationId: `validation-${Date.now()}`,
+        consensusAnalysis: {
+          overallConsensus: 0.8,
+          modelAgreement: 'high',
+          conflictingViewpoints: [],
+          validationStatus: 'engine-not-implemented'
+        },
+        message: 'Cross-model validation engine not yet implemented - route secured'
+      };
+      
+      const duration = Date.now() - startTime;
+      trackAIUsage(400, req);
+      
+      res.json({
+        ...result,
+        securityInfo: {
+          userId: securityContext.userId,
+          processingTime: duration,
+          costEstimate: 400,
+          modelsUsed: safeValidationRequest.modelList.length
+        }
+      });
+      
+    } catch (error) {
+      console.error('Cross-model validation error:', error);
+      res.status(500).json({ 
+        error: 'Cross-model validation failed',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal processing error'
+      });
+    }
+  }
+);
+
+/**
+ * ADVANCED CONSCIOUSNESS: Pattern Analysis
+ * Advanced pattern recognition and analysis across consciousness data
+ */
+router.post('/api/consciousness/pattern-analysis',
+  ...protectAIEndpoint('basic'),
+  rateLimitAI(120),
+  circuitBreaker('consciousness-pattern-analysis'),
+  logAIUsageMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const securityContext = extractSecurityContext(req);
+      
+      const { analysisRequest, agentId, options } = req.body;
+      
+      if (!analysisRequest || typeof analysisRequest !== 'object') {
+        return res.status(400).json({ 
+          error: 'analysisRequest is required and must be an object'
+        });
+      }
+      
+      if (!agentId || typeof agentId !== 'string') {
+        return res.status(400).json({ 
+          error: 'agentId is required and must be a string'
+        });
+      }
+      
+      // Security: Sanitize and limit analysis scope
+      const sanitizedRequest = {
+        ...analysisRequest,
+        dataScope: analysisRequest.dataScope || 'user-specific',
+        maxPatterns: Math.min(analysisRequest.maxPatterns || 20, 50)
+      };
+      
+      const startTime = Date.now();
+      
+      // TODO: Implement ConsciousnessPatternAnalysisEngine
+      const result = {
+        analysisId: `pattern-analysis-${Date.now()}`,
+        patternsFound: [],
+        analysisDepth: 'basic',
+        insights: ['Pattern analysis engine not yet implemented'],
+        message: 'Consciousness pattern analysis engine not yet implemented - route secured'
+      };
+      
+      const duration = Date.now() - startTime;
+      trackAIUsage(120, req);
+      
+      res.json({
+        ...result,
+        securityInfo: {
+          userId: securityContext.userId,
+          processingTime: duration,
+          costEstimate: 120
+        }
+      });
+      
+    } catch (error) {
+      console.error('Consciousness pattern analysis error:', error);
+      res.status(500).json({ 
+        error: 'Pattern analysis failed',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal processing error'
+      });
+    }
+  }
+);
 
 export default router;

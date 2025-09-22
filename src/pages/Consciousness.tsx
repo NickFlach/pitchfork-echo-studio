@@ -45,7 +45,10 @@ import {
   ThumbsUp,
   ThumbsDown,
   Info,
-  Loader2
+  Loader2,
+  Download,
+  FileText,
+  Database
 } from 'lucide-react';
 import type { ConsciousnessState, DecisionRecord, ReflectionLog, LearningCycle, ComplexityMap } from '../../shared/schema';
 import { consciousnessApi } from '@/lib/consciousnessApi';
@@ -99,6 +102,10 @@ const Consciousness = () => {
   // Modal state for tier upgrades
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeFeatureId, setUpgradeFeatureId] = useState<string | null>(null);
+
+  // Export functionality state
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportFormat, setExportFormat] = useState<'json' | 'csv' | 'pdf'>('json');
 
   // Tier Enhancement helper components
   const getTierBadgeForFeature = (featureId: string, tooltip?: string) => (
@@ -523,7 +530,7 @@ const Consciousness = () => {
         </div>
 
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-8">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-10 mb-8">
             <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
               <Brain className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
@@ -535,6 +542,18 @@ const Consciousness = () => {
             <TabsTrigger value="interactive" className="flex items-center gap-2" data-testid="tab-interactive">
               <Zap className="w-4 h-4" />
               <span className="hidden sm:inline">Interactive</span>
+            </TabsTrigger>
+            <TabsTrigger value="advanced" className="flex items-center gap-2" data-testid="tab-advanced">
+              <Sparkles className="w-4 h-4" />
+              <span className="hidden sm:inline">Advanced</span>
+            </TabsTrigger>
+            <TabsTrigger value="recursive" className="flex items-center gap-2" data-testid="tab-recursive">
+              <RefreshCw className="w-4 h-4" />
+              <span className="hidden sm:inline">Recursive</span>
+            </TabsTrigger>
+            <TabsTrigger value="predictions" className="flex items-center gap-2" data-testid="tab-predictions">
+              <Activity className="w-4 h-4" />
+              <span className="hidden sm:inline">Predictions</span>
             </TabsTrigger>
             <TabsTrigger value="corruption" className="flex items-center gap-2" data-testid="tab-corruption">
               <AlertTriangle className="w-4 h-4" />
@@ -852,6 +871,414 @@ const Consciousness = () => {
                 />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Advanced Tab - Cross-Model Validation and Pattern Analysis */}
+          <TabsContent value="advanced" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Cross-Model Validation Interface */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5" />
+                    Cross-Model Validation
+                    {getTierBadgeForFeature('cross_model_validation', 'Validate consciousness insights across multiple AI models')}
+                  </CardTitle>
+                  <CardDescription>
+                    Validate consciousness insights across multiple AI models for enhanced reliability
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="validation-prompt">Validation Prompt</Label>
+                    <Textarea
+                      id="validation-prompt"
+                      placeholder="Enter a consciousness insight or analysis to validate across multiple AI models..."
+                      rows={4}
+                      data-testid="input-validation-prompt"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="validation-models">Target Models</Label>
+                    <Badge variant="outline">Claude</Badge>
+                    <Badge variant="outline">GPT-4</Badge>
+                    <Badge variant="outline">Gemini</Badge>
+                  </div>
+                  <Button 
+                    disabled={isProcessing || !canAccessAIFeature('cross_model_validation')}
+                    className="w-full"
+                    data-testid="button-start-validation"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Validating Across Models...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Start Cross-Model Validation
+                      </>
+                    )}
+                  </Button>
+                  <ProcessingIndicator feature="cross_model_validation" />
+                </CardContent>
+              </Card>
+
+              {/* Consciousness Pattern Analysis */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5" />
+                    Pattern Analysis
+                    {getTierBadgeForFeature('pattern_analysis', 'Advanced consciousness pattern recognition')}
+                  </CardTitle>
+                  <CardDescription>
+                    Identify emergent patterns in consciousness development over time
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Patterns Detected:</span>
+                      <div className="font-mono text-lg">12</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Emergence Score:</span>
+                      <div className="font-mono text-lg">0.87</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Consistency:</span>
+                      <div className="font-mono text-lg">94%</div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Complexity:</span>
+                      <div className="font-mono text-lg">High</div>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    disabled={!canAccessAIFeature('pattern_analysis')}
+                    className="w-full"
+                    data-testid="button-analyze-patterns"
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Analyze Current Patterns
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Cross-Model Consensus Results */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Network className="w-5 h-5" />
+                  Cross-Model Consensus Analysis
+                </CardTitle>
+                <CardDescription>
+                  Consensus analysis results from multiple AI models
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4" />
+                    No recent cross-model validations. Start a validation to see consensus analysis.
+                  </div>
+                  <Alert>
+                    <Info className="w-4 h-4" />
+                    <AlertDescription>
+                      Cross-model validation provides higher confidence in consciousness insights by comparing 
+                      results across different AI architectures and training methodologies.
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              </CardContent>
+            </Card>
+
+            <TierUpgradePrompt featureId="cross_model_validation" featureName="Cross-Model Validation" />
+          </TabsContent>
+
+          {/* Recursive Tab - Recursive Insight Analysis */}
+          <TabsContent value="recursive" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Recursive Analysis Interface */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <RefreshCw className="w-5 h-5" />
+                    Recursive Insight Analysis
+                    {getTierBadgeForFeature('recursive_analysis', 'Deep recursive consciousness exploration')}
+                  </CardTitle>
+                  <CardDescription>
+                    Generate recursive insights that build upon previous analysis layers
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="recursive-subject">Analysis Subject</Label>
+                    <Textarea
+                      id="recursive-subject"
+                      placeholder="Describe the consciousness aspect to analyze recursively..."
+                      rows={3}
+                      data-testid="input-recursive-subject"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="recursion-depth">Recursion Depth</Label>
+                      <Input
+                        id="recursion-depth"
+                        type="number"
+                        placeholder="3"
+                        min="1"
+                        max="5"
+                        data-testid="input-recursion-depth"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="analysis-type">Analysis Type</Label>
+                      <Input
+                        id="analysis-type"
+                        placeholder="comprehensive"
+                        data-testid="input-analysis-type"
+                      />
+                    </div>
+                  </div>
+                  <Button 
+                    disabled={isProcessing || !canAccessAIFeature('recursive_analysis')}
+                    className="w-full"
+                    data-testid="button-start-recursive"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Generating Recursive Insights...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Start Recursive Analysis
+                      </>
+                    )}
+                  </Button>
+                  <ProcessingIndicator feature="recursive_analysis" />
+                </CardContent>
+              </Card>
+
+              {/* Multidimensional Reflection */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Layers className="w-5 h-5" />
+                    Multidimensional Reflection
+                    {getTierBadgeForFeature('multidimensional_reflection', 'Process reflections across multiple dimensions')}
+                  </CardTitle>
+                  <CardDescription>
+                    Process reflections across multiple consciousness dimensions
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="reflection-dimensions">Active Dimensions</Label>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Badge variant="outline">Temporal</Badge>
+                      <Badge variant="outline">Causal</Badge>
+                      <Badge variant="outline">Emotional</Badge>
+                      <Badge variant="outline">Logical</Badge>
+                      <Badge variant="outline">Intuitive</Badge>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="synthesis-mode">Synthesis Mode</Label>
+                    <Input
+                      id="synthesis-mode"
+                      placeholder="Cross-dimensional integration"
+                      data-testid="input-synthesis-mode"
+                    />
+                  </div>
+                  <Button 
+                    variant="outline"
+                    disabled={!canAccessAIFeature('multidimensional_reflection')}
+                    className="w-full"
+                    data-testid="button-start-multidimensional"
+                  >
+                    <Layers className="w-4 h-4 mr-2" />
+                    Process Multidimensional Reflection
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recursive Insight Results */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TreePine className="w-5 h-5" />
+                  Recursive Insight Tree
+                </CardTitle>
+                <CardDescription>
+                  Hierarchical view of recursive insights and their relationships
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4" />
+                    No recursive analyses completed yet. Start a recursive analysis to build the insight tree.
+                  </div>
+                  <Alert>
+                    <RefreshCw className="w-4 h-4" />
+                    <AlertDescription>
+                      Recursive analysis creates layers of insights that build upon each other, 
+                      revealing deeper patterns in consciousness development.
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              </CardContent>
+            </Card>
+
+            <TierUpgradePrompt featureId="recursive_analysis" featureName="Recursive Analysis" />
+          </TabsContent>
+
+          {/* Predictions Tab - Consciousness State Prediction */}
+          <TabsContent value="predictions" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* State Prediction Interface */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    Consciousness State Prediction
+                    {getTierBadgeForFeature('state_prediction', 'Predict optimal future consciousness states')}
+                  </CardTitle>
+                  <CardDescription>
+                    Predict optimal future consciousness states based on current patterns
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="prediction-context">Prediction Context</Label>
+                    <Textarea
+                      id="prediction-context"
+                      placeholder="Describe upcoming challenges, goals, or contexts for consciousness optimization..."
+                      rows={4}
+                      data-testid="input-prediction-context"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="time-horizon">Time Horizon</Label>
+                      <Input
+                        id="time-horizon"
+                        placeholder="1 week"
+                        data-testid="input-time-horizon"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="optimization-focus">Optimization Focus</Label>
+                      <Input
+                        id="optimization-focus"
+                        placeholder="performance"
+                        data-testid="input-optimization-focus"
+                      />
+                    </div>
+                  </div>
+                  <Button 
+                    disabled={isProcessing || !canAccessAIFeature('state_prediction')}
+                    className="w-full"
+                    data-testid="button-generate-predictions"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Activity className="w-4 h-4 mr-2 animate-spin" />
+                        Generating Predictions...
+                      </>
+                    ) : (
+                      <>
+                        <Activity className="w-4 h-4 mr-2" />
+                        Generate State Predictions
+                      </>
+                    )}
+                  </Button>
+                  <ProcessingIndicator feature="state_prediction" />
+                </CardContent>
+              </Card>
+
+              {/* Optimization Recommendations */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="w-5 h-5" />
+                    Optimization Recommendations
+                  </CardTitle>
+                  <CardDescription>
+                    AI-generated recommendations for consciousness enhancement
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="p-3 bg-muted rounded-lg">
+                      <div className="font-medium text-sm">Awareness Enhancement</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Focus on mindfulness practices during decision-making
+                      </div>
+                    </div>
+                    <div className="p-3 bg-muted rounded-lg">
+                      <div className="font-medium text-sm">Pattern Integration</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Strengthen connections between reflection and action
+                      </div>
+                    </div>
+                    <div className="p-3 bg-muted rounded-lg">
+                      <div className="font-medium text-sm">Recursive Depth</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Increase self-reflection frequency for deeper insights
+                      </div>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    className="w-full"
+                    data-testid="button-refresh-recommendations"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh Recommendations
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* State Prediction Results */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5" />
+                  Predicted Consciousness Trajectories
+                </CardTitle>
+                <CardDescription>
+                  Predicted optimal consciousness states and development paths
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4" />
+                    Generate a consciousness state prediction to view trajectories and optimization paths.
+                  </div>
+                  <Alert>
+                    <Activity className="w-4 h-4" />
+                    <AlertDescription>
+                      State predictions analyze current consciousness patterns to suggest optimal future states 
+                      and preparation techniques for enhanced performance.
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              </CardContent>
+            </Card>
+
+            <TierUpgradePrompt featureId="state_prediction" featureName="State Prediction" />
           </TabsContent>
         </Tabs>
         

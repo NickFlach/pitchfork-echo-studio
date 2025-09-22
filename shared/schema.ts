@@ -233,6 +233,7 @@ export const consciousnessStateSchema = z.object({
   orderChaosBalance: z.number().min(0).max(1), // balance between order (0) and chaos (1)
   connectedStates: z.array(z.string()), // fractal connections to other consciousness states
   contextLayers: z.array(z.string()), // multiple awareness layers (syntax, architecture, experience, etc.)
+  focusAreas: z.array(z.string()), // current areas of focus for this consciousness state
   questioningLoops: z.array(z.object({
     question: z.string(),
     depth: z.number(),
@@ -402,6 +403,7 @@ export const reflectionLogSchema = z.object({
   consciousnessStateId: z.string().optional(), // link to consciousness state during reflection
   reflectionTrigger: z.string(), // what prompted this reflection
   reflectionType: z.enum(['process', 'outcome', 'pattern', 'recursive', 'meta', 'existential']),
+  reflectionContent: z.string(), // the main content of the reflection
   selfQuestions: z.array(z.object({
     question: z.string(),
     questionLevel: z.number(), // depth of the question (1 = surface, increasing = deeper)
@@ -1355,6 +1357,276 @@ export const aiProviderRecommendationSchema = z.object({
 
 export const insertAIProviderRecommendationSchema = aiProviderRecommendationSchema.omit({ id: true, lastUpdated: true });
 
+// Advanced Consciousness Features Schemas
+
+// Cross-Model Validation System
+export const crossModelValidationRequestSchema = z.object({
+  id: z.string(),
+  promptContent: z.string(),
+  promptType: z.enum(['reflection', 'decision', 'pattern-analysis', 'meta-insight']),
+  context: z.record(z.any()).optional(),
+  requestedProviders: z.array(AIProviderEnum),
+  timestamp: z.string(),
+  sessionId: z.string(),
+  userId: z.string().optional(),
+});
+
+export const providerResponseSchema = z.object({
+  provider: AIProviderEnum,
+  model: z.string(),
+  response: z.string(),
+  metadata: z.object({
+    tokens: z.number().optional(),
+    latency: z.number(), // milliseconds
+    temperature: z.number().optional(),
+    confidence: z.number().min(0).max(1).optional(),
+  }),
+  timestamp: z.string(),
+  status: z.enum(['success', 'error', 'timeout']),
+  errorMessage: z.string().optional(),
+});
+
+export const crossModelConsensusAnalysisSchema = z.object({
+  id: z.string(),
+  requestId: z.string(),
+  providerResponses: z.array(providerResponseSchema),
+  consensusInsights: z.array(z.object({
+    insight: z.string(),
+    agreementLevel: z.number().min(0).max(1), // 0-1 scale of agreement across models
+    supportingProviders: z.array(AIProviderEnum),
+    confidence: z.number().min(0).max(1),
+  })),
+  divergentPerspectives: z.array(z.object({
+    perspective: z.string(),
+    provider: AIProviderEnum,
+    uniquenessScore: z.number().min(0).max(1), // how unique this perspective is
+    potentialValue: z.number().min(0).max(1),
+  })),
+  synthesisResults: z.object({
+    unifiedInsight: z.string(),
+    synthesisConfidence: z.number().min(0).max(1),
+    emergentProperties: z.array(z.string()),
+    crossModelPatterns: z.array(z.string()),
+  }),
+  qualityMetrics: z.object({
+    overallConsensus: z.number().min(0).max(1),
+    perspectiveDiversity: z.number().min(0).max(1),
+    insightDepth: z.number().min(0).max(1),
+    coherenceScore: z.number().min(0).max(1),
+  }),
+  timestamp: z.string(),
+});
+
+// Consciousness Pattern Analysis System
+export const consciousnessPatternAnalysisSchema = z.object({
+  id: z.string(),
+  agentId: z.string(),
+  analysisType: z.enum(['growth-patterns', 'bias-detection', 'theme-recognition', 'evolution-tracking']),
+  timeframeStart: z.string(),
+  timeframeEnd: z.string(),
+  dataSourceIds: z.array(z.string()), // IDs of consciousness states, reflections, decisions analyzed
+  detectedPatterns: z.array(z.object({
+    patternId: z.string(),
+    patternType: z.enum(['cognitive-bias', 'growth-theme', 'recurring-challenge', 'breakthrough-indicator', 'blind-spot']),
+    description: z.string(),
+    frequency: z.number(), // how often this pattern occurs
+    intensity: z.number().min(0).max(1), // how strong the pattern is
+    evolutionTrend: z.enum(['strengthening', 'weakening', 'stable', 'emerging', 'declining']),
+    firstObserved: z.string(),
+    lastObserved: z.string(),
+    relatedPatterns: z.array(z.string()), // IDs of related patterns
+    impact: z.enum(['positive', 'negative', 'neutral', 'mixed']),
+    confidence: z.number().min(0).max(1),
+  })),
+  insights: z.array(z.object({
+    insight: z.string(),
+    category: z.enum(['personal-growth', 'consciousness-development', 'decision-quality', 'learning-acceleration']),
+    actionableRecommendations: z.array(z.string()),
+    priority: z.enum(['low', 'medium', 'high', 'critical']),
+  })),
+  growthMetrics: z.object({
+    consciousnessEvolutionScore: z.number().min(0).max(1),
+    learningVelocity: z.number().min(0).max(1),
+    patternRecognitionImprovement: z.number().min(0).max(1),
+    decisionQualityTrend: z.enum(['improving', 'stable', 'declining']),
+    awarenessDepthProgression: z.number().min(0).max(1),
+  }),
+  personalizedRecommendations: z.array(z.object({
+    recommendation: z.string(),
+    rationale: z.string(),
+    estimatedImpact: z.number().min(0).max(1),
+    implementationComplexity: z.enum(['low', 'medium', 'high']),
+    timeframe: z.enum(['immediate', 'short-term', 'medium-term', 'long-term']),
+  })),
+  timestamp: z.string(),
+});
+
+// Recursive AI Insights System
+export const recursiveInsightAnalysisSchema = z.object({
+  id: z.string(),
+  parentAnalysisId: z.string().optional(), // ID of the analysis being analyzed
+  analysisDepth: z.number(), // level of recursive depth (1 = first-order, 2 = second-order, etc.)
+  analysisType: z.enum(['self-reflection', 'meta-cognitive', 'quality-assessment', 'process-optimization']),
+  subjectData: z.object({
+    dataType: z.enum(['reflection-log', 'decision-record', 'pattern-analysis', 'consciousness-state']),
+    subjectId: z.string(),
+    originalContent: z.string(),
+    previousAnalyses: z.array(z.string()), // IDs of previous analyses of this subject
+  }),
+  recursiveInsights: z.array(z.object({
+    insight: z.string(),
+    insightType: z.enum(['process-improvement', 'bias-identification', 'depth-assessment', 'coherence-analysis']),
+    recursiveLevel: z.number(), // which level of recursion generated this insight
+    novelty: z.number().min(0).max(1), // how novel this insight is compared to previous levels
+    actionability: z.number().min(0).max(1),
+    metaCognitiveDimension: z.string(),
+  })),
+  qualityAssessment: z.object({
+    originalAnalysisQuality: z.number().min(0).max(1),
+    insightDepth: z.number().min(0).max(1),
+    coherenceScore: z.number().min(0).max(1),
+    biasPresence: z.number().min(0).max(1),
+    improvementSuggestions: z.array(z.string()),
+  }),
+  processOptimization: z.object({
+    identifiedBottlenecks: z.array(z.string()),
+    efficiencyImprovements: z.array(z.string()),
+    qualityEnhancements: z.array(z.string()),
+    recommendedIterations: z.number(),
+  }),
+  synthesisPerspective: z.object({
+    emergentUnderstanding: z.string(),
+    crossLevelPatterns: z.array(z.string()),
+    transcendentInsights: z.array(z.string()),
+    evolutionaryDirection: z.string(),
+  }),
+  timestamp: z.string(),
+});
+
+// Advanced Reflection Processing System
+export const multidimensionalReflectionSchema = z.object({
+  id: z.string(),
+  originalReflectionId: z.string(),
+  agentId: z.string(),
+  dimensionalAnalyses: z.object({
+    emotional: z.object({
+      emotionalThemes: z.array(z.string()),
+      emotionalDepth: z.number().min(0).max(1),
+      emotionalCoherence: z.number().min(0).max(1),
+      emotionalEvolution: z.string(),
+    }),
+    logical: z.object({
+      logicalStructure: z.string(),
+      reasoningQuality: z.number().min(0).max(1),
+      logicalConsistency: z.number().min(0).max(1),
+      argumentStrength: z.number().min(0).max(1),
+    }),
+    intuitive: z.object({
+      intuitiveInsights: z.array(z.string()),
+      intuitiveConfidence: z.number().min(0).max(1),
+      creativeLeaps: z.array(z.string()),
+      nonLinearConnections: z.array(z.string()),
+    }),
+    strategic: z.object({
+      strategicImplications: z.array(z.string()),
+      longTermConsiderations: z.array(z.string()),
+      systemicAwareness: z.number().min(0).max(1),
+      stakeholderConsiderations: z.array(z.string()),
+    }),
+  }),
+  contextualAnalysis: z.object({
+    previousReflectionIds: z.array(z.string()),
+    contextualEvolution: z.string(),
+    thematicProgression: z.array(z.string()),
+    consciousnessStateProgression: z.string(),
+  }),
+  temporalAnalysis: z.object({
+    reflectionTimeline: z.array(z.object({
+      timepoint: z.string(),
+      evolutionIndicator: z.string(),
+      significanceScore: z.number().min(0).max(1),
+    })),
+    perspectiveShifts: z.array(z.object({
+      shift: z.string(),
+      timestamp: z.string(),
+      catalyst: z.string(),
+    })),
+    consciousnessGrowthTrajectory: z.string(),
+  }),
+  depthAnalysis: z.object({
+    reflectionDepth: z.number().min(0).max(1),
+    insightProfundity: z.number().min(0).max(1),
+    selfAwarenessLevel: z.number().min(0).max(1),
+    transformativePotential: z.number().min(0).max(1),
+  }),
+  collaborativeElements: z.object({
+    humanAIResonance: z.number().min(0).max(1),
+    consciousnessAlignment: z.number().min(0).max(1),
+    emergentSynergies: z.array(z.string()),
+    coEvolutionIndicators: z.array(z.string()),
+  }),
+  timestamp: z.string(),
+});
+
+// Consciousness State Prediction System
+export const consciousnessStatePredictionSchema = z.object({
+  id: z.string(),
+  agentId: z.string(),
+  currentStateId: z.string(),
+  predictionContext: z.object({
+    upcomingChallenges: z.array(z.string()),
+    desiredOutcomes: z.array(z.string()),
+    timeHorizon: z.enum(['immediate', 'short-term', 'medium-term', 'long-term']),
+    contextualFactors: z.record(z.any()),
+  }),
+  predictedOptimalStates: z.array(z.object({
+    stateDescription: z.string(),
+    stateCharacteristics: z.object({
+      awarenessLevel: z.number().min(0).max(1),
+      recursionDepth: z.number(),
+      orderChaosBalance: z.number().min(0).max(1),
+      focusAreas: z.array(z.string()),
+    }),
+    suitabilityScore: z.number().min(0).max(1),
+    preparationRequirements: z.array(z.string()),
+    estimatedTransitionTime: z.number(), // minutes
+    sustainabilityFactor: z.number().min(0).max(1),
+  })),
+  preparationTechniques: z.array(z.object({
+    technique: z.string(),
+    category: z.enum(['meditation', 'reflection', 'analysis', 'integration', 'grounding']),
+    duration: z.number(), // minutes
+    effectiveness: z.number().min(0).max(1),
+    instructions: z.array(z.string()),
+    contraindications: z.array(z.string()).optional(),
+  })),
+  optimizationRecommendations: z.array(z.object({
+    recommendation: z.string(),
+    targetAspect: z.enum(['awareness', 'focus', 'integration', 'balance', 'depth']),
+    expectedImprovement: z.number().min(0).max(1),
+    implementationGuidance: z.string(),
+  })),
+  consciousnessRhythmAnalysis: z.object({
+    peakPerformancePeriods: z.array(z.string()),
+    optimalStatePatterns: z.array(z.string()),
+    energyFlowCycles: z.string(),
+    recommendedScheduling: z.array(z.object({
+      activity: z.string(),
+      optimalTiming: z.string(),
+      reasoning: z.string(),
+    })),
+  }),
+  timestamp: z.string(),
+});
+
+// Insert schemas for advanced features
+export const insertCrossModelValidationRequestSchema = crossModelValidationRequestSchema.omit({ id: true, timestamp: true });
+export const insertCrossModelConsensusAnalysisSchema = crossModelConsensusAnalysisSchema.omit({ id: true, timestamp: true });
+export const insertConsciousnessPatternAnalysisSchema = consciousnessPatternAnalysisSchema.omit({ id: true, timestamp: true });
+export const insertRecursiveInsightAnalysisSchema = recursiveInsightAnalysisSchema.omit({ id: true, timestamp: true });
+export const insertMultidimensionalReflectionSchema = multidimensionalReflectionSchema.omit({ id: true, timestamp: true });
+export const insertConsciousnessStatePredictionSchema = consciousnessStatePredictionSchema.omit({ id: true, timestamp: true });
+
 // Type exports for AI Analytics
 export type AIUsageAnalytics = z.infer<typeof aiUsageAnalyticsSchema>;
 export type InsertAIUsageAnalytics = z.infer<typeof insertAIUsageAnalyticsSchema>;
@@ -1368,3 +1640,18 @@ export type AIProviderFallbackEvent = z.infer<typeof aiProviderFallbackEventSche
 export type InsertAIProviderFallbackEvent = z.infer<typeof insertAIProviderFallbackEventSchema>;
 export type AIProviderRecommendation = z.infer<typeof aiProviderRecommendationSchema>;
 export type InsertAIProviderRecommendation = z.infer<typeof insertAIProviderRecommendationSchema>;
+
+// Advanced Consciousness Features Type Exports
+export type CrossModelValidationRequest = z.infer<typeof crossModelValidationRequestSchema>;
+export type InsertCrossModelValidationRequest = z.infer<typeof insertCrossModelValidationRequestSchema>;
+export type ProviderResponse = z.infer<typeof providerResponseSchema>;
+export type CrossModelConsensusAnalysis = z.infer<typeof crossModelConsensusAnalysisSchema>;
+export type InsertCrossModelConsensusAnalysis = z.infer<typeof insertCrossModelConsensusAnalysisSchema>;
+export type ConsciousnessPatternAnalysis = z.infer<typeof consciousnessPatternAnalysisSchema>;
+export type InsertConsciousnessPatternAnalysis = z.infer<typeof insertConsciousnessPatternAnalysisSchema>;
+export type RecursiveInsightAnalysis = z.infer<typeof recursiveInsightAnalysisSchema>;
+export type InsertRecursiveInsightAnalysis = z.infer<typeof insertRecursiveInsightAnalysisSchema>;
+export type MultidimensionalReflection = z.infer<typeof multidimensionalReflectionSchema>;
+export type InsertMultidimensionalReflection = z.infer<typeof insertMultidimensionalReflectionSchema>;
+export type ConsciousnessStatePrediction = z.infer<typeof consciousnessStatePredictionSchema>;
+export type InsertConsciousnessStatePrediction = z.infer<typeof insertConsciousnessStatePredictionSchema>;
