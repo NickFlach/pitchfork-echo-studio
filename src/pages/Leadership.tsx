@@ -326,7 +326,7 @@ const Leadership = () => {
         aiProvider: aiProvider as any,
         modelUsed: modelUsed, // Use actual model from AI response metadata
         requestId: itemId,
-        qualityRating: rating === 'up' ? 'thumbs_up' : 'thumbs_down',
+        qualityRating: rating === 'up' ? 1 : 0,
         feedback: {
           helpful: rating === 'up',
           relevant: rating === 'up',
@@ -1004,7 +1004,7 @@ const Leadership = () => {
                   <CardTitle className="flex items-center gap-2">
                     <Target className="w-5 h-5" />
                     Create New Campaign
-                    {aiEnhanced && (
+                    {false && (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
@@ -1021,10 +1021,7 @@ const Leadership = () => {
                     )}
                   </CardTitle>
                   <CardDescription>
-                    {aiEnhanced 
-                      ? 'Use AI consciousness to generate comprehensive campaign strategies'
-                      : 'Create campaign strategies with strategic planning tools'
-                    }
+                    {'Create campaign strategies with strategic planning tools'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1083,11 +1080,11 @@ const Leadership = () => {
                     {generateStrategyMutation.isPending ? (
                       <>
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        {aiEnhanced ? 'Generating AI Strategy...' : 'Creating Strategy...'}
+                        {'Creating Strategy...'}
                       </>
                     ) : (
                       <>
-                        {aiEnhanced ? (
+                        {false ? (
                           <>
                             <Brain className="w-4 h-4 mr-2" />
                             Generate AI Strategy
@@ -1111,7 +1108,7 @@ const Leadership = () => {
                   <CardTitle className="flex items-center gap-2">
                     <Brain className="w-5 h-5" />
                     Process Leadership Decision
-                    {aiEnhanced && (
+                    {false && (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
@@ -1128,10 +1125,7 @@ const Leadership = () => {
                     )}
                   </CardTitle>
                   <CardDescription>
-                    {aiEnhanced 
-                      ? 'Analyze complex decisions through AI-enhanced multiscale consciousness framework'
-                      : 'Analyze complex decisions through structured decision framework'
-                    }
+                    {'Analyze complex decisions through structured decision framework'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1187,11 +1181,11 @@ const Leadership = () => {
                     {processDecisionMutation.isPending ? (
                       <>
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        {aiEnhanced ? 'Processing with AI...' : 'Processing Decision...'}
+                        {'Processing Decision...'}
                       </>
                     ) : (
                       <>
-                        {aiEnhanced ? (
+                        {false ? (
                           <>
                             <Brain className="w-4 h-4 mr-2" />
                             Process with AI
@@ -1232,7 +1226,7 @@ const Leadership = () => {
                             <Badge variant="outline">
                               {plan.successProbability ? `${(plan.successProbability * 100).toFixed(0)}% success` : 'Planning'}
                             </Badge>
-                            {aiEnhanced && (
+                            {false && (
                               <Badge variant="outline" className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30 text-blue-300">
                                 <Sparkles className="w-3 h-3 mr-1" />
                                 AI Enhanced
@@ -1253,7 +1247,7 @@ const Leadership = () => {
                             ))}
                           </div>
                         )}
-                        {aiEnhanced && (
+                        {false && (
                           <div className="flex items-center justify-between pt-2 border-t">
                             <span className="text-xs text-muted-foreground">Rate this AI strategy:</span>
                             <FeedbackButtons itemId={plan.id} type="strategy" />

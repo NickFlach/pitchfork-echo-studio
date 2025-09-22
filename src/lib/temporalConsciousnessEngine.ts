@@ -127,7 +127,7 @@ export interface TemporalDecisionResult {
 }
 
 export class TemporalConsciousnessEngine {
-  private solver: SublinearSolver;
+  private solver: any;
   private agentId: string;
   private currentState: TemporalConsciousnessState | null = null;
   private isInitialized: boolean = false;

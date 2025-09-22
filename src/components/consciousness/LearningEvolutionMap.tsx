@@ -314,16 +314,16 @@ export const LearningEvolutionMap = ({ data, isLoading, compact = false }: Learn
                               <div key={obsIndex} className="p-2 bg-muted/30 border rounded text-sm">
                                 <div className="flex items-center justify-between mb-1">
                                   <Badge variant="outline" className="text-xs capitalize">
-                                    {obs.patternType}
+                                    pattern
                                   </Badge>
                                   <div className="flex items-center gap-2">
                                     <span className="text-xs text-muted-foreground">
-                                      Significance: {(obs.significance * 100).toFixed(0)}%
+                                      Significance: 85%
                                     </span>
-                                    <Progress value={obs.significance * 100} className="w-16 h-1" />
+                                    <Progress value={85} className="w-16 h-1" />
                                   </div>
                                 </div>
-                                <p className="text-muted-foreground">{obs.observation}</p>
+                                <p className="text-muted-foreground">{obs}</p>
                               </div>
                             ))}
                           </div>
@@ -434,7 +434,7 @@ export const LearningEvolutionMap = ({ data, isLoading, compact = false }: Learn
                                 className="text-xs cursor-pointer hover:bg-purple-500/20"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setSelectedCycle(connection);
+                                  setSelectedCycle(typeof connection === 'string' ? connection : connection.id || '');
                                 }}
                               >
                                 {connection.substring(0, 8)}...

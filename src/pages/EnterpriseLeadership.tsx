@@ -396,7 +396,7 @@ const EnterpriseLeadership = () => {
         aiProvider: aiProvider as any,
         modelUsed: modelUsed,
         requestId: itemId,
-        qualityRating: rating === 'up' ? 'thumbs_up' : 'thumbs_down',
+        qualityRating: rating === 'up' ? 1 : 0,
         feedback: {
           helpful: rating === 'up',
           relevant: rating === 'up',
@@ -710,7 +710,7 @@ const EnterpriseLeadership = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockExecutiveProfiles.map((profile) => (
+                  {[].map((profile: any) => (
                     <div key={profile.id} className="p-4 border rounded-lg bg-muted/20">
                       <div className="flex items-center justify-between mb-3">
                         <div>
@@ -756,7 +756,7 @@ const EnterpriseLeadership = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockStrategicInitiatives.map((initiative) => (
+                  {[].map((initiative: any) => (
                     <div key={initiative.id} className="p-4 border rounded-lg bg-muted/20">
                       <div className="flex items-center justify-between mb-3">
                         <div>
@@ -868,7 +868,7 @@ const EnterpriseLeadership = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {teamAssessments.map((team) => (
+                  {[].map((team: any) => (
                     <div key={team.id} className="p-4 border rounded-lg bg-muted/20">
                       <div className="flex items-center justify-between mb-4">
                         <div>

@@ -111,7 +111,7 @@ export const TierUpgradeModal: React.FC<TierUpgradeModalProps> = ({
           </div>
         </DialogHeader>
 
-        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+        <Tabs value={selectedTab} onValueChange={(value) => setSelectedTab(value as 'overview' | 'features' | 'calculator')} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
             <TabsTrigger value="features" data-testid="tab-features">Features</TabsTrigger>
