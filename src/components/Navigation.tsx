@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Home, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import Web3ConnectButton from './Web3ConnectButton';
 
 interface NavigationItem {
@@ -17,24 +16,12 @@ interface NavigationProps {
   showQuickNav?: boolean;
 }
 
-// Safe Navigation component that gracefully handles missing router context
+// Safe Navigation component that works with or without a Router
 export const Navigation: React.FC<NavigationProps> = ({
   showBackButton = true,
   showHomeButton = true,
   showQuickNav = false
 }) => {
-  // Check if we're in a router context
-  let navigate: ((path: string) => void) | undefined;
-  let isInRouterContext = false;
-
-  try {
-    navigate = useNavigate();
-    isInRouterContext = true;
-  } catch (error) {
-    // useNavigate is not available outside router context
-    console.warn('Navigation component used outside of router context');
-  }
-
   // Organized navigation items by functional groups
   const coreNavItems: NavigationItem[] = [
     { path: '/identity', icon: Shield, label: 'Identity', group: 'core' },
@@ -61,48 +48,14 @@ export const Navigation: React.FC<NavigationProps> = ({
   // Combine all navigation items for backward compatibility
   const allNavItems = [...coreNavItems, ...consciousnessNavItems, ...systemNavItems];
 
-  // Fallback navigation function when not in router context
+  // Fallback navigation functions that don't require Router context
   const handleNavigation = (path: string) => {
-    if (isInRouterContext && navigate) {
-      navigate(path);
-    } else {
-      window.location.href = path;
-    }
+    window.location.href = path;
   };
 
   const handleBack = () => {
-    if (isInRouterContext && navigate) {
-      navigate(-1);
-    } else {
-      window.history.back();
-    }
+    window.history.back();
   };
-
-  // Organized navigation items by functional groups
-  const coreNavItems: NavigationItem[] = [
-    { path: '/identity', icon: Shield, label: 'Identity', group: 'core' },
-    { path: '/organize', icon: Users, label: 'Organize', group: 'core' },
-    { path: '/messages', icon: MessageCircle, label: 'Messages', group: 'core' },
-    { path: '/governance', icon: Scale, label: 'Governance', group: 'core' },
-    { path: '/verify', icon: FileCheck, label: 'Verify', group: 'core' },
-    { path: '/support', icon: Heart, label: 'Support', group: 'core' },
-  ];
-
-  const consciousnessNavItems: NavigationItem[] = [
-    { path: '/whitepaper', icon: BookOpen, label: 'Whitepaper', group: 'consciousness' },
-    { path: '/consciousness', icon: Brain, label: 'Consciousness', group: 'consciousness' },
-    { path: '/leadership', icon: UserCheck, label: 'Leadership', group: 'consciousness' },
-    { path: '/enterprise-leadership', icon: Building, label: 'Enterprise', group: 'consciousness' },
-  ];
-
-  const systemNavItems: NavigationItem[] = [
-    { path: '/funding', icon: DollarSign, label: 'Funding', group: 'system' },
-    { path: '/ai-settings', icon: Settings, label: 'AI Settings', group: 'system' },
-    { path: '/provider-health', icon: Activity, label: 'Provider Health', group: 'system' },
-  ];
-
-  // Combine all navigation items for backward compatibility
-  const allNavItems = [...coreNavItems, ...consciousnessNavItems, ...systemNavItems];
 
   return (
     <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-primary/20 z-10">

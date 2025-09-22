@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CheckCircle, ArrowRight, Sparkles, Zap, X, Crown, Target, Brain } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
 import { FeatureComparison } from './feature-comparison';
 import { CostBenefitCalculator } from './cost-benefit-calculator';
 import { useTier } from '@/contexts/TierContext';
@@ -26,7 +25,6 @@ export const TierUpgradeModal: React.FC<TierUpgradeModalProps> = ({
   featureId,
   className
 }) => {
-  const navigate = useNavigate();
   const { 
     currentTier, 
     features, 
@@ -48,7 +46,7 @@ export const TierUpgradeModal: React.FC<TierUpgradeModalProps> = ({
       trackUpgradeConversion(featureId, true);
     }
     onClose();
-    navigate('/ai-settings');
+    window.location.href = '/ai-settings';
   };
 
   const handleProviderSelect = (provider: string) => {

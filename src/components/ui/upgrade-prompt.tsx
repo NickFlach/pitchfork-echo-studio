@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CheckCircle, ArrowRight, Sparkles, Zap, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
 import type { TierUpgradePrompt } from '@/contexts/TierContext';
 
 interface UpgradePromptModalProps {
@@ -21,24 +20,12 @@ export const UpgradePromptModal: React.FC<UpgradePromptModalProps> = ({
   onUpgrade,
   className
 }) => {
-  // Safe navigation hook that handles router context issues
-  let navigate: any = null;
-  try {
-    navigate = useNavigate();
-  } catch (error) {
-    console.warn('useNavigate called outside router context, navigation disabled');
-  }
-
   if (!prompt) return null;
 
   const handleUpgrade = () => {
     onUpgrade();
-    if (navigate) {
-      navigate('/ai-settings');
-    } else {
-      // Fallback navigation for when router context is not available
-      window.location.href = '/ai-settings';
-    }
+    // Use window navigation so this component can be safely rendered globally
+    window.location.href = '/ai-settings';
   };
 
   const getUrgencyColor = (urgency?: 'low' | 'medium' | 'high') => {
