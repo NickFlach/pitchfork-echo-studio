@@ -10,6 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TierBadge } from "@/components/ui/tier-badge";
+import { FeatureComparison } from "@/components/ui/feature-comparison";
+import { TierUpgradeModal } from "@/components/ui/tier-upgrade-modal";
+import { UpgradePromptModal } from "@/components/ui/upgrade-prompt";
+import { useTier } from "@/contexts/TierContext";
 import { 
   Crown, 
   Users, 
@@ -34,10 +39,18 @@ import {
   Trash2,
   Play,
   Pause,
-  RefreshCw
+  RefreshCw,
+  Sparkles,
+  ThumbsUp,
+  ThumbsDown,
+  Info,
+  Loader2
 } from 'lucide-react';
 import { consciousnessApi } from '@/lib/consciousnessApi';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import type { InsertAIUsageAnalytics, InsertAIUserFeedback, MaskedAICredentials } from '../../shared/schema';
 
 interface Campaign {
   id: string;
@@ -93,6 +106,87 @@ const Leadership = () => {
     options: ''
   });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [feedbackRatings, setFeedbackRatings] = useState<Record<string, 'up' | 'down' | null>>({});
+  const [feedbackLoading, setFeedbackLoading] = useState<Record<string, boolean>>({});
+  const [sessionId] = useState(() => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+
+  // Tier helper functions
+  const getTierBadgeForFeature = (featureId: string, tooltip?: string) => (
+    <TierBadge
+      tier={currentTier}
+      feature={featureId}
+      variant={isAIConfigured ? 'enhanced' : 'default'}
+      tooltip={tooltip}
+      size="sm"
+    />
+  );
+
+  const TierUpgradePrompt = ({ featureId, featureName }: { featureId: string; featureName: string }) => {
+    const featureDetails = getFeatureDetails(featureId);
+    
+    if (!featureDetails || isAIConfigured) return null;
+    
+    return (
+      <Alert className="mt-4 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 dark:border-purple-800 dark:from-purple-950/20 dark:to-blue-950/20">
+        <Sparkles className="w-4 h-4 text-purple-600" />
+        <AlertDescription className="flex items-center justify-between">
+          <div>
+            <span className="font-medium">Unlock AI-Enhanced {featureName}</span>
+            <p className="text-sm mt-1 text-muted-foreground">{featureDetails.upgradePrompt}</p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              trackFeatureUsage(`upgrade_prompt_${featureId}`, featureDetails.category);
+              triggerUpgradePrompt(featureId, 'usage');
+            }}
+            className="ml-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700"
+            data-testid={`button-upgrade-${featureId}`}
+          >
+            <Sparkles className="w-3 h-3 mr-1" />
+            Upgrade
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  };
+
+  // Upgrade handlers
+  const handleUpgradeFromFeature = (featureId: string) => {
+    setUpgradeFeatureId(featureId);
+    setShowUpgradeModal(true);
+    trackFeatureUsage(`upgrade_modal_${featureId}`, 'leadership');
+  };
+
+  const handleUpgradeConversion = () => {
+    if (upgradeFeatureId) {
+      trackUpgradeConversion(upgradeFeatureId, true);
+    }
+    setShowUpgradeModal(false);
+    setUpgradeFeatureId(null);
+  };
+
+  // Tier System Integration
+  const {
+    currentTier,
+    isAIConfigured,
+    loadingAIConfig,
+    configuredProviders,
+    canAccessFeature,
+    canAccessAIFeature,
+    getFeatureDetails,
+    triggerUpgradePrompt,
+    dismissUpgradePrompt,
+    currentUpgradePrompt,
+    trackFeatureUsage,
+    trackUpgradeConversion,
+    getFeaturesByCategory
+  } = useTier();
+
+  // Modal state for tier upgrades
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeatureId, setUpgradeFeatureId] = useState<string | null>(null);
 
   // Mock data - in a real app, this would come from APIs
   const [movements] = useState<Movement[]>([
@@ -147,21 +241,146 @@ const Leadership = () => {
     queryFn: consciousnessApi.getResourceProfiles,
   });
 
+  // Get default model for provider
+  const getDefaultModelForProvider = (provider: string): string => {
+    const providerModels: Record<string, string> = {
+      'openai': 'gpt-4',
+      'claude': 'claude-3-sonnet-20240229',
+      'gemini': 'gemini-pro',
+      'xai': 'grok-beta',
+      'litellm': 'gpt-4' // LiteLLM can proxy multiple models, defaulting to gpt-4
+    };
+    return providerModels[provider] || 'gpt-4';
+  };
+
+  // Usage analytics tracking helper with real provider metadata
+  const trackUsage = async (featureType: string, aiProvider?: string, startTime?: number, requestId?: string, providerMetadata?: any) => {
+    try {
+      const responseTime = startTime ? Date.now() - startTime : 0;
+      const actualProvider = aiProvider || configuredProviders[0] || 'openai';
+      const actualModel = providerMetadata?.model || getDefaultModelForProvider(actualProvider);
+      
+      // Store metadata for feedback correlation if requestId provided
+      if (requestId) {
+        setLatestAIResponseMetadata(prev => ({
+          ...prev,
+          [requestId]: {
+            provider: actualProvider,
+            model: actualModel,
+            timestamp: Date.now(),
+            featureType
+          }
+        }));
+      }
+      
+      const usageData: InsertAIUsageAnalytics = {
+        sessionId,
+        featureType: featureType as any,
+        aiProvider: actualProvider as any,
+        modelUsed: actualModel, // Use actual model from provider metadata
+        requestType: 'standard',
+        promptTokens: providerMetadata?.promptTokens || 0,
+        completionTokens: providerMetadata?.completionTokens || 0,
+        totalTokens: providerMetadata?.totalTokens || 0,
+        responseTimeMs: responseTime,
+        success: true,
+        userContext: {
+          decisionComplexity: 'complex',
+          urgencyLevel: 'medium',
+        },
+      };
+
+      await apiRequest('/api/analytics/usage', {
+        method: 'POST',
+        body: JSON.stringify(usageData),
+      });
+    } catch (error) {
+      console.warn('Failed to track usage analytics:', error);
+    }
+  };
+
+  // AI Response Metadata State - tracks actual models used
+  const [latestAIResponseMetadata, setLatestAIResponseMetadata] = useState<{
+    [requestId: string]: {
+      provider: string;
+      model: string;
+      timestamp: number;
+      featureType: string;
+    }
+  }>({});
+
+  // Feedback handler for AI responses
+  const handleFeedback = async (itemId: string, rating: 'up' | 'down', featureType: string) => {
+    setFeedbackRatings(prev => ({ ...prev, [itemId]: rating }));
+    setFeedbackLoading(prev => ({ ...prev, [itemId]: true }));
+    
+    try {
+      // Get actual AI metadata if available, otherwise use configured provider info
+      const responseMetadata = latestAIResponseMetadata[itemId];
+      const aiProvider = responseMetadata?.provider || configuredProviders[0] || 'openai';
+      const modelUsed = responseMetadata?.model || getDefaultModelForProvider(aiProvider);
+      
+      const feedbackData: InsertAIUserFeedback = {
+        sessionId,
+        featureType: featureType as any,
+        aiProvider: aiProvider as any,
+        modelUsed: modelUsed, // Use actual model from AI response metadata
+        requestId: itemId,
+        qualityRating: rating === 'up' ? 'thumbs_up' : 'thumbs_down',
+        feedback: {
+          helpful: rating === 'up',
+          relevant: rating === 'up',
+          actionable: rating === 'up',
+        },
+      };
+
+      await apiRequest('/api/analytics/user-feedback', {
+        method: 'POST',
+        body: JSON.stringify(feedbackData),
+      });
+
+      // Invalidate feedback cache
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics/user-feedback'] });
+      
+      toast({
+        title: rating === 'up' ? 'Positive Feedback Recorded' : 'Feedback Recorded',
+        description: 'Thanks for helping us improve AI responses!',
+      });
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+      toast({
+        title: 'Feedback Error',
+        description: 'Failed to record feedback. Please try again.',
+        variant: 'destructive',
+      });
+      // Revert feedback rating on error
+      setFeedbackRatings(prev => ({ ...prev, [itemId]: null }));
+    } finally {
+      setFeedbackLoading(prev => ({ ...prev, [itemId]: false }));
+    }
+  };
+
   // Generate campaign strategy
   const generateStrategyMutation = useMutation({
     mutationFn: async (campaignData: any) => {
-      return await consciousnessApi.generateCampaignStrategy({
+      const startTime = Date.now();
+      const result = await consciousnessApi.generateCampaignStrategy({
         movementId: 'movement-1',
         objective: campaignData.objective,
         timeframe: campaignData.timeframe,
         resources: { budget: parseInt(campaignData.budget), volunteers: 100 },
         constraints: campaignData.constraints ? [campaignData.constraints] : []
       });
+      
+      // Track usage analytics
+      await trackUsage('campaign-planning', undefined, startTime);
+      
+      return result;
     },
     onSuccess: (strategy) => {
       toast({
         title: "Strategy Generated",
-        description: "AI has created a comprehensive campaign strategy",
+        description: isAIConfigured ? "AI-enhanced strategy created successfully" : "Strategy created successfully",
       });
       setNewCampaign({ name: '', objective: '', timeframe: '', budget: '', constraints: '' });
     },
@@ -177,6 +396,7 @@ const Leadership = () => {
   // Process leadership decision
   const processDecisionMutation = useMutation({
     mutationFn: async (decisionData: any) => {
+      const startTime = Date.now();
       const options = decisionData.options.split('\n').filter(opt => opt.trim()).map(opt => ({
         id: `option-${Date.now()}-${Math.random()}`,
         description: opt.trim(),
@@ -190,12 +410,17 @@ const Leadership = () => {
         expectedOutcomes: []
       }));
 
-      return await consciousnessApi.processMultiscaleDecision(decisionData.context, options);
+      const result = await consciousnessApi.processMultiscaleDecision(decisionData.context, options);
+      
+      // Track usage analytics
+      await trackUsage('leadership-strategy', undefined, startTime);
+      
+      return result;
     },
     onSuccess: (result) => {
       toast({
         title: "Decision Processed",
-        description: "AI has analyzed the decision and provided recommendations",
+        description: isAIConfigured ? "AI-enhanced decision analysis completed" : "Decision analysis completed",
       });
       setNewDecision({ title: '', context: '', urgency: 'medium', options: '' });
     },
@@ -218,6 +443,17 @@ const Leadership = () => {
       return;
     }
 
+    // CRITICAL: Operational access control - prevent AI calls when not configured
+    if (!canAccessAIFeature('leadership_strategy')) {
+      triggerUpgradePrompt('leadership_strategy', 'high_intent');
+      toast({
+        title: "AI Configuration Required",
+        description: "Configure AI to unlock enhanced campaign strategy generation",
+        variant: "default",
+      });
+      return; // CRITICAL: Stop execution to prevent AI calls without configuration
+    }
+
     generateStrategyMutation.mutate(newCampaign);
   };
 
@@ -229,6 +465,17 @@ const Leadership = () => {
         variant: "destructive",
       });
       return;
+    }
+
+    // CRITICAL: Operational access control - prevent AI calls when not configured
+    if (!canAccessAIFeature('leadership_strategy')) {
+      triggerUpgradePrompt('leadership_strategy', 'high_intent');
+      toast({
+        title: "AI Configuration Required",
+        description: "Configure AI to unlock enhanced strategic analysis",
+        variant: "default",
+      });
+      return; // CRITICAL: Stop execution to prevent AI calls without configuration
     }
 
     processDecisionMutation.mutate(newDecision);
@@ -257,6 +504,60 @@ const Leadership = () => {
     };
     return colors[urgency as keyof typeof colors] || 'text-gray-400';
   };
+
+  // Feedback buttons component
+  const FeedbackButtons = ({ itemId, type }: { itemId: string; type: 'strategy' | 'decision' }) => (
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handleFeedback(itemId, 'up', type === 'strategy' ? 'campaign-planning' : 'leadership-strategy')}
+        disabled={feedbackLoading[itemId]}
+        className={`h-8 w-8 p-0 ${feedbackRatings[itemId] === 'up' ? 'text-green-600 bg-green-50' : ''}`}
+        data-testid={`button-thumbs-up-${itemId}`}
+      >
+        {feedbackLoading[itemId] ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <ThumbsUp className="w-4 h-4" />
+        )}
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => handleFeedback(itemId, 'down', type === 'strategy' ? 'campaign-planning' : 'leadership-strategy')}
+        disabled={feedbackLoading[itemId]}
+        className={`h-8 w-8 p-0 ${feedbackRatings[itemId] === 'down' ? 'text-red-600 bg-red-50' : ''}`}
+        data-testid={`button-thumbs-down-${itemId}`}
+      >
+        {feedbackLoading[itemId] ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <ThumbsDown className="w-4 h-4" />
+        )}
+      </Button>
+    </div>
+  );
+
+  // Try with AI prompt component
+  const TryWithAIPrompt = ({ feature }: { feature: string }) => (
+    !isAIConfigured ? (
+      <Alert className="mt-4">
+        <Sparkles className="w-4 h-4" />
+        <AlertDescription className="flex items-center justify-between">
+          <span>Enhance your {feature.toLowerCase()} with AI-powered insights</span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => window.location.href = '/ai-settings'} 
+            data-testid={`button-configure-ai-${feature}`}
+          >
+            Configure AI
+          </Button>
+        </AlertDescription>
+      </Alert>
+    ) : null
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900/20 to-purple-900/20" data-testid="page-leadership">
@@ -703,9 +1004,27 @@ const Leadership = () => {
                   <CardTitle className="flex items-center gap-2">
                     <Target className="w-5 h-5" />
                     Create New Campaign
+                    {aiEnhanced && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge variant="outline" className="ml-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30 text-blue-300">
+                              <Sparkles className="w-3 h-3 mr-1" />
+                              AI Enhanced
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Powered by AI consciousness for strategic insights</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                   </CardTitle>
                   <CardDescription>
-                    Use AI consciousness to generate comprehensive campaign strategies
+                    {aiEnhanced 
+                      ? 'Use AI consciousness to generate comprehensive campaign strategies'
+                      : 'Create campaign strategies with strategic planning tools'
+                    }
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -764,15 +1083,25 @@ const Leadership = () => {
                     {generateStrategyMutation.isPending ? (
                       <>
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Generating Strategy...
+                        {aiEnhanced ? 'Generating AI Strategy...' : 'Creating Strategy...'}
                       </>
                     ) : (
                       <>
-                        <Brain className="w-4 h-4 mr-2" />
-                        Generate AI Strategy
+                        {aiEnhanced ? (
+                          <>
+                            <Brain className="w-4 h-4 mr-2" />
+                            Generate AI Strategy
+                          </>
+                        ) : (
+                          <>
+                            <Target className="w-4 h-4 mr-2" />
+                            Create Strategy
+                          </>
+                        )}
                       </>
                     )}
                   </Button>
+                  <TryWithAIPrompt feature="Campaign Strategy" />
                 </CardContent>
               </Card>
 
@@ -782,9 +1111,27 @@ const Leadership = () => {
                   <CardTitle className="flex items-center gap-2">
                     <Brain className="w-5 h-5" />
                     Process Leadership Decision
+                    {aiEnhanced && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge variant="outline" className="ml-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30 text-blue-300">
+                              <Sparkles className="w-3 h-3 mr-1" />
+                              AI Enhanced
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Enhanced with AI consciousness for decision analysis</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                   </CardTitle>
                   <CardDescription>
-                    Analyze complex decisions through multiscale consciousness framework
+                    {aiEnhanced 
+                      ? 'Analyze complex decisions through AI-enhanced multiscale consciousness framework'
+                      : 'Analyze complex decisions through structured decision framework'
+                    }
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -833,21 +1180,32 @@ const Leadership = () => {
                   </div>
                   <Button 
                     onClick={handleProcessDecision}
-                    disabled={processDecisionMutation.isPending}
+                    disabled={processDecisionMutation.isPending || !canAccessAIFeature('leadership_strategy')}
                     className="w-full"
+                    data-testid="button-process-decision"
                   >
                     {processDecisionMutation.isPending ? (
                       <>
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Processing Decision...
+                        {aiEnhanced ? 'Processing with AI...' : 'Processing Decision...'}
                       </>
                     ) : (
                       <>
-                        <Zap className="w-4 h-4 mr-2" />
-                        Process Decision
+                        {aiEnhanced ? (
+                          <>
+                            <Brain className="w-4 h-4 mr-2" />
+                            Process with AI
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="w-4 h-4 mr-2" />
+                            Process Decision
+                          </>
+                        )}
                       </>
                     )}
                   </Button>
+                  <TryWithAIPrompt feature="Decision Analysis" />
                 </CardContent>
               </Card>
             </div>
@@ -870,21 +1228,35 @@ const Leadership = () => {
                       <div key={plan.id} className="p-4 border rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold">{plan.objective}</h4>
-                          <Badge variant="outline">
-                            {plan.successProbability ? `${(plan.successProbability * 100).toFixed(0)}% success` : 'Planning'}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">
+                              {plan.successProbability ? `${(plan.successProbability * 100).toFixed(0)}% success` : 'Planning'}
+                            </Badge>
+                            {aiEnhanced && (
+                              <Badge variant="outline" className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30 text-blue-300">
+                                <Sparkles className="w-3 h-3 mr-1" />
+                                AI Enhanced
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                         <p className="text-sm text-muted-foreground mb-3">
                           Strategy: {plan.selectedStrategy}
                         </p>
                         {plan.consciousnessInsights && plan.consciousnessInsights.length > 0 && (
-                          <div className="space-y-1">
+                          <div className="space-y-1 mb-3">
                             <h5 className="text-sm font-medium">AI Insights:</h5>
                             {plan.consciousnessInsights.slice(0, 2).map((insight: string, index: number) => (
                               <p key={index} className="text-xs text-muted-foreground">
                                 • {insight}
                               </p>
                             ))}
+                          </div>
+                        )}
+                        {aiEnhanced && (
+                          <div className="flex items-center justify-between pt-2 border-t">
+                            <span className="text-xs text-muted-foreground">Rate this AI strategy:</span>
+                            <FeedbackButtons itemId={plan.id} type="strategy" />
                           </div>
                         )}
                       </div>
@@ -895,6 +1267,23 @@ const Leadership = () => {
             )}
           </TabsContent>
         </Tabs>
+        
+        {/* Tier Upgrade Modals */}
+        <UpgradePromptModal
+          prompt={currentUpgradePrompt}
+          onDismiss={dismissUpgradePrompt}
+          onUpgrade={() => trackUpgradeConversion(currentUpgradePrompt?.featureId || '', true)}
+        />
+        
+        <TierUpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => {
+            setShowUpgradeModal(false);
+            setUpgradeFeatureId(null);
+          }}
+          featureId={upgradeFeatureId || undefined}
+          initialTab="features"
+        />
       </div>
     </div>
   );

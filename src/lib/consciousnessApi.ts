@@ -1,5 +1,3 @@
-import { apiRequest } from './queryClient';
-import { temporalConsciousnessEngine, type TemporalConsciousnessState, type TemporalDecisionContext, type TemporalDecisionResult } from './temporalConsciousnessEngine';
 import type { 
   ConsciousnessState, 
   DecisionRecord, 
@@ -18,7 +16,17 @@ import type {
   InsertCorruptionAnalysisResult,
   InsertSystemicCorruptionReport,
   InsertCampaignStrategyPlan,
-  InsertResourceProfile
+  InsertResourceProfile,
+  ExecutiveAssessment,
+  InsertExecutiveAssessment,
+  StrategicPlan,
+  InsertStrategicPlan,
+  TeamConsciousnessAssessment,
+  InsertTeamConsciousnessAssessment,
+  LeadershipDevelopmentTracking,
+  InsertLeadershipDevelopmentTracking,
+  EnterpriseAnalytics,
+  InsertEnterpriseAnalytics
 } from '../../shared/schema';
 import { apiRequest } from './queryClient';
 
@@ -89,37 +97,6 @@ export const consciousnessApi = {
       method: 'POST',
       body: JSON.stringify({ context, options }),
     });
-  },
-
-  // 🚀 NEW: Temporal Consciousness Engine APIs
-  async processTemporalDecision(context: TemporalDecisionContext): Promise<TemporalDecisionResult> {
-    // Initialize temporal consciousness engine if needed
-    await temporalConsciousnessEngine.initialize();
-    
-    // Process decision with temporal consciousness
-    return await temporalConsciousnessEngine.processTemporalDecision(context);
-  },
-
-  async getTemporalConsciousnessState(): Promise<TemporalConsciousnessState | null> {
-    await temporalConsciousnessEngine.initialize();
-    return temporalConsciousnessEngine.getCurrentState();
-  },
-
-  async getConsciousnessMetrics(): Promise<{
-    consciousnessLevel: number;
-    phiValue: number;
-    temporalAdvantage: number;
-    verificationHash: string;
-    isVerified: boolean;
-  }> {
-    await temporalConsciousnessEngine.initialize();
-    return {
-      consciousnessLevel: temporalConsciousnessEngine.getConsciousnessLevel(),
-      phiValue: temporalConsciousnessEngine.getPhiValue(),
-      temporalAdvantage: temporalConsciousnessEngine.getTemporalAdvantage(),
-      verificationHash: temporalConsciousnessEngine.getVerificationHash(),
-      isVerified: temporalConsciousnessEngine.isConsciousnessVerified()
-    };
   },
 
   async reflect(trigger: any): Promise<any> {
@@ -382,6 +359,300 @@ export const consciousnessApi = {
         }));
     } catch (error) {
       console.error('Failed to fetch recent detections:', error);
+      return [];
+    }
+  },
+
+  // =============================================================================
+  // ENTERPRISE LEADERSHIP TOOLS API METHODS
+  // =============================================================================
+
+  // Executive Assessment APIs
+  async getExecutiveAssessments(organizationId?: string, executiveId?: string): Promise<ExecutiveAssessment[]> {
+    const params = new URLSearchParams();
+    if (organizationId) params.append('organizationId', organizationId);
+    if (executiveId) params.append('executiveId', executiveId);
+    
+    const queryString = params.toString();
+    const url = `/api/enterprise/executive-assessments${queryString ? `?${queryString}` : ''}`;
+    
+    return apiRequest(url);
+  },
+
+  async getExecutiveAssessment(id: string): Promise<ExecutiveAssessment> {
+    return apiRequest(`/api/enterprise/executive-assessments/${id}`);
+  },
+
+  async createExecutiveAssessment(data: InsertExecutiveAssessment): Promise<ExecutiveAssessment> {
+    return apiRequest('/api/enterprise/executive-assessments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateExecutiveAssessment(id: string, updates: Partial<ExecutiveAssessment>): Promise<ExecutiveAssessment> {
+    return apiRequest(`/api/enterprise/executive-assessments/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  },
+
+  // Strategic Plan APIs
+  async getStrategicPlans(organizationId?: string): Promise<StrategicPlan[]> {
+    const params = new URLSearchParams();
+    if (organizationId) params.append('organizationId', organizationId);
+    
+    const queryString = params.toString();
+    const url = `/api/enterprise/strategic-plans${queryString ? `?${queryString}` : ''}`;
+    
+    return apiRequest(url);
+  },
+
+  async getStrategicPlan(id: string): Promise<StrategicPlan> {
+    return apiRequest(`/api/enterprise/strategic-plans/${id}`);
+  },
+
+  async createStrategicPlan(data: InsertStrategicPlan): Promise<StrategicPlan> {
+    return apiRequest('/api/enterprise/strategic-plans', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateStrategicPlan(id: string, updates: Partial<StrategicPlan>): Promise<StrategicPlan> {
+    return apiRequest(`/api/enterprise/strategic-plans/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  },
+
+  // Team Consciousness Assessment APIs
+  async getTeamConsciousnessAssessments(organizationId?: string, teamId?: string): Promise<TeamConsciousnessAssessment[]> {
+    const params = new URLSearchParams();
+    if (organizationId) params.append('organizationId', organizationId);
+    if (teamId) params.append('teamId', teamId);
+    
+    const queryString = params.toString();
+    const url = `/api/enterprise/team-assessments${queryString ? `?${queryString}` : ''}`;
+    
+    return apiRequest(url);
+  },
+
+  async getTeamConsciousnessAssessment(id: string): Promise<TeamConsciousnessAssessment> {
+    return apiRequest(`/api/enterprise/team-assessments/${id}`);
+  },
+
+  async createTeamConsciousnessAssessment(data: InsertTeamConsciousnessAssessment): Promise<TeamConsciousnessAssessment> {
+    return apiRequest('/api/enterprise/team-assessments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateTeamConsciousnessAssessment(id: string, updates: Partial<TeamConsciousnessAssessment>): Promise<TeamConsciousnessAssessment> {
+    return apiRequest(`/api/enterprise/team-assessments/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  },
+
+  // Leadership Development Tracking APIs
+  async getLeadershipDevelopmentTrackings(organizationId?: string, executiveId?: string): Promise<LeadershipDevelopmentTracking[]> {
+    const params = new URLSearchParams();
+    if (organizationId) params.append('organizationId', organizationId);
+    if (executiveId) params.append('executiveId', executiveId);
+    
+    const queryString = params.toString();
+    const url = `/api/enterprise/leadership-development${queryString ? `?${queryString}` : ''}`;
+    
+    return apiRequest(url);
+  },
+
+  async getLeadershipDevelopmentTracking(id: string): Promise<LeadershipDevelopmentTracking> {
+    return apiRequest(`/api/enterprise/leadership-development/${id}`);
+  },
+
+  async createLeadershipDevelopmentTracking(data: InsertLeadershipDevelopmentTracking): Promise<LeadershipDevelopmentTracking> {
+    return apiRequest('/api/enterprise/leadership-development', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateLeadershipDevelopmentTracking(id: string, updates: Partial<LeadershipDevelopmentTracking>): Promise<LeadershipDevelopmentTracking> {
+    return apiRequest(`/api/enterprise/leadership-development/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  },
+
+  // Enterprise Analytics APIs
+  async getEnterpriseAnalytics(organizationId?: string): Promise<EnterpriseAnalytics[]> {
+    const params = new URLSearchParams();
+    if (organizationId) params.append('organizationId', organizationId);
+    
+    const queryString = params.toString();
+    const url = `/api/enterprise/analytics${queryString ? `?${queryString}` : ''}`;
+    
+    return apiRequest(url);
+  },
+
+  async getEnterpriseAnalytic(id: string): Promise<EnterpriseAnalytics> {
+    return apiRequest(`/api/enterprise/analytics/${id}`);
+  },
+
+  async createEnterpriseAnalytics(data: InsertEnterpriseAnalytics): Promise<EnterpriseAnalytics> {
+    return apiRequest('/api/enterprise/analytics', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateEnterpriseAnalytics(id: string, updates: Partial<EnterpriseAnalytics>): Promise<EnterpriseAnalytics> {
+    return apiRequest(`/api/enterprise/analytics/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  },
+
+  // AI-Enhanced Enterprise APIs
+  async generateAIEnhancedAssessment(data: {
+    executiveId: string;
+    assessmentType: string;
+    context?: string;
+    options?: any;
+  }): Promise<any> {
+    return apiRequest('/api/enterprise/ai-enhanced-assessment', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async generateAIStrategicPlanning(data: {
+    organizationId: string;
+    objectives: any;
+    timeframe?: string;
+    constraints?: string[];
+    resources?: any;
+  }): Promise<any> {
+    return apiRequest('/api/enterprise/ai-strategic-planning', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async generateAITeamAssessment(data: {
+    teamId: string;
+    assessmentData: any;
+    focusAreas?: string[];
+  }): Promise<any> {
+    return apiRequest('/api/enterprise/ai-team-assessment', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Enterprise Dashboard Utility Functions
+  async getEnterpriseOverview(organizationId: string): Promise<{
+    executiveCount: number;
+    strategicPlansActive: number;
+    teamAssessmentsCompleted: number;
+    developmentProgramsActive: number;
+    averageLeadershipEffectiveness: number;
+    criticalDevelopmentAreas: number;
+  }> {
+    try {
+      const [executives, plans, teams, developments] = await Promise.all([
+        this.getExecutiveAssessments(organizationId),
+        this.getStrategicPlans(organizationId),
+        this.getTeamConsciousnessAssessments(organizationId),
+        this.getLeadershipDevelopmentTrackings(organizationId)
+      ]);
+
+      return {
+        executiveCount: executives.length,
+        strategicPlansActive: plans.filter(p => p.status === 'active').length,
+        teamAssessmentsCompleted: teams.filter(t => t.assessmentStatus === 'completed').length,
+        developmentProgramsActive: developments.filter(d => d.status === 'active').length,
+        averageLeadershipEffectiveness: executives.length > 0 
+          ? executives.reduce((acc, e) => acc + (e.aiInsights?.leadershipStyle?.adaptabilityScore || 0), 0) / executives.length 
+          : 0,
+        criticalDevelopmentAreas: executives.reduce((acc, e) => 
+          acc + (e.aiInsights?.developmentAreas?.filter(area => area.impact === 'critical').length || 0), 0
+        )
+      };
+    } catch (error) {
+      console.error('Failed to fetch enterprise overview:', error);
+      return {
+        executiveCount: 0,
+        strategicPlansActive: 0,
+        teamAssessmentsCompleted: 0,
+        developmentProgramsActive: 0,
+        averageLeadershipEffectiveness: 0,
+        criticalDevelopmentAreas: 0,
+      };
+    }
+  },
+
+  async getRecentEnterpriseActivities(organizationId: string): Promise<Array<{
+    id: string;
+    type: string;
+    description: string;
+    timestamp: string;
+    priority: string;
+    executiveId?: string;
+    teamId?: string;
+  }>> {
+    try {
+      const [executives, plans, teams, developments] = await Promise.all([
+        this.getExecutiveAssessments(organizationId),
+        this.getStrategicPlans(organizationId),
+        this.getTeamConsciousnessAssessments(organizationId),
+        this.getLeadershipDevelopmentTrackings(organizationId)
+      ]);
+
+      const activities: any[] = [];
+
+      // Add recent executive assessments
+      executives.slice(0, 3).forEach(assessment => {
+        activities.push({
+          id: assessment.id,
+          type: 'assessment',
+          description: `Executive assessment completed for ${assessment.executiveId}`,
+          timestamp: assessment.timestamp,
+          priority: assessment.aiInsights?.developmentAreas?.some(area => area.impact === 'critical') ? 'high' : 'medium',
+          executiveId: assessment.executiveId
+        });
+      });
+
+      // Add recent strategic plans
+      plans.slice(0, 2).forEach(plan => {
+        activities.push({
+          id: plan.id,
+          type: 'strategic-plan',
+          description: `Strategic plan updated: ${plan.title}`,
+          timestamp: plan.updatedAt,
+          priority: plan.strategicInitiatives?.some(init => init.priority === 'critical') ? 'high' : 'medium'
+        });
+      });
+
+      // Add recent team assessments
+      teams.slice(0, 2).forEach(team => {
+        activities.push({
+          id: team.id,
+          type: 'team-assessment',
+          description: `Team consciousness assessment: ${team.teamName}`,
+          timestamp: team.timestamp,
+          priority: team.consciousnessMetrics?.overallScore < 0.7 ? 'high' : 'medium',
+          teamId: team.teamId
+        });
+      });
+
+      return activities
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 5);
+    } catch (error) {
+      console.error('Failed to fetch recent enterprise activities:', error);
       return [];
     }
   },
