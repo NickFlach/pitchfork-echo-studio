@@ -111,10 +111,10 @@ export const Navigation: React.FC<NavigationProps> = ({
           {/* Left side - Back and Home buttons */}
           <div className="flex items-center gap-2">
             {showBackButton && (
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
-                onClick={() => navigate(-1)}
+                onClick={handleBack}
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -122,10 +122,10 @@ export const Navigation: React.FC<NavigationProps> = ({
               </Button>
             )}
             {showHomeButton && (
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
-                onClick={() => navigate('/')}
+                onClick={() => handleNavigation('/')}
                 className="flex items-center gap-2"
               >
                 <Home className="w-4 h-4" />
@@ -145,7 +145,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                     key={item.path}
                     variant={isActive ? "cosmic" : "ghost"}
                     size="sm"
-                    onClick={() => navigate(item.path)}
+                    onClick={() => handleNavigation(item.path)}
                     className="flex items-center gap-1"
                   >
                     <Icon className="w-4 h-4" />
