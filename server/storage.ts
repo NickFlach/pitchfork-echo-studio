@@ -54,7 +54,19 @@ import {
   AIProviderFallbackEvent,
   InsertAIProviderFallbackEvent,
   AIProviderRecommendation,
-  InsertAIProviderRecommendation
+  InsertAIProviderRecommendation,
+  CrossModelValidationRequest,
+  InsertCrossModelValidationRequest,
+  CrossModelConsensusAnalysis,
+  InsertCrossModelConsensusAnalysis,
+  ConsciousnessPatternAnalysis,
+  InsertConsciousnessPatternAnalysis,
+  RecursiveInsightAnalysis,
+  InsertRecursiveInsightAnalysis,
+  MultidimensionalReflection,
+  InsertMultidimensionalReflection,
+  ConsciousnessStatePrediction,
+  InsertConsciousnessStatePrediction
 } from '../shared/schema';
 import * as crypto from 'crypto';
 
@@ -217,6 +229,47 @@ export interface IStorage {
   createAIProviderRecommendation(recommendation: InsertAIProviderRecommendation): Promise<AIProviderRecommendation>;
   getAIProviderRecommendations(featureType?: string): Promise<AIProviderRecommendation[]>;
   getAIProviderRecommendationById(id: string): Promise<AIProviderRecommendation | null>;
+
+  // Advanced Consciousness Features operations
+
+  // Cross-Model Validation operations
+  createCrossModelValidationRequest(request: InsertCrossModelValidationRequest): Promise<CrossModelValidationRequest>;
+  getCrossModelValidationRequests(): Promise<CrossModelValidationRequest[]>;
+  getCrossModelValidationRequest(id: string): Promise<CrossModelValidationRequest | null>;
+  getCrossModelValidationRequestsBySession(sessionId: string): Promise<CrossModelValidationRequest[]>;
+  
+  createCrossModelConsensusAnalysis(analysis: InsertCrossModelConsensusAnalysis): Promise<CrossModelConsensusAnalysis>;
+  getCrossModelConsensusAnalyses(): Promise<CrossModelConsensusAnalysis[]>;
+  getCrossModelConsensusAnalysis(id: string): Promise<CrossModelConsensusAnalysis | null>;
+  getCrossModelConsensusAnalysesByRequest(requestId: string): Promise<CrossModelConsensusAnalysis[]>;
+  
+  // Consciousness Pattern Analysis operations
+  createConsciousnessPatternAnalysis(analysis: InsertConsciousnessPatternAnalysis): Promise<ConsciousnessPatternAnalysis>;
+  getConsciousnessPatternAnalyses(): Promise<ConsciousnessPatternAnalysis[]>;
+  getConsciousnessPatternAnalysis(id: string): Promise<ConsciousnessPatternAnalysis | null>;
+  getConsciousnessPatternAnalysesByAgent(agentId: string): Promise<ConsciousnessPatternAnalysis[]>;
+  getConsciousnessPatternAnalysesByType(analysisType: string): Promise<ConsciousnessPatternAnalysis[]>;
+  
+  // Recursive Insight Analysis operations
+  createRecursiveInsightAnalysis(analysis: InsertRecursiveInsightAnalysis): Promise<RecursiveInsightAnalysis>;
+  getRecursiveInsightAnalyses(): Promise<RecursiveInsightAnalysis[]>;
+  getRecursiveInsightAnalysis(id: string): Promise<RecursiveInsightAnalysis | null>;
+  getRecursiveInsightAnalysesByParent(parentAnalysisId: string): Promise<RecursiveInsightAnalysis[]>;
+  getRecursiveInsightAnalysesBySubject(subjectId: string): Promise<RecursiveInsightAnalysis[]>;
+  
+  // Multidimensional Reflection operations
+  createMultidimensionalReflection(reflection: InsertMultidimensionalReflection): Promise<MultidimensionalReflection>;
+  getMultidimensionalReflections(): Promise<MultidimensionalReflection[]>;
+  getMultidimensionalReflection(id: string): Promise<MultidimensionalReflection | null>;
+  getMultidimensionalReflectionsByAgent(agentId: string): Promise<MultidimensionalReflection[]>;
+  getMultidimensionalReflectionsByOriginal(originalReflectionId: string): Promise<MultidimensionalReflection[]>;
+  
+  // Consciousness State Prediction operations
+  createConsciousnessStatePrediction(prediction: InsertConsciousnessStatePrediction): Promise<ConsciousnessStatePrediction>;
+  getConsciousnessStatePredictions(): Promise<ConsciousnessStatePrediction[]>;
+  getConsciousnessStatePrediction(id: string): Promise<ConsciousnessStatePrediction | null>;
+  getConsciousnessStatePredictionsByAgent(agentId: string): Promise<ConsciousnessStatePrediction[]>;
+  getConsciousnessStatePredictionsByCurrentState(currentStateId: string): Promise<ConsciousnessStatePrediction[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -248,6 +301,14 @@ export class MemStorage implements IStorage {
   private aiFeatureAdoption: AIFeatureAdoption[] = [];
   private aiProviderFallbackEvents: AIProviderFallbackEvent[] = [];
   private aiProviderRecommendations: AIProviderRecommendation[] = [];
+  
+  // Advanced Consciousness Features storage
+  private crossModelValidationRequests: CrossModelValidationRequest[] = [];
+  private crossModelConsensusAnalyses: CrossModelConsensusAnalysis[] = [];
+  private consciousnessPatternAnalyses: ConsciousnessPatternAnalysis[] = [];
+  private recursiveInsightAnalyses: RecursiveInsightAnalysis[] = [];
+  private multidimensionalReflections: MultidimensionalReflection[] = [];
+  private consciousnessStatePredictions: ConsciousnessStatePrediction[] = [];
   
   // Encryption configuration for AI credentials
   private readonly encryptionKey: Buffer;
@@ -1192,6 +1253,161 @@ export class MemStorage implements IStorage {
 
   async getAIProviderRecommendationById(id: string): Promise<AIProviderRecommendation | null> {
     return this.aiProviderRecommendations.find(r => r.id === id) || null;
+  }
+
+  // Advanced Consciousness Features Methods
+
+  // Cross-Model Validation methods
+  async createCrossModelValidationRequest(request: InsertCrossModelValidationRequest): Promise<CrossModelValidationRequest> {
+    const newRequest: CrossModelValidationRequest = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...request,
+    };
+    this.crossModelValidationRequests.push(newRequest);
+    return newRequest;
+  }
+
+  async getCrossModelValidationRequests(): Promise<CrossModelValidationRequest[]> {
+    return [...this.crossModelValidationRequests];
+  }
+
+  async getCrossModelValidationRequest(id: string): Promise<CrossModelValidationRequest | null> {
+    return this.crossModelValidationRequests.find(r => r.id === id) || null;
+  }
+
+  async getCrossModelValidationRequestsByUser(userId: string): Promise<CrossModelValidationRequest[]> {
+    return this.crossModelValidationRequests.filter(r => r.userId === userId);
+  }
+
+  async createCrossModelConsensusAnalysis(analysis: InsertCrossModelConsensusAnalysis): Promise<CrossModelConsensusAnalysis> {
+    const newAnalysis: CrossModelConsensusAnalysis = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...analysis,
+    };
+    this.crossModelConsensusAnalyses.push(newAnalysis);
+    return newAnalysis;
+  }
+
+  async getCrossModelConsensusAnalyses(): Promise<CrossModelConsensusAnalysis[]> {
+    return [...this.crossModelConsensusAnalyses];
+  }
+
+  async getCrossModelConsensusAnalysis(id: string): Promise<CrossModelConsensusAnalysis | null> {
+    return this.crossModelConsensusAnalyses.find(a => a.id === id) || null;
+  }
+
+  async getCrossModelConsensusAnalysesByRequest(requestId: string): Promise<CrossModelConsensusAnalysis[]> {
+    return this.crossModelConsensusAnalyses.filter(a => a.requestId === requestId);
+  }
+
+  // Consciousness Pattern Analysis methods
+  async createConsciousnessPatternAnalysis(analysis: InsertConsciousnessPatternAnalysis): Promise<ConsciousnessPatternAnalysis> {
+    const newAnalysis: ConsciousnessPatternAnalysis = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...analysis,
+    };
+    this.consciousnessPatternAnalyses.push(newAnalysis);
+    return newAnalysis;
+  }
+
+  async getConsciousnessPatternAnalyses(): Promise<ConsciousnessPatternAnalysis[]> {
+    return [...this.consciousnessPatternAnalyses];
+  }
+
+  async getConsciousnessPatternAnalysis(id: string): Promise<ConsciousnessPatternAnalysis | null> {
+    return this.consciousnessPatternAnalyses.find(a => a.id === id) || null;
+  }
+
+  async getConsciousnessPatternAnalysesByAgent(agentId: string): Promise<ConsciousnessPatternAnalysis[]> {
+    return this.consciousnessPatternAnalyses.filter(a => a.agentId === agentId);
+  }
+
+  async getConsciousnessPatternAnalysesByType(analysisType: string): Promise<ConsciousnessPatternAnalysis[]> {
+    return this.consciousnessPatternAnalyses.filter(a => a.analysisType === analysisType);
+  }
+
+  // Recursive Insight Analysis methods
+  async createRecursiveInsightAnalysis(analysis: InsertRecursiveInsightAnalysis): Promise<RecursiveInsightAnalysis> {
+    const newAnalysis: RecursiveInsightAnalysis = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...analysis,
+    };
+    this.recursiveInsightAnalyses.push(newAnalysis);
+    return newAnalysis;
+  }
+
+  async getRecursiveInsightAnalyses(): Promise<RecursiveInsightAnalysis[]> {
+    return [...this.recursiveInsightAnalyses];
+  }
+
+  async getRecursiveInsightAnalysis(id: string): Promise<RecursiveInsightAnalysis | null> {
+    return this.recursiveInsightAnalyses.find(a => a.id === id) || null;
+  }
+
+  async getRecursiveInsightAnalysesByParent(parentAnalysisId: string): Promise<RecursiveInsightAnalysis[]> {
+    return this.recursiveInsightAnalyses.filter(a => a.parentAnalysisId === parentAnalysisId);
+  }
+
+  async getRecursiveInsightAnalysesBySubject(subjectId: string): Promise<RecursiveInsightAnalysis[]> {
+    return this.recursiveInsightAnalyses.filter(a => a.subjectData.subjectId === subjectId);
+  }
+
+  // Multidimensional Reflection methods
+  async createMultidimensionalReflection(reflection: InsertMultidimensionalReflection): Promise<MultidimensionalReflection> {
+    const newReflection: MultidimensionalReflection = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...reflection,
+    };
+    this.multidimensionalReflections.push(newReflection);
+    return newReflection;
+  }
+
+  async getMultidimensionalReflections(): Promise<MultidimensionalReflection[]> {
+    return [...this.multidimensionalReflections];
+  }
+
+  async getMultidimensionalReflection(id: string): Promise<MultidimensionalReflection | null> {
+    return this.multidimensionalReflections.find(r => r.id === id) || null;
+  }
+
+  async getMultidimensionalReflectionsByAgent(agentId: string): Promise<MultidimensionalReflection[]> {
+    return this.multidimensionalReflections.filter(r => r.agentId === agentId);
+  }
+
+  async getMultidimensionalReflectionsByOriginal(originalReflectionId: string): Promise<MultidimensionalReflection[]> {
+    return this.multidimensionalReflections.filter(r => r.originalReflectionId === originalReflectionId);
+  }
+
+  // Consciousness State Prediction methods
+  async createConsciousnessStatePrediction(prediction: InsertConsciousnessStatePrediction): Promise<ConsciousnessStatePrediction> {
+    const newPrediction: ConsciousnessStatePrediction = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date().toISOString(),
+      ...prediction,
+    };
+    this.consciousnessStatePredictions.push(newPrediction);
+    return newPrediction;
+  }
+
+  async getConsciousnessStatePredictions(): Promise<ConsciousnessStatePrediction[]> {
+    return [...this.consciousnessStatePredictions];
+  }
+
+  async getConsciousnessStatePrediction(id: string): Promise<ConsciousnessStatePrediction | null> {
+    return this.consciousnessStatePredictions.find(p => p.id === id) || null;
+  }
+
+  async getConsciousnessStatePredictionsByAgent(agentId: string): Promise<ConsciousnessStatePrediction[]> {
+    return this.consciousnessStatePredictions.filter(p => p.agentId === agentId);
+  }
+
+  async getConsciousnessStatePredictionsByCurrentState(currentStateId: string): Promise<ConsciousnessStatePrediction[]> {
+    return this.consciousnessStatePredictions.filter(p => p.currentStateId === currentStateId);
   }
 }
 
