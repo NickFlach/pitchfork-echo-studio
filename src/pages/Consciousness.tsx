@@ -210,7 +210,7 @@ const Consciousness = () => {
         aiProvider: aiProvider as any,
         modelUsed: modelUsed,
         requestId: itemId,
-        qualityRating: rating === 'up' ? 'thumbs_up' : 'thumbs_down',
+        qualityRating: rating === 'up' ? 1 : 0,
         feedback: {
           helpful: rating === 'up',
           relevant: rating === 'up',

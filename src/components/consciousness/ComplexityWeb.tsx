@@ -1185,7 +1185,7 @@ export const ComplexityWeb = ({ data, consciousnessData, decisionData, isLoading
                   <div key={index} className="p-3 bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-sm">{property.property}</span>
-                      <Badge className={`${getStabilityColor(property.stability)}`}>
+                      <Badge className={`${getStabilityColor(property.stability.toString())}`}>
                         {property.stability}
                       </Badge>
                     </div>

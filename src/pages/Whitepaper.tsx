@@ -344,10 +344,10 @@ We stand at a crossroads. We can:
 For the complete whitepaper with detailed action guides, safety protocols, real-world case studies, and comprehensive instructions, visit: ${window.location.origin}/whitepaper
 `;
 
-    const filename = downloadFormat === 'pdf' ? 'Fighting_Back_Whitepaper.pdf' : 'Fighting_Back_Whitepaper.txt';
-    const mimeType = downloadFormat === 'pdf' ? 'application/pdf' : 'text/plain';
+    const filename = (downloadFormat as string) === 'pdf' ? 'Fighting_Back_Whitepaper.pdf' : 'Fighting_Back_Whitepaper.txt';
+    const mimeType = (downloadFormat as string) === 'pdf' ? 'application/pdf' : 'text/plain';
     
-    if (downloadFormat === 'pdf') {
+    if ((downloadFormat as string) === 'pdf') {
       toast({
         title: "PDF Generated",
         description: "Your whitepaper PDF is being downloaded.",
