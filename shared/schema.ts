@@ -165,6 +165,260 @@ export const aiUsageAnalyticsSchema = z.object({
 });
 
 export type AIUsageAnalytics = z.infer<typeof aiUsageAnalyticsSchema>;
+export type InsertAIUsageAnalytics = z.infer<typeof aiUsageAnalyticsSchema>;
+
+export const aiUserFeedbackSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  feedback: z.string(),
+  rating: z.number().min(1).max(5),
+  createdAt: z.string(),
+});
+
+export type AIUserFeedback = z.infer<typeof aiUserFeedbackSchema>;
+export type InsertAIUserFeedback = z.infer<typeof aiUserFeedbackSchema>;
+
+export const maskedAICredentialsSchema = z.object({
+  provider: AIProviderEnum,
+  hasCredentials: z.boolean(),
+  lastUsed: z.string().optional(),
+});
+
+export type MaskedAICredentials = z.infer<typeof maskedAICredentialsSchema>;
+
+// Consciousness Models
+export const consciousnessStateSchema = z.object({
+  id: z.string(),
+  timestamp: z.string(),
+  level: z.number(),
+  dimensions: z.record(z.number()),
+  metadata: z.record(z.any()).optional(),
+  state: z.string().optional(),
+  awarenessLevel: z.number().optional(),
+  recursionDepth: z.number().optional(),
+  orderChaosBalance: z.number().optional(),
+  emergentInsights: z.array(z.string()).optional(),
+  activePatternsRecognized: z.number().optional(),
+  contextLayers: z.number().optional(),
+});
+
+export type ConsciousnessState = z.infer<typeof consciousnessStateSchema>;
+export type InsertConsciousnessState = z.infer<typeof consciousnessStateSchema>;
+
+export const decisionRecordSchema = z.object({
+  id: z.string(),
+  timestamp: z.string(),
+  context: z.string(),
+  decision: z.string(),
+  outcome: z.string().optional(),
+  confidence: z.number(),
+  cascadingEffects: z.array(z.string()).optional(),
+});
+
+export type DecisionRecord = z.infer<typeof decisionRecordSchema>;
+export type InsertDecisionRecord = z.infer<typeof decisionRecordSchema>;
+
+export const reflectionLogSchema = z.object({
+  id: z.string(),
+  timestamp: z.string(),
+  trigger: z.string(),
+  reflection: z.string(),
+  insights: z.array(z.string()),
+});
+
+export type ReflectionLog = z.infer<typeof reflectionLogSchema>;
+export type InsertReflectionLog = z.infer<typeof reflectionLogSchema>;
+
+export const learningCycleSchema = z.object({
+  id: z.string(),
+  startTime: z.string(),
+  endTime: z.string().optional(),
+  phase: z.string(),
+  progress: z.number(),
+  learnings: z.array(z.string()),
+});
+
+export type LearningCycle = z.infer<typeof learningCycleSchema>;
+export type InsertLearningCycle = z.infer<typeof learningCycleSchema>;
+
+export const complexityMapSchema = z.object({
+  id: z.string(),
+  timestamp: z.string(),
+  nodes: z.array(z.record(z.any())),
+  connections: z.array(z.record(z.any())),
+  metrics: z.record(z.number()),
+  edges: z.array(z.record(z.any())).optional(),
+  name: z.string().optional(),
+  complexityMetrics: z.record(z.number()).optional(),
+  emergentProperties: z.array(z.string()).optional(),
+  systemScope: z.string().optional(),
+  version: z.string().optional(),
+  updatedAt: z.string().optional(),
+});
+
+export type ComplexityMap = z.infer<typeof complexityMapSchema>;
+export type InsertComplexityMap = z.infer<typeof complexityMapSchema>;
+
+// Message and Conversation Models
+export const messageSchema = z.object({
+  id: z.string(),
+  conversationId: z.string(),
+  role: z.enum(['user', 'assistant']),
+  content: z.string(),
+  timestamp: z.string(),
+});
+
+export type Message = z.infer<typeof messageSchema>;
+export type InsertMessage = z.infer<typeof messageSchema>;
+
+export const conversationSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  userId: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type Conversation = z.infer<typeof conversationSchema>;
+export type InsertConversation = z.infer<typeof conversationSchema>;
+
+// Governance Models
+export const proposalSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  proposer: z.string(),
+  status: z.enum(['active', 'passed', 'rejected']),
+  createdAt: z.string(),
+});
+
+export type Proposal = z.infer<typeof proposalSchema>;
+export type InsertProposal = z.infer<typeof proposalSchema>;
+
+export const voteSchema = z.object({
+  id: z.string(),
+  proposalId: z.string(),
+  voter: z.string(),
+  choice: z.enum(['for', 'against', 'abstain']),
+  timestamp: z.string(),
+});
+
+export type Vote = z.infer<typeof voteSchema>;
+export type InsertVote = z.infer<typeof voteSchema>;
+
+export const governanceConfigSchema = z.object({
+  id: z.string(),
+  votingPeriod: z.number(),
+  quorum: z.number(),
+  proposalThreshold: z.number(),
+});
+
+export type GovernanceConfig = z.infer<typeof governanceConfigSchema>;
+export type InsertGovernanceConfig = z.infer<typeof governanceConfigSchema>;
+
+// Corruption Analysis Models
+export const corruptionAnalysisResultSchema = z.object({
+  id: z.string(),
+  target: z.string(),
+  score: z.number(),
+  indicators: z.array(z.string()),
+  recommendations: z.array(z.string()),
+  timestamp: z.string(),
+});
+
+export type CorruptionAnalysisResult = z.infer<typeof corruptionAnalysisResultSchema>;
+export type InsertCorruptionAnalysisResult = z.infer<typeof corruptionAnalysisResultSchema>;
+
+export const systemicCorruptionReportSchema = z.object({
+  id: z.string(),
+  sector: z.string(),
+  findings: z.array(z.string()),
+  severity: z.enum(['low', 'medium', 'high', 'critical']),
+  timestamp: z.string(),
+});
+
+export type SystemicCorruptionReport = z.infer<typeof systemicCorruptionReportSchema>;
+export type InsertSystemicCorruptionReport = z.infer<typeof systemicCorruptionReportSchema>;
+
+// Strategic Models
+export const campaignStrategyPlanSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  objectives: z.array(z.string()),
+  tactics: z.array(z.string()),
+  timeline: z.string(),
+  resources: z.array(z.string()),
+});
+
+export type CampaignStrategyPlan = z.infer<typeof campaignStrategyPlanSchema>;
+export type InsertCampaignStrategyPlan = z.infer<typeof campaignStrategyPlanSchema>;
+
+export const resourceProfileSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  availability: z.number(),
+  allocation: z.record(z.number()),
+  timestamp: z.string(),
+});
+
+export type ResourceProfile = z.infer<typeof resourceProfileSchema>;
+export type InsertResourceProfile = z.infer<typeof resourceProfileSchema>;
+
+// Enterprise Leadership Models
+export const executiveAssessmentSchema = z.object({
+  id: z.string(),
+  executiveId: z.string(),
+  scores: z.record(z.number()),
+  recommendations: z.array(z.string()),
+  timestamp: z.string(),
+});
+
+export type ExecutiveAssessment = z.infer<typeof executiveAssessmentSchema>;
+export type InsertExecutiveAssessment = z.infer<typeof executiveAssessmentSchema>;
+
+export const strategicPlanSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  goals: z.array(z.string()),
+  initiatives: z.array(z.string()),
+  timeline: z.string(),
+});
+
+export type StrategicPlan = z.infer<typeof strategicPlanSchema>;
+export type InsertStrategicPlan = z.infer<typeof strategicPlanSchema>;
+
+export const teamConsciousnessAssessmentSchema = z.object({
+  id: z.string(),
+  teamId: z.string(),
+  metrics: z.record(z.number()),
+  insights: z.array(z.string()),
+  timestamp: z.string(),
+});
+
+export type TeamConsciousnessAssessment = z.infer<typeof teamConsciousnessAssessmentSchema>;
+export type InsertTeamConsciousnessAssessment = z.infer<typeof teamConsciousnessAssessmentSchema>;
+
+export const leadershipDevelopmentTrackingSchema = z.object({
+  id: z.string(),
+  leaderId: z.string(),
+  milestones: z.array(z.string()),
+  progress: z.number(),
+  nextSteps: z.array(z.string()),
+});
+
+export type LeadershipDevelopmentTracking = z.infer<typeof leadershipDevelopmentTrackingSchema>;
+export type InsertLeadershipDevelopmentTracking = z.infer<typeof leadershipDevelopmentTrackingSchema>;
+
+export const enterpriseAnalyticsSchema = z.object({
+  id: z.string(),
+  metrics: z.record(z.number()),
+  trends: z.record(z.array(z.number())),
+  insights: z.array(z.string()),
+  timestamp: z.string(),
+});
+
+export type EnterpriseAnalytics = z.infer<typeof enterpriseAnalyticsSchema>;
+export type InsertEnterpriseAnalytics = z.infer<typeof enterpriseAnalyticsSchema>;
 
 // Smart Contract Blockchain Integration Types
 // Import comprehensive blockchain types
