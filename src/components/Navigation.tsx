@@ -62,7 +62,7 @@ export const Navigation: React.FC<NavigationProps> = ({
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Left side - Back and Home buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {showBackButton && (
               <Button
                 variant="ghost"
@@ -70,8 +70,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 onClick={handleBack}
                 className="flex items-center gap-2"
               >
-                <ArrowLeft className="w-4 h-4" />
-                Back
+                <ArrowLeft className="w-5 h-5" />
               </Button>
             )}
             {showHomeButton && (
@@ -81,15 +80,14 @@ export const Navigation: React.FC<NavigationProps> = ({
                 onClick={() => handleNavigation('/')}
                 className="flex items-center gap-2"
               >
-                <Home className="w-4 h-4" />
-                Home
+                <Home className="w-5 h-5" />
               </Button>
             )}
           </div>
 
           {/* Center - Quick navigation (optional) */}
           {showQuickNav && (
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-0.5">
               {allNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = window.location.pathname === item.path;
@@ -97,12 +95,12 @@ export const Navigation: React.FC<NavigationProps> = ({
                   <Button
                     key={item.path}
                     variant={isActive ? "cosmic" : "ghost"}
-                    size="sm"
+                    size="icon"
                     onClick={() => handleNavigation(item.path)}
-                    className="flex items-center gap-1"
+                    title={item.label}
+                    className="w-10 h-10"
                   >
-                    <Icon className="w-4 h-4" />
-                    <span className="hidden lg:inline">{item.label}</span>
+                    <Icon className="w-5 h-5" />
                   </Button>
                 );
               })}
@@ -110,7 +108,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           )}
 
           {/* Right side - Web3 Connect and Platform title */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Web3ConnectButton />
             <div className="text-sm font-semibold text-gradient-cosmic">
               Pitchfork Protocol
