@@ -1,105 +1,12 @@
-import React, { useMemo, useCallback } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, FileCheck, Heart, Wallet, LogOut, Copy, ExternalLink, ChevronRight, MessageCircle, Scale, BookOpen, DollarSign, Github } from 'lucide-react';
-import { useWeb3 } from '@/hooks/useWeb3';
-import { formatAddress, getNetworkName } from '@/hooks/useWeb3';
-import { useToast } from '@/hooks/use-toast';
+import { Shield, Users, FileCheck, Heart, ChevronRight, MessageCircle, Scale, BookOpen, DollarSign, Github } from 'lucide-react';
 import neoTokenLogo from '@/assets/neo-token-logo.png';
 import { Navigation } from '@/components/Navigation';
+import Web3ConnectButton from '@/components/Web3ConnectButton';
 
 export const PitchforkHero = React.memo(() => {
-  const {
-    isConnected,
-    account,
-    chainId,
-    connectWallet,
-    disconnectWallet,
-    isConnecting
-  } = useWeb3();
-  const {
-    toast
-  } = useToast();
-
   const go = (path: string) => { window.location.href = path; };
-
-  const handleWalletAction = useCallback(() => {
-    if (isConnected) {
-      disconnectWallet();
-      toast({
-        title: "Wallet Disconnected",
-        description: "Your wallet has been disconnected successfully."
-      });
-    } else {
-      connectWallet();
-    }
-  }, [isConnected, disconnectWallet, connectWallet, toast]);
-
-  const copyAddress = useCallback(() => {
-    if (account) {
-      navigator.clipboard.writeText(account);
-      toast({
-        title: "Address Copied",
-        description: "Wallet address copied to clipboard!"
-      });
-    }
-  }, [account, toast]);
-
-  const openInExplorer = useCallback(() => {
-    if (account && chainId) {
-      let explorerUrl = '';
-      switch (chainId) {
-        case 1:
-          explorerUrl = `https://etherscan.io/address/${account}`;
-          break;
-        case 137:
-          explorerUrl = `https://polygonscan.com/address/${account}`;
-          break;
-        case 56:
-          explorerUrl = `https://bscscan.com/address/${account}`;
-          break;
-        default:
-          toast({
-            title: "Explorer Not Available",
-            description: "Block explorer not configured for this network.",
-            variant: "destructive"
-          });
-          return;
-      }
-      window.open(explorerUrl, '_blank');
-    }
-  }, [account, chainId, toast]);
-
-  const navigationItems = useMemo(() => [{
-    path: '/identity',
-    icon: Shield,
-    title: 'Secure Identity',
-    description: 'Privacy-first verification'
-  }, {
-    path: '/organize',
-    icon: Users,
-    title: 'Organize',
-    description: 'Coordinate resistance'
-  }, {
-    path: '/messages',
-    icon: MessageCircle,
-    title: 'Secure Messages',
-    description: 'Encrypted communication'
-  }, {
-    path: '/governance',
-    icon: Scale,
-    title: 'DAO Governance',
-    description: 'Democratic decisions'
-  }, {
-    path: '/verify',
-    icon: FileCheck,
-    title: 'Verify',
-    description: 'Document truth'
-  }, {
-    path: '/support',
-    icon: Heart,
-    title: 'Support',
-    description: 'Fund justice'
-  }], []);
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -143,45 +50,9 @@ export const PitchforkHero = React.memo(() => {
                 View Source
               </Button>
 
-              {!isConnected ? (
-                <Button variant="cosmic" size="lg" onClick={handleWalletAction} disabled={isConnecting} className="min-w-[200px] text-lg font-semibold">
-                  <Wallet className="w-5 h-5 mr-2" />
-                  {isConnecting ? 'Connecting...' : 'Connect Wallet'}
-                </Button>
-              ) : (
-                <div className="space-y-4">
-                  {/* Connected wallet info */}
-                  <div className="bg-background/10 backdrop-blur-sm border border-primary/20 rounded-lg p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Connected Wallet</span>
-                      <Button variant="cosmicOutline" size="sm" onClick={handleWalletAction} className="h-8 px-3">
-                        <LogOut className="w-3 h-3 mr-1" />
-                        Disconnect
-                      </Button>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <code className="text-sm font-mono text-foreground bg-muted/20 px-2 py-1 rounded">
-                          {formatAddress(account!)}
-                        </code>
-                        <Button variant="ghost" size="sm" onClick={copyAddress} className="h-6 w-6 p-0">
-                          <Copy className="w-3 h-3" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={openInExplorer} className="h-6 w-6 p-0">
-                          <ExternalLink className="w-3 h-3" />
-                        </Button>
-                      </div>
-
-                      {chainId && (
-                        <div className="text-xs text-muted-foreground">
-                          Network: {getNetworkName(chainId)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div className="min-w-[200px]">
+                <Web3ConnectButton />
+              </div>
             </div>
 
             {/* Introduction text - always visible */}
@@ -190,26 +61,23 @@ export const PitchforkHero = React.memo(() => {
                 Learn how decentralized tools can help you fight corruption, organize resistance, 
                 and build a more just world. Our comprehensive whitepaper explains everything you need to know.
               </p>
-              {!isConnected && (
-                <p className="text-sm text-muted-foreground/80">
-                  Connect your wallet to access the full platform and start taking action.
-                </p>
-              )}
+              <p className="text-sm text-muted-foreground/80">
+                Connect your wallet to access the full platform and start taking action.
+              </p>
             </div>
 
             {/* Core Platform Features */}
-            {isConnected && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-6 max-w-6xl mx-auto">
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/identity')}>
-                  <div className="flex items-center">
-                    <Shield className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold">Secure Identity</div>
-                      <div className="text-xs text-muted-foreground">Privacy-first verification</div>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-6 max-w-6xl mx-auto">
+              <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/identity')}>
+                <div className="flex items-center">
+                  <Shield className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Secure Identity</div>
+                    <div className="text-xs text-muted-foreground">Privacy-first verification</div>
                   </div>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
 
                 <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/organize')}>
                   <div className="flex items-center">
@@ -266,7 +134,6 @@ export const PitchforkHero = React.memo(() => {
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
-            )}
           </div>
         </div>
       </div>
