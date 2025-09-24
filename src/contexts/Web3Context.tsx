@@ -61,33 +61,13 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
   const [error, setError] = useState<string | null>(null);
   const [supportedChains] = useState<number[]>(config?.supportedChains || [1, 137, 56, 5, 11155111, 80001, 97]);
 
-  // Initialize ethers on component mount
+  // Initialize ethers on component mount and check connection after
   useEffect(() => {
-    initEthers();
-  }, []);
-
-  // Available wallet configurations
-  const availableWallets: WalletInfo[] = [
-    {
-      name: 'MetaMask',
-      icon: '🦊',
-      connector: 'metamask'
-    },
-    {
-      name: 'WalletConnect',
-      icon: '📱',
-      connector: 'walletconnect'
-    },
-    {
-      name: 'Coinbase Wallet',
-      icon: '🔷',
-      connector: 'coinbase'
-    }
-  ];
-
-  // Check if wallet is already connected on load
-  useEffect(() => {
-    checkConnection();
+    const initializeAndCheck = async () => {
+      await initEthers();
+      checkConnection();
+    };
+    initializeAndCheck();
   }, []);
 
   // Listen for account changes
@@ -117,7 +97,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
 
   const checkConnection = async () => {
     console.log('🔍 Checking existing wallet connection...');
-    if (window.ethereum) {
+    if (window.ethereum && BrowserProvider) {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
         console.log('🔍 Existing accounts found:', accounts);
@@ -143,7 +123,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
         console.error('❌ Error checking connection:', error);
       }
     } else {
-      console.log('ℹ️ No Web3 wallet detected - this is expected if MetaMask is not installed');
+      console.log('ℹ️ No Web3 wallet detected or ethers not initialized - this is expected if MetaMask is not installed');
     }
   };
 
@@ -154,6 +134,13 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
     if (!window.ethereum) {
       const errorMsg = 'No Web3 wallet detected. Please install MetaMask or another Web3 wallet.';
       console.warn('⚠️ No Web3 wallet detected - install MetaMask to enable blockchain features');
+      setError(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    if (!BrowserProvider) {
+      const errorMsg = 'Web3 provider not initialized. Please try again.';
+      console.warn('⚠️ Ethers not initialized');
       setError(errorMsg);
       throw new Error(errorMsg);
     }
@@ -268,7 +255,23 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
     error,
     supportedChains,
     switchNetwork,
-    availableWallets,
+    availableWallets: [
+      {
+        name: 'MetaMask',
+        icon: '🦊',
+        connector: 'metamask'
+      },
+      {
+        name: 'WalletConnect',
+        icon: '📱',
+        connector: 'walletconnect'
+      },
+      {
+        name: 'Coinbase Wallet',
+        icon: '🔷',
+        connector: 'coinbase'
+      }
+    ],
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

@@ -29,6 +29,48 @@ const Identity = () => {
     retry: 1, // Only retry once to avoid infinite loops
   });
 
+  // Verification mutation using unified flow - MUST be declared before any conditional returns
+  const verifyMutation = useMutation({
+    mutationFn: async (level: 'basic' | 'verified') => {
+      if (!account) throw new Error('No account connected');
+      return await identityApi.verifyLevel(account, level);
+    },
+    onSuccess: (result, level) => {
+      // Only invalidate and show success if verification actually succeeded
+      if (result.verificationLevel === level) {
+        queryClient.invalidateQueries({ queryKey: ['identity'] });
+        toast({
+          title: "Verification Complete",
+          description: `You are now ${level} verified. Your privacy is protected.`,
+        });
+      } else {
+        throw new Error('Verification level mismatch');
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: "Verification Failed",
+        description: error.message || "Please try again",
+        variant: "destructive"
+      });
+    },
+  });
+
+  const currentLevel = identity?.verificationLevel || 'none';
+
+  const handleVerification = async (level: 'basic' | 'verified') => {
+    setIsVerifying(true);
+    
+    try {
+      await verifyMutation.mutateAsync(level);
+      // Success handling is now in verifyMutation.onSuccess
+    } catch (error) {
+      // Error handling is now in verifyMutation.onError
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
   // Show error state if there's an error
   if (error && isConnected) {
     return (
@@ -70,47 +112,6 @@ const Identity = () => {
     );
   }
 
-  // Verification mutation using unified flow
-  const verifyMutation = useMutation({
-    mutationFn: async (level: 'basic' | 'verified') => {
-      if (!account) throw new Error('No account connected');
-      return await identityApi.verifyLevel(account, level);
-    },
-    onSuccess: (result, level) => {
-      // Only invalidate and show success if verification actually succeeded
-      if (result.verificationLevel === level) {
-        queryClient.invalidateQueries({ queryKey: ['identity'] });
-        toast({
-          title: "Verification Complete",
-          description: `You are now ${level} verified. Your privacy is protected.`,
-        });
-      } else {
-        throw new Error('Verification level mismatch');
-      }
-    },
-    onError: (error) => {
-      toast({
-        title: "Verification Failed",
-        description: error.message || "Please try again",
-        variant: "destructive"
-      });
-    },
-  });
-
-  const currentLevel = identity?.verificationLevel || 'none';
-
-  const handleVerification = async (level: 'basic' | 'verified') => {
-    setIsVerifying(true);
-    
-    try {
-      await verifyMutation.mutateAsync(level);
-      // Success handling is now in verifyMutation.onSuccess
-    } catch (error) {
-      // Error handling is now in verifyMutation.onError
-    } finally {
-      setIsVerifying(false);
-    }
-  };
 
   if (!isConnected) {
     return (
