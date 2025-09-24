@@ -32,7 +32,7 @@ export const PitchforkHero = React.memo(() => {
             </p>
           </div>
           
-          {/* Action buttons - always visible */
+          {/* Action buttons - always visible */}
           <div className="space-y-6 pt-8">
             {/* Primary Actions - Always accessible */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
@@ -67,75 +67,73 @@ export const PitchforkHero = React.memo(() => {
             </div>
             
             {/* Core Platform Features */}
-            {
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-6 max-w-6xl mx-auto">
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/identity')}>
-                  <div className="flex items-center">
-                    <Shield className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold">Secure Identity</div>
-                      <div className="text-xs text-muted-foreground">Privacy-first verification</div>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-6 max-w-6xl mx-auto">
+              <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/identity')}>
+                <div className="flex items-center">
+                  <Shield className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Secure Identity</div>
+                    <div className="text-xs text-muted-foreground">Privacy-first verification</div>
                   </div>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-                
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/organize')}>
-                  <div className="flex items-center">
-                    <Users className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold">Organize</div>
-                      <div className="text-xs text-muted-foreground">Coordinate resistance</div>
-                    </div>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              
+              <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/organize')}>
+                <div className="flex items-center">
+                  <Users className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Organize</div>
+                    <div className="text-xs text-muted-foreground">Coordinate resistance</div>
                   </div>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-                
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/messages')}>
-                  <div className="flex items-center">
-                    <MessageCircle className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold">Secure Messages</div>
-                      <div className="text-xs text-muted-foreground">Encrypted communication</div>
-                    </div>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              
+              <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/messages')}>
+                <div className="flex items-center">
+                  <MessageCircle className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Secure Messages</div>
+                    <div className="text-xs text-muted-foreground">Encrypted communication</div>
                   </div>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
 
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/governance')}>
-                  <div className="flex items-center">
-                    <Scale className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold">DAO Governance</div>
-                      <div className="text-xs text-muted-foreground">Democratic decisions</div>
-                    </div>
+              <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/governance')}>
+                <div className="flex items-center">
+                  <Scale className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">DAO Governance</div>
+                    <div className="text-xs text-muted-foreground">Democratic decisions</div>
                   </div>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-                
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/verify')}>
-                  <div className="flex items-center">
-                    <FileCheck className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold">Verify</div>
-                      <div className="text-xs text-muted-foreground">Document truth</div>
-                    </div>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              
+              <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/verify')}>
+                <div className="flex items-center">
+                  <FileCheck className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Verify</div>
+                    <div className="text-xs text-muted-foreground">Document truth</div>
                   </div>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-                
-                <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/support')}>
-                  <div className="flex items-center">
-                    <Heart className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold">Support</div>
-                      <div className="text-xs text-muted-foreground">Fund justice</div>
-                    </div>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+              
+              <Button variant="cosmicOutline" className="flex items-center justify-between p-4 h-auto" onClick={() => go('/support')}>
+                <div className="flex items-center">
+                  <Heart className="w-5 h-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-semibold">Support</div>
+                    <div className="text-xs text-muted-foreground">Fund justice</div>
                   </div>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            }
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
