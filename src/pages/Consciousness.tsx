@@ -14,7 +14,7 @@ import { FeatureComparison } from "@/components/ui/feature-comparison";
 import { TierUpgradeModal } from "@/components/ui/tier-upgrade-modal";
 import { UpgradePromptModal } from "@/components/ui/upgrade-prompt";
 import { useTier } from "@/contexts/TierContext";
-import { ConsciousnessDashboard } from '@/components/consciousness/ConsciousnessDashboard';
+import { EnhancedConsciousnessDashboard } from '@/components/consciousness/EnhancedConsciousnessDashboard';
 import { DecisionTimeline } from '@/components/consciousness/DecisionTimeline';
 import { ReflectionObservatory } from '@/components/consciousness/ReflectionObservatory';
 import { PatternRecognitionGrid } from '@/components/consciousness/PatternRecognitionGrid';
@@ -590,11 +590,7 @@ const Consciousness = () => {
                   <CardDescription>Active consciousness parameters</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ConsciousnessDashboard 
-                    data={consciousnessStates} 
-                    isLoading={loadingConsciousness}
-                    compact={true}
-                  />
+                  <EnhancedConsciousnessDashboard />
                 </CardContent>
               </Card>
 
@@ -807,7 +803,7 @@ const Consciousness = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ConsciousnessDashboard data={consciousnessStates} isLoading={loadingConsciousness} />
+                <EnhancedConsciousnessDashboard />
               </CardContent>
             </Card>
           </TabsContent>
