@@ -1,9 +1,21 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
 import "./index.css";
-import { pwaManager } from '@/lib/pwaManager';
+import App from "./App.tsx";
+import { pwaManager } from "./lib/pwaManager";
+import { performanceMonitor } from "./lib/performance";
 
-// Initialize PWA on app start
+// Initialize PWA manager (service worker registration happens automatically)
 pwaManager;
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Initialize performance monitoring
+if (process.env.NODE_ENV === 'development') {
+  console.log('📊 Performance monitoring enabled');
+  performanceMonitor;
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);

@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Web3Provider } from "@/contexts/Web3Context";
 import { TierProvider, useTier } from "@/contexts/TierContext";
 import { UpgradePromptModal } from "@/components/ui/upgrade-prompt";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { queryClient } from "@/lib/queryClient";
 
 // Lazy load components
@@ -55,43 +56,45 @@ const GlobalUpgradePrompt = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TierProvider>
-      <Web3Provider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Suspense fallback={<LoadingSpinner />}>
-              <GlobalUpgradePrompt />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/whitepaper" element={<Whitepaper />} />
-                <Route path="/identity" element={<Identity />} />
-                <Route path="/organize" element={<Organize />} />
-                <Route path="/verify" element={<Verify />} />
-                <Route path="/support" element={<Support />} />
-                <Route path="/messages" element={<Messages />} />
-                <Route path="/governance" element={<Governance />} />
-                <Route path="/leadership" element={<Leadership />} />
-                <Route path="/enterprise-leadership" element={<EnterpriseLeadership />} />
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TierProvider>
+        <Web3Provider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Suspense fallback={<LoadingSpinner />}>
+                <GlobalUpgradePrompt />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/whitepaper" element={<Whitepaper />} />
+                  <Route path="/identity" element={<Identity />} />
+                  <Route path="/organize" element={<Organize />} />
+                  <Route path="/verify" element={<Verify />} />
+                  <Route path="/support" element={<Support />} />
+                  <Route path="/messages" element={<Messages />} />
+                  <Route path="/governance" element={<Governance />} />
+                  <Route path="/leadership" element={<Leadership />} />
+                  <Route path="/enterprise-leadership" element={<EnterpriseLeadership />} />
 
-                <Route path="/consciousness" element={<Consciousness />} />
+                  <Route path="/consciousness" element={<Consciousness />} />
 
-                <Route path="/funding" element={<Funding />} />
+                  <Route path="/funding" element={<Funding />} />
 
-                <Route path="/ai-settings" element={<AISettings />} />
-                <Route path="/provider-health" element={<ProviderHealthDashboard />} />
+                  <Route path="/ai-settings" element={<AISettings />} />
+                  <Route path="/provider-health" element={<ProviderHealthDashboard />} />
 
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </TooltipProvider>
-      </Web3Provider>
-    </TierProvider>
-  </QueryClientProvider>
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </TooltipProvider>
+        </Web3Provider>
+      </TierProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
