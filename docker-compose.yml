@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # IPFS Node for decentralized storage
+  ipfs:
+    image: ipfs/go-ipfs:latest
+    container_name: pitchfork-ipfs
+    restart: unless-stopped
+    environment:
+      - IPFS_PROFILE=server
+    volumes:
+      - ipfs_data:/data/ipfs
+    ports:
+      - "4001:4001"   # P2P
+      - "5001:5001"   # API
+      - "8081:8080"   # Gateway
+    healthcheck:
+      test: ["CMD", "ipfs", "id"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for session management and caching
+  redis:
+    image: redis:7-alpine
+    container_name: pitchfork-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-changeme}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Pitchfork Backend API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-builder
+    container_name: pitchfork-api
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+      ipfs:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      API_PORT: 3001
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis:6379
+      IPFS_API_URL: http://ipfs:5001
+      IPFS_GATEWAY_URL: http://ipfs:8080
+      # Blockchain configuration
+      ETHEREUM_RPC_URL: ${ETHEREUM_RPC_URL}
+      POLYGON_RPC_URL: ${POLYGON_RPC_URL}
+      BSC_RPC_URL: ${BSC_RPC_URL}
+      # AI Provider Keys
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      XAI_API_KEY: ${XAI_API_KEY}
+      # Security
+      JWT_SECRET: ${JWT_SECRET:-changeme-in-production}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-changeme-in-production}
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "3001:3001"
+    volumes:
+      - api_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Pitchfork Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: pitchfork-frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      FRONTEND_PORT: 8080
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  ipfs_data:
+    driver: local
+  redis_data:
+    driver: local
+  api_logs:
+    driver: local
+
+networks:
+  default:
+    name: pitchfork-network
