@@ -279,7 +279,7 @@ const CONTRACTS = {
 
 - **Issues**: GitHub Issues
 - **Discord**: Community server
-- **Email**: support@pitchfork.protocol
+- **Email**: info@spacechild.love
 
 ---
 
