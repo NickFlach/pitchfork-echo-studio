@@ -59,7 +59,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
   const [walletType, setWalletType] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [supportedChains] = useState<number[]>(config?.supportedChains || [1, 137, 56, 5, 11155111, 80001, 97]);
+  const [supportedChains] = useState<number[]>(config?.supportedChains || [47763, 1, 137, 56, 5, 11155111, 80001, 97]);
 
   // Initialize ethers on component mount and check connection after
   useEffect(() => {
@@ -227,6 +227,16 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
         nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
         rpcUrls: ['https://polygon-rpc.com/'],
         blockExplorerUrls: ['https://polygonscan.com/']
+      },
+      47763: {
+        chainId: '0xBA93',
+        chainName: 'NEO X',
+        nativeCurrency: { name: 'GAS', symbol: 'GAS', decimals: 18 },
+        rpcUrls: [
+          'https://mainnet-1.rpc.banelabs.org',
+          'https://mainnet-2.rpc.banelabs.org'
+        ],
+        blockExplorerUrls: ['https://xexplorer.neo.org']
       },
       // Add more network configurations as needed
     };
