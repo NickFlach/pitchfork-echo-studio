@@ -39,6 +39,7 @@ export const Web3ConnectButton: React.FC = () => {
 
   const getChainName = (chainId: number) => {
     const chains: Record<number, string> = {
+      47763: 'NEO X',
       1: 'Ethereum',
       137: 'Polygon',
       56: 'BSC',
@@ -76,10 +77,10 @@ export const Web3ConnectButton: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => switchNetwork(1)}
+            onClick={() => switchNetwork(47763)}
             className="text-orange-600 border-orange-200 hover:bg-orange-50"
           >
-            Switch Network
+            Switch to NEO X
           </Button>
         )}
 
