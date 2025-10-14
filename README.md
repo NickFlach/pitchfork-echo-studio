@@ -365,3 +365,44 @@ Together, we can create a world where **truth prevails**, **justice is served**,
 *Built with ❤️ by the global resistance community*
 
 *Powered by advanced AI and decentralized technology*
+
+## Environment setup (.env example)
+
+Create a `.env` file at project root with strong secrets and required URLs:
+
+```bash
+# Secrets (use long, random strings)
+JWT_SECRET=please-change-to-a-long-random-string
+ENCRYPTION_KEY=please-change-to-a-32+char-random-string
+REDIS_PASSWORD=please-change
+POSTGRES_PASSWORD=please-change
+POSTGRES_DB=pitchfork
+POSTGRES_USER=pitchfork
+
+# Backend
+API_PORT=3001
+LOG_LEVEL=info
+ALLOWED_ORIGINS=http://localhost:8080
+
+# DB URL used by backend
+DATABASE_URL=postgresql://pitchfork:please-change@localhost:5432/pitchfork
+
+# Web3 RPC URLs
+ETHEREUM_RPC_URL=
+POLYGON_RPC_URL=
+BSC_RPC_URL=
+
+# IPFS
+IPFS_API_URL=http://localhost:5001
+IPFS_GATEWAY_URL=http://localhost:8080
+
+# Frontend
+VITE_API_URL=http://localhost:3001
+VITE_FRONTEND_URL=http://localhost:8080
+
+# AI Providers
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+GEMINI_API_KEY=
+XAI_API_KEY=
+```

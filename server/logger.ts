@@ -57,11 +57,12 @@ export class Logger {
     context?: Record<string, any>,
     error?: any
   ): LogEntry {
+    const safeContext = this.redactSensitive(context);
     const entry: LogEntry = {
       timestamp: new Date(),
       level,
       message,
-      context,
+      context: safeContext,
       error,
     };
 
@@ -82,6 +83,24 @@ export class Logger {
     const errorStr = entry.error ? ` | Error: ${entry.error.message || entry.error}` : '';
 
     return `[${timestamp}] ${levelName}: ${entry.message}${contextStr}${errorStr}`;
+  }
+
+  private redactSensitive(context?: Record<string, any>): Record<string, any> | undefined {
+    if (!context) return context;
+    try {
+      const SENSITIVE_KEYS = ['authorization', 'apiKey', 'apikey', 'token', 'jwt', 'secret', 'password'];
+      const redacted: Record<string, any> = {};
+      for (const [k, v] of Object.entries(context)) {
+        if (SENSITIVE_KEYS.includes(k.toLowerCase())) {
+          redacted[k] = typeof v === 'string' ? `${v.slice(0, 4)}…[redacted]` : '[redacted]';
+        } else {
+          redacted[k] = v;
+        }
+      }
+      return redacted;
+    } catch {
+      return context;
+    }
   }
 
   debug(message: string, context?: Record<string, any>): void {
