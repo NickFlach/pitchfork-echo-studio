@@ -1,3 +1,18 @@
+# Database Migrations
+
+Run migrations locally:
+
+```bash
+npm run db:generate
+npm run db:migrate
+```
+
+Ensure `DATABASE_URL` is set in your `.env`.
+
+Migrations directory: `./db/migrations`
+
+CI suggestion: run `npm run db:migrate` against an ephemeral Postgres before tests.
+
 # 🗄️ Pitchfork Protocol Database
 
 **Real PostgreSQL persistence replacing in-memory storage**
