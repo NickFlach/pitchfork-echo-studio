@@ -147,7 +147,7 @@ export class Logger {
   // Request logging for HTTP requests
   logRequest(req: any, res: any, next: any): void {
     const startTime = Date.now();
-    const requestId = this.generateRequestId();
+    const requestId = req.requestId || this.generateRequestId();
 
     this.info('Request started', {
       requestId,
@@ -159,7 +159,7 @@ export class Logger {
 
     res.on('finish', () => {
       const duration = Date.now() - startTime;
-      const level = res.statusCode >= 400 ? 'warn' : 'info';
+      const level = res.statusCode >= 500 ? 'error' : (res.statusCode >= 400 ? 'warn' : 'info');
 
       this[level]('Request completed', {
         requestId,
