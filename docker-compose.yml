@@ -25,7 +25,7 @@ services:
     image: redis:7-alpine
     container_name: pitchfork-redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-changeme}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
     ports:
@@ -49,6 +49,8 @@ services:
         condition: service_healthy
       ipfs:
         condition: service_healthy
+      postgres:
+        condition: service_healthy
     environment:
       NODE_ENV: production
       API_PORT: 3001
@@ -59,14 +61,16 @@ services:
       ETHEREUM_RPC_URL: ${ETHEREUM_RPC_URL}
       POLYGON_RPC_URL: ${POLYGON_RPC_URL}
       BSC_RPC_URL: ${BSC_RPC_URL}
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-pitchfork}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-pitchfork}
       # AI Provider Keys
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       XAI_API_KEY: ${XAI_API_KEY}
       # Security
-      JWT_SECRET: ${JWT_SECRET:-changeme-in-production}
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-changeme-in-production}
+      JWT_SECRET: ${JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       # Logging
       LOG_LEVEL: ${LOG_LEVEL:-info}
     ports:
@@ -79,6 +83,25 @@ services:
       timeout: 10s
       retries: 3
 
+  # PostgreSQL for persistence
+  postgres:
+    image: postgres:16-alpine
+    container_name: pitchfork-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pitchfork}
+      POSTGRES_USER: ${POSTGRES_USER:-pitchfork}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Pitchfork Frontend
   frontend:
     build:
@@ -89,6 +112,7 @@ services:
     restart: unless-stopped
     depends_on:
       - api
+      - postgres
     environment:
       NODE_ENV: production
       FRONTEND_PORT: 8080
