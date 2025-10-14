@@ -27,6 +27,23 @@ app.use(cors({
 app.use(express.json());
 // Global basic rate limiting
 app.use(rateLimitGeneral as any);
+// Security headers (helmet-like)
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  next();
+});
+
+// Request ID propagation
+app.use((req: any, _res, next) => {
+  const headerId = req.get?.('X-Request-ID') || req.headers['x-request-id'];
+  req.requestId = headerId || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  next();
+});
 
 // Request logging middleware
 app.use(logRequest);
