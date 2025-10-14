@@ -4,7 +4,7 @@
  * Based on existing shared/schema.ts types
  */
 
-import { pgTable, text, varchar, integer, boolean, timestamp, jsonb, serial, decimal } from 'drizzle-orm/pg-core';
+import { pgTable, text, varchar, integer, boolean, timestamp, jsonb, serial, decimal, index } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { relations } from 'drizzle-orm';
 
@@ -48,7 +48,11 @@ export const movements = pgTable('movements', {
   encryptionKey: text('encryption_key'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => ({
+  idxCreator: index('idx_movements_creator').on(t.creatorAddress),
+  idxStatus: index('idx_movements_status').on(t.status),
+  idxCreatedAt: index('idx_movements_created_at').on(t.createdAt),
+}));
 
 export const movementsRelations = relations(movements, ({ one, many }) => ({
   creator: one(identities, {
@@ -65,7 +69,10 @@ export const memberships = pgTable('memberships', {
   walletAddress: varchar('wallet_address', { length: 42 }).notNull(),
   role: varchar('role', { length: 50 }).default('member').notNull(),
   joinedAt: timestamp('joined_at').defaultNow().notNull(),
-});
+}, (t) => ({
+  idxMovement: index('idx_memberships_movement').on(t.movementId),
+  idxWallet: index('idx_memberships_wallet').on(t.walletAddress),
+}));
 
 export const membershipsRelations = relations(memberships, ({ one }) => ({
   movement: one(movements, {
@@ -95,7 +102,11 @@ export const documents = pgTable('documents', {
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => ({
+  idxSubmitter: index('idx_documents_submitter').on(t.submitterAddress),
+  idxCategory: index('idx_documents_category').on(t.category),
+  idxCreatedAt: index('idx_documents_created_at').on(t.createdAt),
+}));
 
 export const documentsRelations = relations(documents, ({ one }) => ({
   submitter: one(identities, {
@@ -124,7 +135,12 @@ export const campaigns = pgTable('campaigns', {
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => ({
+  idxCreator: index('idx_campaigns_creator').on(t.creatorAddress),
+  idxStatus: index('idx_campaigns_status').on(t.status),
+  idxEndDate: index('idx_campaigns_end_date').on(t.endDate),
+  idxCreatedAt: index('idx_campaigns_created_at').on(t.createdAt),
+}));
 
 export const campaignsRelations = relations(campaigns, ({ one, many }) => ({
   creator: one(identities, {
@@ -141,7 +157,11 @@ export const donations = pgTable('donations', {
   amount: decimal('amount', { precision: 18, scale: 2 }).notNull(),
   transactionHash: varchar('transaction_hash', { length: 66 }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-});
+}, (t) => ({
+  idxCampaign: index('idx_donations_campaign').on(t.campaignId),
+  idxDonor: index('idx_donations_donor').on(t.donorAddress),
+  idxCreatedAt: index('idx_donations_created_at').on(t.createdAt),
+}));
 
 export const donationsRelations = relations(donations, ({ one }) => ({
   campaign: one(campaigns, {
