@@ -1,0 +1,17 @@
+[Unit]
+Description=Pitchfork Echo Studio (Docker Compose)
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/pitchfork-echo-studio
+RemainAfterExit=yes
+Environment=COMPOSE_DOCKER_CLI_BUILD=1
+Environment=DOCKER_BUILDKIT=1
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

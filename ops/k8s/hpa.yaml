@@ -1,0 +1,26 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pitchfork-api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pitchfork-api
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    # Optional: custom metric for p95 latency if available via Prometheus Adapter
+    # - type: Pods
+    #   pods:
+    #     metric:
+    #       name: http_request_duration_ms_p95
+    #     target:
+    #       type: AverageValue
+    #       averageValue: 300ms
