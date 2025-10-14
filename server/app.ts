@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import { createRequire } from 'module';
 import { JsonRpcProvider } from 'ethers';
+import net from 'net';
+import { URL } from 'url';
+import { rateLimitGeneral } from './middleware/rateLimiting.js';
 import { storage } from './storage.js';
 import router from './routes.js';
 import * as config from './config.js';
@@ -22,6 +25,8 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+// Global basic rate limiting
+app.use(rateLimitGeneral as any);
 
 // Request logging middleware
 app.use(logRequest);
@@ -50,26 +55,71 @@ async function checkWeb3Providers() {
   return results;
 }
 
+async function checkIpfs() {
+  if (!config.ipfsApiUrl) return false;
+  try {
+    const controller = new AbortController();
+    const to = setTimeout(() => controller.abort(), 3000);
+    const resp = await fetch(`${config.ipfsApiUrl}/api/v0/version`, { signal: controller.signal });
+    clearTimeout(to);
+    return resp.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function checkRedis() {
+  if (!config.redisUrl) return false;
+  try {
+    const u = new URL(config.redisUrl);
+    const host = u.hostname;
+    const port = Number(u.port || 6379);
+    const password = u.password;
+    const socket = new net.Socket();
+    const timeoutMs = 2000;
+    return await new Promise<boolean>((resolve) => {
+      let settled = false;
+      const onError = () => { if (!settled) { settled = true; resolve(false); } };
+      socket.setTimeout(timeoutMs, onError);
+      socket.on('error', onError);
+      socket.connect(port, host, () => {
+        const authCmd = password ? `*2\r\n$4\r\nAUTH\r\n$${password.length}\r\n${password}\r\n` : '';
+        const pingCmd = `*1\r\n$4\r\nPING\r\n`;
+        socket.write(authCmd + pingCmd);
+      });
+      socket.on('data', (data) => {
+        const text = data.toString();
+        if (text.includes('+PONG')) {
+          settled = true; resolve(true); socket.destroy();
+        }
+      });
+      socket.on('close', () => { if (!settled) { resolve(false); } });
+    });
+  } catch {
+    return false;
+  }
+}
+
 app.get('/health', async (req, res) => {
   logApiCall('/health', 'GET', { userAgent: req.get('User-Agent') });
   const db = await checkDatabaseConnection();
-  const web3 = await checkWeb3Providers();
-  res.json({ status: 'OK', timestamp: new Date().toISOString(), dependencies: { db, web3 } });
+  const [web3, ipfs, redis] = await Promise.all([checkWeb3Providers(), checkIpfs(), checkRedis()]);
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), dependencies: { db, web3, ipfs, redis } });
 });
 
 // Readiness check - verify core dependencies
 app.get('/ready', async (req, res) => {
   const start = Date.now();
   const dbHealthy = await checkDatabaseConnection();
-  const web3 = await checkWeb3Providers();
+  const [web3, ipfsHealthy, redisHealthy] = await Promise.all([checkWeb3Providers(), checkIpfs(), checkRedis()]);
   const web3Healthy = Object.values(web3).some(Boolean);
   const result = {
-    status: dbHealthy && web3Healthy ? 'READY' : 'DEGRADED',
+    status: (dbHealthy && web3Healthy && ipfsHealthy && redisHealthy) ? 'READY' : 'DEGRADED',
     timestamp: new Date().toISOString(),
     latencyMs: Date.now() - start,
-    dependencies: { db: dbHealthy, web3 }
+    dependencies: { db: dbHealthy, web3, ipfs: ipfsHealthy, redis: redisHealthy }
   };
-  const code = (dbHealthy && web3Healthy) ? 200 : 503;
+  const code = (dbHealthy && web3Healthy && ipfsHealthy && redisHealthy) ? 200 : 503;
   res.status(code).json(result);
 });
 
