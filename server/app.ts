@@ -5,6 +5,7 @@ import { JsonRpcProvider } from 'ethers';
 import net from 'net';
 import { URL } from 'url';
 import { rateLimitGeneral } from './middleware/rateLimiting.js';
+import { aiService } from './ai/AIServiceManager.js';
 import { storage } from './storage.js';
 import router from './routes.js';
 import * as config from './config.js';
@@ -43,6 +44,52 @@ app.use((req: any, _res, next) => {
   const headerId = req.get?.('X-Request-ID') || req.headers['x-request-id'];
   req.requestId = headerId || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   next();
+});
+
+// ----------------------------------------------------------------------------
+// Prometheus-style metrics (in-memory, minimal)
+// ----------------------------------------------------------------------------
+const metrics = {
+  httpRequestsTotal: new Map<string, number>(), // method:path:status
+  httpRequestDurationMs: new Map<string, number[]>(), // method:path -> durations
+};
+
+function metricsKey(method: string, path: string, status?: number): string {
+  return status ? `${method}:${path}:${status}` : `${method}:${path}`;
+}
+
+app.use((req: any, res: any, next: any) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const key = metricsKey(req.method, req.route?.path || req.path, res.statusCode);
+    metrics.httpRequestsTotal.set(key, (metrics.httpRequestsTotal.get(key) || 0) + 1);
+    const dkey = metricsKey(req.method, req.route?.path || req.path);
+    const arr = metrics.httpRequestDurationMs.get(dkey) || [];
+    arr.push(duration);
+    if (arr.length > 1000) arr.shift();
+    metrics.httpRequestDurationMs.set(dkey, arr);
+  });
+  next();
+});
+
+app.get('/metrics', (_req, res) => {
+  let body = '';
+  body += '# HELP http_requests_total Total HTTP requests by method,path,status\n';
+  body += '# TYPE http_requests_total counter\n';
+  for (const [key, count] of metrics.httpRequestsTotal.entries()) {
+    const [method, path, status] = key.split(':');
+    body += `http_requests_total{method="${method}",path="${path}",status="${status}"} ${count}\n`;
+  }
+  body += '\n# HELP http_request_duration_ms Average HTTP request duration by method,path\n';
+  body += '# TYPE http_request_duration_ms gauge\n';
+  for (const [key, vals] of metrics.httpRequestDurationMs.entries()) {
+    const [method, path] = key.split(':');
+    const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
+    body += `http_request_duration_ms{method="${method}",path="${path}"} ${avg}\n`;
+  }
+  res.set('Content-Type', 'text/plain; version=0.0.4');
+  res.send(body);
 });
 
 // Request logging middleware
@@ -138,6 +185,16 @@ app.get('/ready', async (req, res) => {
   };
   const code = (dbHealthy && web3Healthy && ipfsHealthy && redisHealthy) ? 200 : 503;
   res.status(code).json(result);
+});
+
+// Provider health endpoint (AI providers)
+app.get('/provider-health', async (_req, res) => {
+  try {
+    const status = await aiService.healthCheck();
+    res.json(status);
+  } catch (e: any) {
+    res.status(500).json({ status: 'unhealthy', error: e?.message || 'unknown' });
+  }
 });
 
 // Mount API routes
