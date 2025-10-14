@@ -1,4 +1,4 @@
-import { storage } from './storage';
+import { storage } from './db-storage';
 import { ConsciousnessEngine } from './ConsciousnessEngine';
 import { PatternRecognitionSystem } from './PatternRecognitionSystem';
 import { MultiscaleAwarenessEngine } from './MultiscaleAwarenessEngine';

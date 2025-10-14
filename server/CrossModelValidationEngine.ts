@@ -7,7 +7,7 @@
  */
 
 import { aiService } from './ai/AIServiceManager';
-import { storage } from './storage';
+import { storage } from './db-storage';
 import { PROMPT_TEMPLATES, interpolateTemplate } from './ai/prompts';
 import {
   CrossModelValidationRequest,

@@ -1,4 +1,4 @@
-import { storage } from './storage';
+import { storage } from './db-storage';
 import { RecursiveReflectionEngine } from './RecursiveReflectionEngine';
 import { PatternRecognitionSystem } from './PatternRecognitionSystem';
 import { AdaptiveLearningCore } from './AdaptiveLearningCore';
