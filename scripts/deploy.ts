@@ -1,6 +1,6 @@
 import { ethers, network } from "hardhat";
-import { writeFileSync, readFileSync, existsSync } from "fs";
-import { join } from "path";
+import { writeFileSync, readFileSync, existsSync, mkdirSync, copyFileSync } from "fs";
+import { join, dirname } from "path";
 
 interface DeploymentConfig {
   network: string;
@@ -16,6 +16,8 @@ async function main() {
   console.log(`Network: ${network.name}`);
   
   const [deployer] = await ethers.getSigners();
+  const net = await ethers.provider.getNetwork();
+  const chainId = Number(net.chainId);
   console.log(`Deploying contracts with account: ${deployer.address}`);
   console.log(`Account balance: ${ethers.formatEther(await ethers.provider.getBalance(deployer.address))} ETH`);
 
@@ -164,8 +166,71 @@ async function main() {
 
   // 9. Save deployment information
   const deploymentPath = join(__dirname, "..", "deployments", `${network.name}.json`);
+  const deploymentDir = dirname(deploymentPath);
+  if (!existsSync(deploymentDir)) mkdirSync(deploymentDir, { recursive: true });
   writeFileSync(deploymentPath, JSON.stringify(deploymentConfig, null, 2));
   console.log(`✅ Deployment info saved to: ${deploymentPath}`);
+
+  // 9.1 Update consolidated per-chain address registry
+  try {
+    const rootAddressesPath = join(__dirname, "..", "contracts", "addresses.json");
+    const frontendAddressesPath = join(__dirname, "..", "src", "contracts", "addresses.json");
+
+    const addresses: Record<string, any> = existsSync(rootAddressesPath)
+      ? JSON.parse(readFileSync(rootAddressesPath, "utf-8"))
+      : {};
+
+    addresses[String(chainId)] = {
+      ConsciousnessToken: deploymentConfig.contracts.ConsciousnessToken,
+      ConsciousnessAchievements: deploymentConfig.contracts.ConsciousnessAchievements,
+      AIServicePayment: deploymentConfig.contracts.AIServicePayment,
+      LeadershipSubscription: deploymentConfig.contracts.LeadershipSubscription,
+      ConsciousnessIdentity: deploymentConfig.contracts.ConsciousnessIdentity,
+      ConsciousnessDAO: deploymentConfig.contracts.ConsciousnessDAO,
+      network: network.name,
+      deployer: deployer.address,
+      deploymentDate: deploymentConfig.deploymentDate
+    };
+
+    // Ensure directories exist
+    const rootDir = dirname(rootAddressesPath);
+    const feDir = dirname(frontendAddressesPath);
+    if (!existsSync(rootDir)) mkdirSync(rootDir, { recursive: true });
+    if (!existsSync(feDir)) mkdirSync(feDir, { recursive: true });
+
+    writeFileSync(rootAddressesPath, JSON.stringify(addresses, null, 2));
+    writeFileSync(frontendAddressesPath, JSON.stringify(addresses, null, 2));
+    console.log(`✅ Updated per-chain address registry for chainId ${chainId}`);
+  } catch (e) {
+    console.warn("⚠️ Failed to update addresses.json:", e);
+  }
+
+  // 9.2 Export ABIs to frontend for deployed contracts (best-effort)
+  try {
+    const abiOutDir = join(__dirname, "..", "src", "contracts", "abi");
+    if (!existsSync(abiOutDir)) mkdirSync(abiOutDir, { recursive: true });
+
+    const artifactsBase = join(__dirname, "..", "artifacts", "contracts");
+    const contractAbiFiles = [
+      ["ConsciousnessToken.sol", "ConsciousnessToken"],
+      ["ConsciousnessAchievements.sol", "ConsciousnessAchievements"],
+      ["AIServicePayment.sol", "AIServicePayment"],
+      ["LeadershipSubscription.sol", "LeadershipSubscription"],
+      ["ConsciousnessIdentity.sol", "ConsciousnessIdentity"],
+      ["ConsciousnessDAO.sol", "ConsciousnessDAO"]
+    ];
+
+    for (const [sol, name] of contractAbiFiles) {
+      const src = join(artifactsBase, sol, `${name}.json`);
+      const dest = join(abiOutDir, `${name}.json`);
+      if (existsSync(src)) {
+        copyFileSync(src, dest);
+      }
+    }
+    console.log("✅ Exported ABIs to src/contracts/abi");
+  } catch (e) {
+    console.warn("⚠️ ABI export skipped (artifacts not found):", e);
+  }
 
   // 10. Generate environment variables file
   const envPath = join(__dirname, "..", ".env.deployment");
