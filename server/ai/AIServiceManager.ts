@@ -15,6 +15,9 @@ import { LiteLLMAdapter } from './providers/LiteLLMAdapter';
 export class AIServiceManager {
   private providers: Map<AIProvider, AIProviderAdapter> = new Map();
   private currentSettings: AISettings | null = null;
+  private circuitBreakers: Map<AIProvider, { failures: number; openUntil: number }> = new Map();
+  private maxFailuresBeforeOpen = 5;
+  private breakerOpenMs = 5 * 60 * 1000; // 5 minutes
 
   constructor() {
     // Initialize all providers on startup (async, but don't wait)
@@ -88,6 +91,10 @@ export class AIServiceManager {
   registerProvider(provider: AIProvider, adapter: AIProviderAdapter): void {
     this.providers.set(provider, adapter);
     console.log(`AI Service Manager: Registered ${provider} provider`);
+    // initialize circuit breaker state
+    if (!this.circuitBreakers.has(provider)) {
+      this.circuitBreakers.set(provider, { failures: 0, openUntil: 0 });
+    }
   }
 
   /**
@@ -242,6 +249,10 @@ export class AIServiceManager {
     request: AIRequest, 
     settings: AISettings
   ): AsyncIterable<AIStreamResponse> {
+    // Circuit breaker
+    if (this.isCircuitOpen(provider)) {
+      throw new Error(`Circuit open for provider ${provider}`);
+    }
     const adapter = this.providers.get(provider);
     if (!adapter) {
       throw new Error(`Provider ${provider} not registered`);
@@ -268,6 +279,7 @@ export class AIServiceManager {
           });
 
           // Yield chunks with timeout monitoring
+          const start = Date.now();
           for await (const chunk of streamIterator) {
             if (abortController.signal.aborted) {
               throw new Error('Request timeout during streaming');
@@ -282,6 +294,12 @@ export class AIServiceManager {
           }
           
           clearTimeout(timeoutId);
+          this.onProviderSuccess(provider);
+          const latency = Date.now() - start;
+          await this.persistProviderPerformance(provider, {
+            successRate: 1,
+            avgLatencyMs: latency,
+          });
           return;
           
         } finally {
@@ -290,6 +308,7 @@ export class AIServiceManager {
         
       } catch (error) {
         lastError = error as Error;
+        this.onProviderFailure(provider);
         
         if (attempt < retry.maxAttempts) {
           // Exponential backoff with jitter
@@ -446,13 +465,20 @@ export class AIServiceManager {
     request: AIRequest, 
     settings: AISettings
   ): Promise<AIResponse> {
+    // Circuit breaker
+    if (this.isCircuitOpen(provider)) {
+      throw new Error(`Circuit open for provider ${provider}`);
+    }
     const adapter = this.providers.get(provider);
     if (!adapter) {
       throw new Error(`Provider ${provider} not registered`);
     }
 
     const { retry, timeoutMs } = settings.routing;
-    const providerConfig = settings.providerPrefs[provider] || this.getDefaultConfig(provider);
+    const providerConfig = this.applyBudgetCaps(
+      settings.providerPrefs[provider] || this.getDefaultConfig(provider),
+      settings
+    );
 
     let lastError: Error | null = null;
     
@@ -463,12 +489,21 @@ export class AIServiceManager {
           setTimeout(() => reject(new Error('Request timeout')), timeoutMs);
         });
 
+        const startedAt = Date.now();
         const requestPromise = adapter.makeRequest({
           ...request,
           config: providerConfig,
         });
 
         const response = await Promise.race([requestPromise, timeoutPromise]);
+        this.onProviderSuccess(provider);
+        const latency = Date.now() - startedAt;
+        // Persist provider performance snapshot (best-effort)
+        await this.persistProviderPerformance(provider, {
+          successRate: 1,
+          avgLatencyMs: latency,
+          totalTokens: (response as any)?.usage?.totalTokens,
+        });
         
         // Enhance response with request metadata
         return {
@@ -479,6 +514,7 @@ export class AIServiceManager {
         
       } catch (error) {
         lastError = error as Error;
+        this.onProviderFailure(provider);
         
         if (attempt < retry.maxAttempts) {
           // Wait before retrying (with exponential backoff)
@@ -505,6 +541,71 @@ export class AIServiceManager {
     };
     
     return defaults[provider];
+  }
+
+  // Apply budget caps from settings (basic: respect costOptimization by limiting maxTokens)
+  private applyBudgetCaps(config: AIModelConfig, settings: AISettings): AIModelConfig {
+    const capped = { ...config };
+    if ((settings as any).costOptimization) {
+      // Ensure a reasonable upper bound on tokens
+      const MAX_TOKENS = 2000;
+      if (!capped.maxTokens || capped.maxTokens > MAX_TOKENS) {
+        capped.maxTokens = MAX_TOKENS;
+      }
+      // Lower temperature slightly for determinism/cost
+      if (typeof capped.temperature === 'number' && capped.temperature > 0.7) {
+        capped.temperature = 0.7;
+      }
+    }
+    return capped;
+  }
+
+  // Circuit breaker helpers
+  private isCircuitOpen(provider: AIProvider): boolean {
+    const st = this.circuitBreakers.get(provider);
+    if (!st) return false;
+    const now = Date.now();
+    return st.openUntil > now;
+  }
+
+  private onProviderFailure(provider: AIProvider): void {
+    const now = Date.now();
+    const st = this.circuitBreakers.get(provider) || { failures: 0, openUntil: 0 };
+    st.failures += 1;
+    if (st.failures >= this.maxFailuresBeforeOpen) {
+      st.openUntil = now + this.breakerOpenMs;
+      st.failures = 0;
+      console.warn(`Circuit opened for provider ${provider} until ${new Date(st.openUntil).toISOString()}`);
+    }
+    this.circuitBreakers.set(provider, st);
+  }
+
+  private onProviderSuccess(provider: AIProvider): void {
+    const st = this.circuitBreakers.get(provider) || { failures: 0, openUntil: 0 };
+    st.failures = 0;
+    st.openUntil = 0;
+    this.circuitBreakers.set(provider, st);
+  }
+
+  // Persist provider performance snapshot (best-effort)
+  private async persistProviderPerformance(provider: AIProvider, data: {
+    successRate?: number;
+    avgLatencyMs?: number;
+    totalTokens?: number;
+  }): Promise<void> {
+    try {
+      await storage.createAIProviderPerformance({
+        provider,
+        timeWindow: 'instant',
+        successRate: data.successRate ?? 1,
+        avgLatencyMs: data.avgLatencyMs ?? 0,
+        errorRate: data.successRate !== undefined ? (1 - data.successRate) : 0,
+        avgCostCents: 0,
+        avgTokens: data.totalTokens ?? 0,
+      } as any);
+    } catch (e) {
+      // swallow
+    }
   }
 
   /**
