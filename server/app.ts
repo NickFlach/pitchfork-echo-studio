@@ -1,16 +1,24 @@
 import express from 'express';
 import cors from 'cors';
+import { createRequire } from 'module';
+import { JsonRpcProvider } from 'ethers';
 import { storage } from './storage.js';
 import router from './routes.js';
 import * as config from './config.js';
 import { logger, logRequest, logApiCall } from './logger.js';
+import { pool, checkDatabaseConnection } from '../db/index.js';
 
 const app = express();
 const PORT = config.apiPort;
 
 // Middleware
 app.use(cors({
-  origin: config.allowedOrigins,
+  origin: function(origin, callback) {
+    // Allow same-origin or no origin (curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (config.allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS blocked'), false);
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -19,9 +27,50 @@ app.use(express.json());
 app.use(logRequest);
 
 // Health check
-app.get('/health', (req, res) => {
+async function checkWeb3Providers() {
+  const results: Record<string, boolean> = {};
+  const entries: Array<[string, string | undefined]> = [
+    ['ethereum', config.ethereumRpcUrl],
+    ['polygon', config.polygonRpcUrl],
+    ['bsc', config.bscRpcUrl],
+  ];
+  await Promise.all(entries.map(async ([name, url]) => {
+    if (!url) { results[name] = false; return; }
+    try {
+      const provider = new JsonRpcProvider(url, undefined, { staticNetwork: null });
+      const controller = new AbortController();
+      const to = setTimeout(() => controller.abort(), 3000);
+      await provider.getBlockNumber();
+      clearTimeout(to);
+      results[name] = true;
+    } catch {
+      results[name] = false;
+    }
+  }));
+  return results;
+}
+
+app.get('/health', async (req, res) => {
   logApiCall('/health', 'GET', { userAgent: req.get('User-Agent') });
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  const db = await checkDatabaseConnection();
+  const web3 = await checkWeb3Providers();
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), dependencies: { db, web3 } });
+});
+
+// Readiness check - verify core dependencies
+app.get('/ready', async (req, res) => {
+  const start = Date.now();
+  const dbHealthy = await checkDatabaseConnection();
+  const web3 = await checkWeb3Providers();
+  const web3Healthy = Object.values(web3).some(Boolean);
+  const result = {
+    status: dbHealthy && web3Healthy ? 'READY' : 'DEGRADED',
+    timestamp: new Date().toISOString(),
+    latencyMs: Date.now() - start,
+    dependencies: { db: dbHealthy, web3 }
+  };
+  const code = (dbHealthy && web3Healthy) ? 200 : 503;
+  res.status(code).json(result);
 });
 
 // Mount API routes
