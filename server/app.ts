@@ -7,6 +7,8 @@ import { URL } from 'url';
 import { rateLimitGeneral } from './middleware/rateLimiting.js';
 import { aiService } from './ai/AIServiceManager.js';
 import { storage } from './storage.js';
+// If needed to switch to DB storage, change the import to:
+// import { storage } from './db-storage.js';
 import router from './routes.js';
 import * as config from './config.js';
 import { logger, logRequest, logApiCall } from './logger.js';
