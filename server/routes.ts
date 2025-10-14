@@ -1,6 +1,6 @@
 import express from 'express';
 import { z } from 'zod';
-import { storage } from './storage';
+import { storage } from './db-storage';
 import { ConsciousnessEngine } from './ConsciousnessEngine';
 import { MultiscaleAwarenessEngine } from './MultiscaleAwarenessEngine';
 import { DecisionSynthesisEngine } from './DecisionSynthesisEngine';

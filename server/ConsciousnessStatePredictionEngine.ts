@@ -6,7 +6,7 @@
  * provides personalized consciousness rhythm analysis for peak performance.
  */
 
-import { storage } from './storage';
+import { storage } from './db-storage';
 import { aiService } from './ai/AIServiceManager';
 import { PROMPT_TEMPLATES, interpolateTemplate } from './ai/prompts';
 import {

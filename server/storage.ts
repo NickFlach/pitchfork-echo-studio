@@ -368,7 +368,7 @@ export class MemStorage implements IStorage {
   private enterpriseAnalytics: EnterpriseAnalytics[] = [];
   
   // Encryption configuration for AI credentials
-  private readonly encryptionKey: Buffer;
+  private encryptionKey: Buffer;
   private readonly algorithm = 'aes-256-gcm';
   private readonly ivLength = 12; // 96 bits for GCM
   private readonly tagLength = 16; // 128 bits for GCM
@@ -387,6 +387,55 @@ export class MemStorage implements IStorage {
 
     // Derive a consistent key using scrypt
     this.encryptionKey = crypto.scryptSync(envKey, 'ai-credentials-salt', this.keyLength);
+  }
+
+  /**
+   * Rotate the encryption key used for AI credentials.
+   * Re-encrypts all stored credentials with the new key atomically in-memory.
+   * Call this during a maintenance window; persist ENCRYPTION_KEY and restart as needed.
+   */
+  async rotateEncryptionKey(newEnvKey: string): Promise<{ rotatedCount: number }>{
+    if (!newEnvKey || newEnvKey.length < 32) {
+      throw new Error('New encryption key must be at least 32 characters');
+    }
+
+    const newKey = crypto.scryptSync(newEnvKey, 'ai-credentials-salt', this.keyLength);
+
+    // Decrypt with current key, then re-encrypt with new key
+    let rotated = 0;
+    const decrypted: { index: number; provider: AIProvider; apiKey: string; baseUrl?: string }[] = [];
+    for (let i = 0; i < this.aiCredentials.length; i++) {
+      const cred = this.aiCredentials[i];
+      try {
+        const apiKeyPlain = this.decryptText(cred.apiKey);
+        decrypted.push({ index: i, provider: cred.provider, apiKey: apiKeyPlain, baseUrl: cred.baseUrl });
+      } catch (e) {
+        // If any credential cannot be decrypted, abort rotation to avoid data loss
+        throw new Error(`Failed to decrypt existing credential for provider ${cred.provider}`);
+      }
+    }
+
+    // Temporarily swap to new key to use encryptText
+    const oldKey = this.encryptionKey;
+    this.encryptionKey = newKey;
+    try {
+      for (const item of decrypted) {
+        const now = new Date().toISOString();
+        this.aiCredentials[item.index] = {
+          ...this.aiCredentials[item.index],
+          apiKey: this.encryptText(item.apiKey),
+          updatedAt: now,
+        } as any;
+        rotated++;
+      }
+    } catch (e) {
+      // On error, restore old key to keep instance usable
+      this.encryptionKey = oldKey;
+      throw e;
+    }
+
+    // Keep the new key active
+    return { rotatedCount: rotated };
   }
 
   // Identity operations
