@@ -1,0 +1,85 @@
+{
+	"folders": [
+		{
+			"name": "pitchfork-echo-studio",
+			"path": "."
+		},
+		{
+			"name": "SpaceChild",
+			"path": "../SpaceChild"
+		},
+		{
+			"name": "SpaceAgent",
+			"path": "../SpaceAgent"
+		},
+		{
+			"name": "MusicPortal",
+			"path": "../MusicPortal"
+		},
+		{
+			"name": "QuantumSingularity",
+			"path": "../QuantumSingularity"
+		},
+		{
+			"name": "ParadoxResolver",
+			"path": "../ParadoxResolver"
+		},
+		{
+			"name": "ConsciousnessProbe",
+			"path": "../ConsciousnessProbe"
+		},
+		{
+			"name": "HumanityFrontier",
+			"path": "../HumanityFrontier"
+		},
+		{
+			"name": "klaus-kode-agentic-integrator",
+			"path": "../klaus-kode-agentic-integrator"
+		},
+		{
+			"name": "PlanetaryQuantumNetwork",
+			"path": "../PlanetaryQuantumNetwork"
+		},
+		{
+			"name": "SIN",
+			"path": "../SIN"
+		},
+		{
+			"name": "neo",
+			"path": "../neo"
+		},
+		{
+			"name": "ninja-craft-hub",
+			"path": "../ninja-craft-hub"
+		},
+		{
+			"name": "ShinobiRunner",
+			"path": "../ShinobiRunner"
+		},
+		{
+			"name": "PitchforksDex",
+			"path": "../PitchforksDex"
+		},
+		{
+			"name": "PitchforkAnalyst",
+			"path": "../PitchforkAnalyst"
+		},
+		{
+			"name": "ChessAI",
+			"path": "../ChessAI"
+		},
+		{
+			"name": "QuantumKernel",
+			"path": "../QuantumKernel"
+		},
+		{
+			"name": "Agent9",
+			"path": "../Agent9"
+		},
+		{
+			"name": "SpaceChildCollective",
+			"path": "../SpaceChildCollective"
+		}
+	],
+	"settings": {}
+}
