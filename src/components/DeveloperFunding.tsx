@@ -117,7 +117,7 @@ export function DeveloperFunding() {
         {/* Developer Wallet Info */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">
-            Developer Ethereum Address
+            Developer Neo X Address
           </Label>
           <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border">
             <code className="flex-1 text-sm font-mono break-all">
