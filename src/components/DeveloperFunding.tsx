@@ -158,7 +158,7 @@ export function DeveloperFunding() {
                 disabled={!isConnected || isLoading}
                 className="text-sm"
               >
-                {amount} ETH
+                {amount} GAS
               </Button>
             ))}
           </div>
@@ -167,7 +167,7 @@ export function DeveloperFunding() {
         {/* Custom Amount */}
         <div className="space-y-3">
           <Label htmlFor="custom-amount" className="text-sm font-medium">
-            Custom Amount (ETH)
+            Custom Amount (GAS)
           </Label>
           <div className="flex gap-2">
             <Input
