@@ -363,8 +363,9 @@ export const TierProvider: React.FC<TierProviderProps> = ({ children }) => {
 
   // AI Configuration Detection
   const { data: aiCredentials = [], isLoading: loadingAIConfig } = useQuery<MaskedAICredentials[]>({
-    queryKey: ['/api/admin/ai-credentials'],
+    queryKey: ['/ai-credentials'],
     refetchInterval: 30000, // Check every 30 seconds
+    retry: false, // Don't retry if backend isn't available
   });
 
   // Dynamic AI availability detection
