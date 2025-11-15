@@ -31,8 +31,9 @@ export const PitchforkHero = React.memo(() => {
   const FAUCET_ADDRESS = "0xFb05A4dEf7548C9D4371B56222CaBbac6080885D";
   const FAUCET_ABI = [
     "function claim() external",
-    "function hasClaimed(address) view returns (bool)",
-    "function paused() view returns (bool)",
+    "function hasClaimed(address) external view returns (bool)",
+    "function paused() external view returns (bool)",
+    "function amountPerClaim() external view returns (uint256)",
   ];
 
   const PFORK_TOKEN_ADDRESS = "0x216490C8E6b33b4d8A2390dADcf9f433E30da60F"; // Replace with actual PFORK token address
