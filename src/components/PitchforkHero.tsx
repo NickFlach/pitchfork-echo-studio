@@ -88,10 +88,15 @@ export const PitchforkHero = React.memo(() => {
 
   const checkRPCHealth = async (): Promise<boolean> => {
     try {
-      if (!signer?.provider) return false;
-      await signer.provider.getBlockNumber();
+      if (!signer?.provider) {
+        console.log("RPC Health Check: No provider available");
+        return false;
+      }
+      const blockNumber = await signer.provider.getBlockNumber();
+      console.log("RPC Health Check: Success, current block:", blockNumber);
       return true;
     } catch (error) {
+      console.error("RPC Health Check: Failed", error);
       toast({
         title: "Network Error",
         description: "Unable to connect to NEO X network. Please try again.",
@@ -109,8 +114,14 @@ export const PitchforkHero = React.memo(() => {
       const gasPrice = (await signer.provider.getFeeData()).gasPrice;
       if (!gasPrice) return null;
       const gasCost = gasEstimate * gasPrice;
+      console.log("Gas estimation:", {
+        gasEstimate: gasEstimate.toString(),
+        gasPrice: gasPrice.toString(),
+        totalCost: ethers.formatEther(gasCost)
+      });
       return ethers.formatEther(gasCost);
     } catch (error) {
+      console.log("Gas estimation failed (this is normal if already claimed):", error);
       return null;
     }
   };
@@ -148,18 +159,48 @@ export const PitchforkHero = React.memo(() => {
 
     try {
       setIsClaiming(true);
+      console.log("=== FAUCET CLAIM STARTED ===");
+      console.log("Wallet state:", { account, chainId, hasSigner: !!signer });
 
       // Check RPC health
       const rpcHealthy = await checkRPCHealth();
-      if (!rpcHealthy) return;
+      if (!rpcHealthy) {
+        console.log("RPC health check failed, aborting");
+        return;
+      }
 
       // Verify contract exists
       const provider = signer.provider;
+      const network = await provider.getNetwork();
+      console.log("Current network:", {
+        chainId: Number(network.chainId),
+        name: network.name,
+        faucetAddress: FAUCET_ADDRESS
+      });
+      
       const code = await provider.getCode(FAUCET_ADDRESS);
+      console.log("Contract code check:", {
+        address: FAUCET_ADDRESS,
+        codeLength: code.length,
+        hasCode: code !== "0x"
+      });
+      
       if (code === "0x") {
         toast({
           title: "Contract Not Found",
-          description: `Faucet contract not found at ${FAUCET_ADDRESS} on NEO X.`,
+          description: (
+            <div className="flex flex-col gap-2">
+              <p>Faucet contract not found at {FAUCET_ADDRESS} on chain {Number(network.chainId)}.</p>
+              <a
+                href={`https://xexplorer.neo.org/address/${FAUCET_ADDRESS}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-primary hover:underline text-xs"
+              >
+                Verify on NEO X Explorer <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          ),
           variant: "destructive",
         });
         return;
