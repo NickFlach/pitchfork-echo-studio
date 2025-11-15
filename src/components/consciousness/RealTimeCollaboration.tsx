@@ -128,28 +128,38 @@ export function RealTimeCollaboration() {
 
   // Initialize WebSocket connection
   useEffect(() => {
-    wsRef.current = new MockWebSocket('ws://localhost:3001/consciousness-collaboration');
-    
-    wsRef.current.on('open', () => {
-      setIsConnected(true);
-      toast({
-        title: "Connected to Consciousness Network",
-        description: "You can now join collaborative consciousness sessions",
+    // Only connect to WebSocket in development when backend is available
+    if (process.env.NODE_ENV === 'development') {
+      wsRef.current = new MockWebSocket('ws://localhost:3001/consciousness-collaboration');
+      
+      wsRef.current.on('open', () => {
+        setIsConnected(true);
+        toast({
+          title: "Connected to Consciousness Network",
+          description: "You can now join collaborative consciousness sessions",
+        });
       });
-    });
 
-    wsRef.current.on('message', (event: any) => {
-      handleIncomingMessage(event.data);
-    });
-
-    wsRef.current.on('close', () => {
-      setIsConnected(false);
-      toast({
-        title: "Disconnected",
-        description: "Connection to consciousness network lost",
-        variant: "destructive",
+      wsRef.current.on('message', (event: any) => {
+        handleIncomingMessage(event.data);
       });
-    });
+
+      wsRef.current.on('close', () => {
+        setIsConnected(false);
+        toast({
+          title: "Disconnected",
+          description: "Connection to consciousness network lost",
+          variant: "destructive",
+        });
+      });
+    } else {
+      // In production, show offline mode
+      toast({
+        title: "Collaborative Features Offline",
+        description: "Real-time collaboration requires backend deployment",
+        variant: "default",
+      });
+    }
 
     return () => {
       wsRef.current?.close();
