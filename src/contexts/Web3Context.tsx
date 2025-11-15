@@ -74,15 +74,30 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
   useEffect(() => {
     if (window.ethereum) {
       const handleAccountsChanged = (accounts: string[]) => {
+        console.log('🔄 MetaMask account changed event fired:', accounts);
         if (accounts.length === 0) {
+          console.log('🚪 No accounts found, disconnecting wallet');
           disconnectWallet();
         } else {
+          console.log('👤 Updating account to:', accounts[0]);
           setAccount(accounts[0]);
+          // Refresh provider and signer with new account
+          if (BrowserProvider) {
+            const provider = new BrowserProvider(window.ethereum);
+            provider.getSigner().then(newSigner => {
+              console.log('✅ Signer updated for new account');
+              setSigner(newSigner);
+            });
+          }
         }
       };
 
       const handleChainChanged = (chainId: string) => {
-        setChainId(parseInt(chainId, 16));
+        const numericChainId = parseInt(chainId, 16);
+        console.log('🔄 MetaMask chain changed event fired:', numericChainId);
+        setChainId(numericChainId);
+        // Force page reload on chain change for clean state
+        window.location.reload();
       };
 
       window.ethereum.on('accountsChanged', handleAccountsChanged);
@@ -100,14 +115,17 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
     if (window.ethereum && BrowserProvider) {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        console.log('🔍 Existing accounts found:', accounts);
+        console.log('🔍 eth_accounts returned:', accounts);
         
         if (accounts.length > 0) {
           const provider = new BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           const network = await provider.getNetwork();
           
-          console.log('🔄 Restoring connection for:', accounts[0]);
+          console.log('🔄 Restoring connection:');
+          console.log('  - Account:', accounts[0]);
+          console.log('  - ChainId:', Number(network.chainId));
+          console.log('  - Network:', network.name);
           
           setIsConnected(true);
           setAccount(accounts[0]);
