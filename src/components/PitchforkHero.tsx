@@ -43,20 +43,32 @@ export const PitchforkHero = React.memo(() => {
   ];
 
   const fetchPforkBalance = async () => {
+    console.log("🔍 Fetching PFORK balance...", { isConnected, account, hasSigner: !!signer, chainId });
+    
     if (!isConnected || !account || !signer || chainId !== 47763) {
+      console.log("❌ Balance fetch skipped:", { isConnected, hasAccount: !!account, hasSigner: !!signer, chainId, expectedChainId: 47763 });
       setPforkBalance("0");
       return;
     }
 
     try {
       setIsLoadingBalance(true);
+      console.log("📞 Creating PFORK token contract at:", PFORK_TOKEN_ADDRESS);
       const tokenContract = new ethers.Contract(PFORK_TOKEN_ADDRESS, ERC20_ABI, signer);
+      
+      console.log("📊 Fetching balance for account:", account);
       const balance = await tokenContract.balanceOf(account);
+      console.log("💰 Raw balance:", balance.toString());
+      
       const decimals = await tokenContract.decimals();
+      console.log("🔢 Token decimals:", decimals);
+      
       const formattedBalance = ethers.formatUnits(balance, decimals);
+      console.log("✅ Formatted balance:", formattedBalance);
+      
       setPforkBalance(parseFloat(formattedBalance).toFixed(2));
     } catch (error) {
-      console.error("Error fetching PFORK balance:", error);
+      console.error("❌ Error fetching PFORK balance:", error);
       setPforkBalance("0");
     } finally {
       setIsLoadingBalance(false);
