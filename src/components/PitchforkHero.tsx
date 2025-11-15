@@ -32,6 +32,7 @@ export const PitchforkHero = React.memo(() => {
   const FAUCET_ABI = [
     "function claim() external",
     "function hasClaimed(address) view returns (bool)",
+    "function paused() view returns (bool)",
   ];
 
   const PFORK_TOKEN_ADDRESS = "0x216490C8E6b33b4d8A2390dADcf9f433E30da60F"; // Replace with actual PFORK token address
@@ -128,6 +129,20 @@ export const PitchforkHero = React.memo(() => {
       }
       
       const faucet = new ethers.Contract(FAUCET_ADDRESS, FAUCET_ABI, signer);
+
+      console.log("🔍 Checking if faucet is paused...");
+      try {
+        const paused = await faucet.paused();
+        console.log("📊 Faucet paused status:", paused);
+        
+        if (paused) {
+          alert("The PFORK faucet is currently paused. Please try again later.");
+          return;
+        }
+      } catch (pausedError) {
+        console.warn("⚠️ Could not check paused status, continuing anyway:", pausedError);
+        // Continue with claim even if paused check fails
+      }
 
       console.log("🔍 Checking if already claimed for:", account);
       const alreadyClaimed = await faucet.hasClaimed(account);
