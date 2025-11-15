@@ -118,24 +118,23 @@ export const PitchforkHero = React.memo(() => {
     try {
       setIsClaiming(true);
       console.log("🔗 Creating contract instance at:", FAUCET_ADDRESS);
-      console.log("📊 Current chainId from hook:", chainId);
-      console.log("🔍 Signer details:", {
-        signerAddress: account,
-        providerChainId: signer.provider ? await signer.provider.getNetwork().then(n => n.chainId) : "unknown"
+      console.log("📊 Current chainId from Web3Context:", chainId);
+      console.log("🔍 Wallet details:", {
+        account,
+        isConnected,
+        chainId,
+        hasSigner: !!signer,
+        hasProvider: !!signer?.provider
       });
       
-      // Verify we're actually on Neo X
-      const network = await signer.provider.getNetwork();
-      console.log("🌐 Connected network:", {
-        chainId: network.chainId,
-        name: network.name,
-        isNeoX: network.chainId === 47763n
-      });
-      
-      if (network.chainId !== 47763n) {
-        alert(`You're connected to chain ${network.chainId}, but need to be on Neo X (47763).\n\nPlease switch networks in your wallet.`);
+      // Double-check we're on Neo X using the hook's chainId (which is a regular number)
+      if (chainId !== 47763) {
+        console.error("❌ Wrong network! Expected 47763, got:", chainId);
+        alert(`Please switch to Neo X network (Chain ID 47763).\n\nCurrent network: ${chainId || 'unknown'}`);
         return;
       }
+      
+      console.log("✅ Confirmed on Neo X network (47763)");
       
       // First, check if contract exists by checking code at address
       const provider = signer.provider;
