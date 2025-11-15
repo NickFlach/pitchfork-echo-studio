@@ -22,18 +22,26 @@ export const PitchforkHero = React.memo(() => {
 
   const handleLogoClick = async () => {
     console.log('🪙 PFORK logo clicked');
-    if (isClaiming) return;
+    console.log('📊 Wallet state:', { isConnected, account, chainId, hasSigner: !!signer });
+    
+    if (isClaiming) {
+      console.log('⏳ Already claiming, ignoring click');
+      return;
+    }
 
     if (!isConnected || !signer || !account) {
+      console.log('❌ Wallet not connected');
       alert('Please connect your wallet first using the Connect Wallet button.');
       return;
     }
 
     if (chainId !== 47763) {
+      console.log('🔄 Wrong network, attempting to switch to NEO X (47763)');
       try {
         await switchNetwork(47763);
+        console.log('✅ Network switched successfully');
       } catch (error) {
-        console.error('Failed to switch network:', error);
+        console.error('❌ Failed to switch network:', error);
         alert('Please switch your wallet to the NEO X network (chainId 47763) to claim PFORK.');
         return;
       }
@@ -41,29 +49,47 @@ export const PitchforkHero = React.memo(() => {
 
     try {
       setIsClaiming(true);
+      console.log('🔗 Creating contract instance at:', FAUCET_ADDRESS);
       const faucet = new ethers.Contract(FAUCET_ADDRESS, FAUCET_ABI, signer);
 
+      console.log('🔍 Checking if faucet is paused...');
       const paused = await faucet.paused();
+      console.log('📊 Faucet paused status:', paused);
+      
       if (paused) {
         alert('The PFORK faucet is currently paused. Please try again later.');
         return;
       }
 
+      console.log('🔍 Checking if already claimed for:', account);
       const alreadyClaimed = await faucet.hasClaimed(account);
+      console.log('📊 Already claimed status:', alreadyClaimed);
+      
       if (alreadyClaimed) {
-        alert('You have already claimed your PFORK from this faucet.');
+        alert('You have already claimed your 10 PFORK from this faucet.');
         return;
       }
 
+      console.log('📤 Calling claim() function...');
       const tx = await faucet.claim();
+      console.log('⏳ Transaction sent:', tx.hash);
+      
+      console.log('⏳ Waiting for confirmation...');
       await tx.wait();
+      console.log('✅ Transaction confirmed!');
 
-      alert(`PFORK claimed successfully!\nTransaction: ${tx.hash.slice(0, 10)}...`);
-    } catch (error) {
-      console.error('Error claiming PFORK:', error);
-      alert('Failed to claim PFORK. Please try again or check your wallet.');
+      alert(`10 PFORK claimed successfully!\nTransaction: ${tx.hash.slice(0, 10)}...`);
+    } catch (error: any) {
+      console.error('❌ Error claiming PFORK:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        data: error.data
+      });
+      alert(`Failed to claim PFORK: ${error.message || 'Please try again or check your wallet.'}`);
     } finally {
       setIsClaiming(false);
+      console.log('🏁 Claim attempt finished');
     }
   };
 
@@ -79,7 +105,7 @@ export const PitchforkHero = React.memo(() => {
               onClick={handleLogoClick}
               disabled={isClaiming}
               className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 cursor-pointer"
-              title="Click to claim 1 PFORK (NEO X faucet)"
+              title="Click to claim 10 PFORK (NEO X faucet)"
             >
               <img
                 src={neoTokenLogo}
