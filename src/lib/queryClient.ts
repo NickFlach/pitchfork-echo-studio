@@ -1,20 +1,38 @@
 import { QueryClient } from '@tanstack/react-query';
 
-// API Configuration
+// API Configuration - Use Supabase Edge Functions in production
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 const API_BASE_URL = process.env.NODE_ENV === 'development' 
   ? 'http://localhost:3001' 
-  : '';
+  : `${SUPABASE_URL}/functions/v1`;
 
 // Custom fetcher with retry logic
 export const apiRequest = async (url: string, options: RequestInit = {}) => {
-  const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+  // Map API paths to Edge Functions in production
+  let fullUrl = url.startsWith('http') ? url : url;
+  
+  if (process.env.NODE_ENV === 'production') {
+    // Map /api/ routes to Edge Functions
+    if (url.startsWith('/api/admin/ai-credentials')) {
+      fullUrl = `${API_BASE_URL}/ai-credentials`;
+    } else if (url.startsWith('/api/')) {
+      // Other API routes aren't available in production yet
+      console.warn(`API endpoint ${url} not available in production`);
+      throw new Error('Backend endpoint not available');
+    } else {
+      fullUrl = `${API_BASE_URL}${url}`;
+    }
+  } else {
+    fullUrl = `${API_BASE_URL}${url}`;
+  }
   
   const config: RequestInit = {
+    ...options,
     headers: {
       'Content-Type': 'application/json',
+      'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '',
       ...options.headers,
     },
-    ...options,
   };
 
   const response = await fetch(fullUrl, config);
