@@ -117,6 +117,17 @@ export const PitchforkHero = React.memo(() => {
     try {
       setIsClaiming(true);
       console.log("🔗 Creating contract instance at:", FAUCET_ADDRESS);
+      
+      // First, check if contract exists by checking code at address
+      const provider = signer.provider;
+      const code = await provider.getCode(FAUCET_ADDRESS);
+      console.log("📜 Contract code length:", code.length, "bytes");
+      
+      if (code === "0x") {
+        alert(`Faucet contract not found at ${FAUCET_ADDRESS} on Neo X.\n\nPlease check the contract address is correct for Neo X mainnet (chainId 47763).`);
+        return;
+      }
+      
       const faucet = new ethers.Contract(FAUCET_ADDRESS, FAUCET_ABI, signer);
 
       console.log("🔍 Checking if faucet is paused...");
