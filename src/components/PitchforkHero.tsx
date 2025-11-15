@@ -21,6 +21,7 @@ export const PitchforkHero = React.memo(() => {
   ];
 
   const handleLogoClick = async () => {
+    console.log('🪙 PFORK logo clicked');
     if (isClaiming) return;
 
     if (!isConnected || !signer || !account) {
@@ -77,13 +78,13 @@ export const PitchforkHero = React.memo(() => {
               type="button"
               onClick={handleLogoClick}
               disabled={isClaiming}
-              className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 cursor-pointer"
               title="Click to claim 1 PFORK (NEO X faucet)"
             >
               <img
                 src={neoTokenLogo}
                 alt="Neo Token Logo"
-                className="w-32 h-32 transition-cosmic hover:scale-110 glow-cosmic rounded-full cursor-pointer"
+                className="w-32 h-32 transition-cosmic hover:scale-110 glow-cosmic rounded-full"
               />
             </button>
           </div>
