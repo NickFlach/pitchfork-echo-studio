@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Shield, Users, FileCheck, Heart, ChevronRight, MessageCircle, Scale, BookOpen, DollarSign, Github } from 'lucide-react';
 import neoTokenLogo from '@/assets/neo-token-logo.png';
@@ -12,6 +12,8 @@ export const PitchforkHero = React.memo(() => {
 
   const { isConnected, account, signer, chainId, switchNetwork } = useWeb3();
   const [isClaiming, setIsClaiming] = useState(false);
+  const [pforkBalance, setPforkBalance] = useState<string>('0');
+  const [isLoadingBalance, setIsLoadingBalance] = useState(false);
 
   const FAUCET_ADDRESS = '0xFb05A4dEf7548C9D4371B56222CaBbac6080885D';
   const FAUCET_ABI = [
@@ -19,6 +21,38 @@ export const PitchforkHero = React.memo(() => {
     'function hasClaimed(address) view returns (bool)',
     'function paused() view returns (bool)',
   ];
+
+  const PFORK_TOKEN_ADDRESS = '0x1234567890123456789012345678901234567890'; // Replace with actual PFORK token address
+  const ERC20_ABI = [
+    'function balanceOf(address owner) view returns (uint256)',
+    'function decimals() view returns (uint8)',
+    'function symbol() view returns (string)',
+  ];
+
+  const fetchPforkBalance = async () => {
+    if (!isConnected || !account || !signer || chainId !== 47763) {
+      setPforkBalance('0');
+      return;
+    }
+
+    try {
+      setIsLoadingBalance(true);
+      const tokenContract = new ethers.Contract(PFORK_TOKEN_ADDRESS, ERC20_ABI, signer);
+      const balance = await tokenContract.balanceOf(account);
+      const decimals = await tokenContract.decimals();
+      const formattedBalance = ethers.formatUnits(balance, decimals);
+      setPforkBalance(parseFloat(formattedBalance).toFixed(2));
+    } catch (error) {
+      console.error('Error fetching PFORK balance:', error);
+      setPforkBalance('0');
+    } finally {
+      setIsLoadingBalance(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPforkBalance();
+  }, [isConnected, account, chainId]);
 
   const handleLogoClick = async (e?: React.MouseEvent | React.KeyboardEvent) => {
     e?.preventDefault();
@@ -87,6 +121,8 @@ export const PitchforkHero = React.memo(() => {
       console.log('✅ Transaction confirmed!');
 
       alert(`10 PFORK claimed successfully!\nTransaction: ${tx.hash.slice(0, 10)}...`);
+      // Refresh balance after successful claim
+      await fetchPforkBalance();
     } catch (error: any) {
       console.error('❌ Error claiming PFORK:', error);
       console.error('Error details:', {
@@ -174,6 +210,27 @@ export const PitchforkHero = React.memo(() => {
                 <Web3ConnectButton />
               </div>
             </div>
+
+            {/* PFORK Balance Display */}
+            {isConnected && chainId === 47763 && (
+              <div className="flex justify-center pt-4">
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg px-6 py-3 shadow-lg">
+                  <div className="flex items-center gap-3">
+                    <img src={neoTokenLogo} alt="PFORK" className="w-8 h-8 rounded-full" />
+                    <div className="text-left">
+                      <p className="text-xs text-muted-foreground">Your Balance</p>
+                      <p className="text-xl font-bold text-foreground">
+                        {isLoadingBalance ? (
+                          <span className="animate-pulse">Loading...</span>
+                        ) : (
+                          `${pforkBalance} PFORK`
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Introduction text - always visible */}
             <div className="max-w-3xl mx-auto text-center space-y-4">
