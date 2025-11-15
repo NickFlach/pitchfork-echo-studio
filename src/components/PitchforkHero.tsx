@@ -1,12 +1,70 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Shield, Users, FileCheck, Heart, ChevronRight, MessageCircle, Scale, BookOpen, DollarSign, Github } from 'lucide-react';
 import neoTokenLogo from '@/assets/neo-token-logo.png';
 import { Navigation } from '@/components/Navigation';
 import Web3ConnectButton from '@/components/Web3ConnectButton';
+import { useWeb3 } from '@/hooks/useWeb3';
+import { ethers } from 'ethers';
 
 export const PitchforkHero = React.memo(() => {
   const go = (path: string) => { window.location.href = path; };
+
+  const { isConnected, account, signer, chainId, switchNetwork } = useWeb3();
+  const [isClaiming, setIsClaiming] = useState(false);
+
+  const FAUCET_ADDRESS = '0xFb05A4dEf7548C9D4371B56222CaBbac6080885D';
+  const FAUCET_ABI = [
+    'function claim() external',
+    'function hasClaimed(address) view returns (bool)',
+    'function paused() view returns (bool)',
+  ];
+
+  const handleLogoClick = async () => {
+    if (isClaiming) return;
+
+    if (!isConnected || !signer || !account) {
+      alert('Please connect your wallet first using the Connect Wallet button.');
+      return;
+    }
+
+    if (chainId !== 47763) {
+      try {
+        await switchNetwork(47763);
+      } catch (error) {
+        console.error('Failed to switch network:', error);
+        alert('Please switch your wallet to the NEO X network (chainId 47763) to claim PFORK.');
+        return;
+      }
+    }
+
+    try {
+      setIsClaiming(true);
+      const faucet = new ethers.Contract(FAUCET_ADDRESS, FAUCET_ABI, signer);
+
+      const paused = await faucet.paused();
+      if (paused) {
+        alert('The PFORK faucet is currently paused. Please try again later.');
+        return;
+      }
+
+      const alreadyClaimed = await faucet.hasClaimed(account);
+      if (alreadyClaimed) {
+        alert('You have already claimed your PFORK from this faucet.');
+        return;
+      }
+
+      const tx = await faucet.claim();
+      await tx.wait();
+
+      alert(`PFORK claimed successfully!\nTransaction: ${tx.hash.slice(0, 10)}...`);
+    } catch (error) {
+      console.error('Error claiming PFORK:', error);
+      alert('Failed to claim PFORK. Please try again or check your wallet.');
+    } finally {
+      setIsClaiming(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -15,7 +73,19 @@ export const PitchforkHero = React.memo(() => {
         <div className="text-center space-y-8 px-4">
           {/* Logo */}
           <div className="flex justify-center mb-8">
-            <img src={neoTokenLogo} alt="Neo Token Logo" className="w-32 h-32 transition-cosmic hover:scale-110 glow-cosmic rounded-full" />
+            <button
+              type="button"
+              onClick={handleLogoClick}
+              disabled={isClaiming}
+              className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              title="Click to claim 1 PFORK (NEO X faucet)"
+            >
+              <img
+                src={neoTokenLogo}
+                alt="Neo Token Logo"
+                className="w-32 h-32 transition-cosmic hover:scale-110 glow-cosmic rounded-full cursor-pointer"
+              />
+            </button>
           </div>
 
           {/* Main heading with gradient text */}
