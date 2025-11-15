@@ -1,4 +1,4 @@
-import { PitchforkHero } from "@/components/PitchforkHeroFixed";
+import { PitchforkHero } from "@/components/PitchforkHero";
 
 const Index = () => {
   return <PitchforkHero />;
