@@ -65,7 +65,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
   useEffect(() => {
     const initializeAndCheck = async () => {
       await initEthers();
-      checkConnection();
+      await checkConnection();
     };
     initializeAndCheck();
   }, []);

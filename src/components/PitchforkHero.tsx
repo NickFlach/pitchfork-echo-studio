@@ -20,7 +20,8 @@ export const PitchforkHero = React.memo(() => {
     'function paused() view returns (bool)',
   ];
 
-  const handleLogoClick = async () => {
+  const handleLogoClick = async (e?: React.MouseEvent | React.KeyboardEvent) => {
+    e?.preventDefault();
     console.log('🪙 PFORK logo clicked');
     console.log('📊 Wallet state:', { isConnected, account, chainId, hasSigner: !!signer });
     
@@ -31,6 +32,13 @@ export const PitchforkHero = React.memo(() => {
 
     if (!isConnected || !signer || !account) {
       console.log('❌ Wallet not connected');
+      console.log('📊 Full wallet state debug:', { 
+        isConnected, 
+        hasAccount: !!account, 
+        hasSigner: !!signer,
+        chainId,
+        ethereumExists: !!window.ethereum 
+      });
       alert('Please connect your wallet first using the Connect Wallet button.');
       return;
     }
@@ -101,21 +109,31 @@ export const PitchforkHero = React.memo(() => {
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <div
-              onClick={() => {
+              onClick={(e) => {
                 console.log('🖱 Logo container clicked');
                 if (!isClaiming) {
-                  void handleLogoClick();
+                  void handleLogoClick(e);
                 }
               }}
-              className="rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-              title="Click to claim 10 PFORK (NEO X faucet)"
+              onKeyDown={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && !isClaiming) {
+                  e.preventDefault();
+                  console.log('⌨️ Logo activated via keyboard');
+                  void handleLogoClick(e);
+                }
+              }}
+              className={`rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all ${isClaiming ? 'opacity-50 cursor-wait' : 'hover:shadow-xl hover:shadow-primary/50'}`}
+              title={isClaiming ? "Claiming PFORK..." : "Click to claim 10 PFORK (NEO X faucet)"}
               role="button"
               tabIndex={0}
+              aria-label="Click to claim 10 PFORK tokens from faucet"
+              aria-disabled={isClaiming}
             >
               <img
                 src={neoTokenLogo}
                 alt="Neo Token Logo"
-                className="w-32 h-32 transition-cosmic hover:scale-110 glow-cosmic rounded-full"
+                className={`w-32 h-32 transition-cosmic rounded-full pointer-events-none ${isClaiming ? 'animate-pulse' : 'hover:scale-110 glow-cosmic'}`}
+                draggable={false}
               />
             </div>
           </div>
