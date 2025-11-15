@@ -100,19 +100,24 @@ export const PitchforkHero = React.memo(() => {
         <div className="text-center space-y-8 px-4">
           {/* Logo */}
           <div className="flex justify-center mb-8">
-            <button
-              type="button"
-              onClick={handleLogoClick}
-              disabled={isClaiming}
-              className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 cursor-pointer"
+            <div
+              onClick={() => {
+                console.log('🖱 Logo container clicked');
+                if (!isClaiming) {
+                  void handleLogoClick();
+                }
+              }}
+              className="rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               title="Click to claim 10 PFORK (NEO X faucet)"
+              role="button"
+              tabIndex={0}
             >
               <img
                 src={neoTokenLogo}
                 alt="Neo Token Logo"
                 className="w-32 h-32 transition-cosmic hover:scale-110 glow-cosmic rounded-full"
               />
-            </button>
+            </div>
           </div>
 
           {/* Main heading with gradient text */}
