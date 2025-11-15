@@ -24,6 +24,8 @@ export const getNetworkName = (chainId: number): string => {
       return 'BSC Mainnet';
     case 97:
       return 'BSC Testnet';
+    case 47763:
+      return 'NEO X Mainnet';
     default:
       return `Chain ID: ${chainId}`;
   }

@@ -11,12 +11,15 @@ import {
   BookOpen,
   DollarSign,
   Github,
+  RefreshCw,
+  ExternalLink,
 } from "lucide-react";
 import neoTokenLogo from "@/assets/neo-token-logo.png";
 import { Navigation } from "@/components/Navigation";
 import Web3ConnectButton from "@/components/Web3ConnectButton";
 import { useWeb3 } from "@/hooks/useWeb3";
 import { ethers } from "ethers";
+import { useToast } from "@/hooks/use-toast";
 
 export const PitchforkHero = React.memo(() => {
   const go = (path: string) => {
@@ -24,9 +27,12 @@ export const PitchforkHero = React.memo(() => {
   };
 
   const { isConnected, account, signer, chainId, switchNetwork } = useWeb3();
+  const { toast } = useToast();
   const [isClaiming, setIsClaiming] = useState(false);
   const [pforkBalance, setPforkBalance] = useState<string>("0");
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
+  const [lastClaimTime, setLastClaimTime] = useState<number | null>(null);
+  const [estimatedGas, setEstimatedGas] = useState<string | null>(null);
 
   const FAUCET_ADDRESS = "0xFb05A4dEf7548C9D4371B56222CaBbac6080885D";
   const FAUCET_ABI = [
@@ -44,32 +50,20 @@ export const PitchforkHero = React.memo(() => {
   ];
 
   const fetchPforkBalance = async () => {
-    console.log("🔍 Fetching PFORK balance...", { isConnected, account, hasSigner: !!signer, chainId });
-    
     if (!isConnected || !account || !signer || chainId !== 47763) {
-      console.log("❌ Balance fetch skipped:", { isConnected, hasAccount: !!account, hasSigner: !!signer, chainId, expectedChainId: 47763 });
       setPforkBalance("0");
       return;
     }
 
     try {
       setIsLoadingBalance(true);
-      console.log("📞 Creating PFORK token contract at:", PFORK_TOKEN_ADDRESS);
       const tokenContract = new ethers.Contract(PFORK_TOKEN_ADDRESS, ERC20_ABI, signer);
-      
-      console.log("📊 Fetching balance for account:", account);
       const balance = await tokenContract.balanceOf(account);
-      console.log("💰 Raw balance:", balance.toString());
-      
       const decimals = await tokenContract.decimals();
-      console.log("🔢 Token decimals:", decimals);
-      
       const formattedBalance = ethers.formatUnits(balance, decimals);
-      console.log("✅ Formatted balance:", formattedBalance);
-      
       setPforkBalance(parseFloat(formattedBalance).toFixed(2));
     } catch (error) {
-      console.error("❌ Error fetching PFORK balance:", error);
+      console.error("Error fetching PFORK balance:", error);
       setPforkBalance("0");
     } finally {
       setIsLoadingBalance(false);
@@ -78,121 +72,176 @@ export const PitchforkHero = React.memo(() => {
 
   useEffect(() => {
     fetchPforkBalance();
+    // Load last claim time from localStorage
+    const stored = localStorage.getItem(`pfork_claim_${account}`);
+    if (stored) {
+      setLastClaimTime(parseInt(stored));
+    }
   }, [isConnected, account, chainId]);
+
+  // Auto-refresh balance every 30 seconds when connected
+  useEffect(() => {
+    if (!isConnected || chainId !== 47763) return;
+    const interval = setInterval(fetchPforkBalance, 30000);
+    return () => clearInterval(interval);
+  }, [isConnected, chainId]);
+
+  const checkRPCHealth = async (): Promise<boolean> => {
+    try {
+      if (!signer?.provider) return false;
+      await signer.provider.getBlockNumber();
+      return true;
+    } catch (error) {
+      toast({
+        title: "Network Error",
+        description: "Unable to connect to NEO X network. Please try again.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
+  const estimateClaimGas = async (): Promise<string | null> => {
+    try {
+      if (!signer || !account) return null;
+      const faucet = new ethers.Contract(FAUCET_ADDRESS, FAUCET_ABI, signer);
+      const gasEstimate = await faucet.claim.estimateGas();
+      const gasPrice = (await signer.provider.getFeeData()).gasPrice;
+      if (!gasPrice) return null;
+      const gasCost = gasEstimate * gasPrice;
+      return ethers.formatEther(gasCost);
+    } catch (error) {
+      return null;
+    }
+  };
 
   const handleLogoClick = async (e?: React.MouseEvent | React.KeyboardEvent) => {
     e?.preventDefault();
-    console.log("🪙 PFORK logo clicked");
-    console.log("📊 Wallet state:", { isConnected, account, chainId, hasSigner: !!signer });
 
-    if (isClaiming) {
-      console.log("⏳ Already claiming, ignoring click");
-      return;
-    }
+    if (isClaiming) return;
 
     if (!isConnected || !signer || !account) {
-      console.log("❌ Wallet not connected");
-      console.log("📊 Full wallet state debug:", {
-        isConnected,
-        hasAccount: !!account,
-        hasSigner: !!signer,
-        chainId,
-        ethereumExists: !!window.ethereum,
+      toast({
+        title: "Wallet Not Connected",
+        description: "Please connect your wallet first using the Connect Wallet button.",
+        variant: "destructive",
       });
-      alert("Please connect your wallet first using the Connect Wallet button.");
       return;
     }
 
     if (chainId !== 47763) {
-      console.log("🔄 Wrong network, attempting to switch to NEO X (47763)");
       try {
         await switchNetwork(47763);
-        console.log("✅ Network switched successfully");
+        toast({
+          title: "Network Switched",
+          description: "Successfully switched to NEO X network.",
+        });
       } catch (error) {
-        console.error("❌ Failed to switch network:", error);
-        alert("Please switch your wallet to the NEO X network (chainId 47763) to claim PFORK.");
+        toast({
+          title: "Network Switch Failed",
+          description: "Please manually switch your wallet to the NEO X network (chainId 47763).",
+          variant: "destructive",
+        });
         return;
       }
     }
 
     try {
       setIsClaiming(true);
-      console.log("🔗 Creating contract instance at:", FAUCET_ADDRESS);
-      console.log("📊 Current chainId from Web3Context:", chainId);
-      console.log("🔍 Wallet details:", {
-        account,
-        isConnected,
-        chainId,
-        hasSigner: !!signer,
-        hasProvider: !!signer?.provider
-      });
-      
-      // Double-check we're on Neo X using the hook's chainId (which is a regular number)
-      if (chainId !== 47763) {
-        console.error("❌ Wrong network! Expected 47763, got:", chainId);
-        alert(`Please switch to Neo X network (Chain ID 47763).\n\nCurrent network: ${chainId || 'unknown'}`);
-        return;
-      }
-      
-      console.log("✅ Confirmed on Neo X network (47763)");
-      
-      // First, check if contract exists by checking code at address
+
+      // Check RPC health
+      const rpcHealthy = await checkRPCHealth();
+      if (!rpcHealthy) return;
+
+      // Verify contract exists
       const provider = signer.provider;
       const code = await provider.getCode(FAUCET_ADDRESS);
-      console.log("📜 Contract code length:", code.length, "bytes");
-      
       if (code === "0x") {
-        alert(`Faucet contract not found at ${FAUCET_ADDRESS} on Neo X.\n\nPlease check the contract address is correct for Neo X mainnet (chainId 47763).`);
+        toast({
+          title: "Contract Not Found",
+          description: `Faucet contract not found at ${FAUCET_ADDRESS} on NEO X.`,
+          variant: "destructive",
+        });
         return;
       }
-      
+
       const faucet = new ethers.Contract(FAUCET_ADDRESS, FAUCET_ABI, signer);
 
-      console.log("🔍 Checking if faucet is paused...");
+      // Check if paused
       try {
         const paused = await faucet.paused();
-        console.log("📊 Faucet paused status:", paused);
-        
         if (paused) {
-          alert("The PFORK faucet is currently paused. Please try again later.");
+          toast({
+            title: "Faucet Paused",
+            description: "The PFORK faucet is currently paused. Please try again later.",
+            variant: "destructive",
+          });
           return;
         }
       } catch (pausedError) {
-        console.warn("⚠️ Could not check paused status, continuing anyway:", pausedError);
-        // Continue with claim even if paused check fails
+        // Continue if paused check fails
       }
 
-      console.log("🔍 Checking if already claimed for:", account);
+      // Check if already claimed
       const alreadyClaimed = await faucet.hasClaimed(account);
-      console.log("📊 Already claimed status:", alreadyClaimed);
-
       if (alreadyClaimed) {
-        alert("You have already claimed your 10 PFORK from this faucet.");
+        const claimTime = lastClaimTime ? new Date(lastClaimTime).toLocaleDateString() : "previously";
+        toast({
+          title: "Already Claimed",
+          description: `You claimed your 10 PFORK ${claimTime}. Each address can only claim once.`,
+          variant: "destructive",
+        });
         return;
       }
 
-      console.log("📤 Calling claim() function...");
+      // Estimate gas
+      const gasCost = await estimateClaimGas();
+      if (gasCost) {
+        setEstimatedGas(gasCost);
+      }
+
+      // Execute claim
       const tx = await faucet.claim();
-      console.log("⏳ Transaction sent:", tx.hash);
+      
+      toast({
+        title: "Transaction Submitted",
+        description: "Waiting for confirmation...",
+      });
 
-      console.log("⏳ Waiting for confirmation...");
       await tx.wait();
-      console.log("✅ Transaction confirmed!");
+      
+      // Store claim time
+      const claimTime = Date.now();
+      localStorage.setItem(`pfork_claim_${account}`, claimTime.toString());
+      setLastClaimTime(claimTime);
 
-      alert(`10 PFORK claimed successfully!\nTransaction: ${tx.hash.slice(0, 10)}...`);
-      // Refresh balance after successful claim
+      toast({
+        title: "Claim Successful! 🎉",
+        description: (
+          <div className="flex flex-col gap-2">
+            <p>10 PFORK claimed successfully!</p>
+            <a
+              href={`https://xexplorer.neo.org/tx/${tx.hash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-primary hover:underline"
+            >
+              View on Explorer <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        ),
+      });
+
       await fetchPforkBalance();
     } catch (error: any) {
-      console.error("❌ Error claiming PFORK:", error);
-      console.error("Error details:", {
-        message: error.message,
-        code: error.code,
-        data: error.data,
+      console.error("Error claiming PFORK:", error);
+      toast({
+        title: "Claim Failed",
+        description: error.message || "Failed to claim PFORK. Please try again.",
+        variant: "destructive",
       });
-      alert(`Failed to claim PFORK: ${error.message || "Please try again or check your wallet."}`);
     } finally {
       setIsClaiming(false);
-      console.log("🏁 Claim attempt finished");
     }
   };
 
@@ -205,7 +254,6 @@ export const PitchforkHero = React.memo(() => {
           <div className="flex justify-center mb-8">
             <div
               onClick={(e) => {
-                console.log("🖱 Logo container clicked");
                 if (!isClaiming) {
                   void handleLogoClick(e);
                 }
@@ -213,7 +261,6 @@ export const PitchforkHero = React.memo(() => {
               onKeyDown={(e) => {
                 if ((e.key === "Enter" || e.key === " ") && !isClaiming) {
                   e.preventDefault();
-                  console.log("⌨️ Logo activated via keyboard");
                   void handleLogoClick(e);
                 }
               }}
@@ -295,7 +342,22 @@ export const PitchforkHero = React.memo(() => {
                         {isLoadingBalance ? <span className="animate-pulse">Loading...</span> : `${pforkBalance} PFORK`}
                       </p>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={fetchPforkBalance}
+                      disabled={isLoadingBalance}
+                      className="ml-2"
+                      title="Refresh balance"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${isLoadingBalance ? 'animate-spin' : ''}`} />
+                    </Button>
                   </div>
+                  {estimatedGas && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Est. gas: {parseFloat(estimatedGas).toFixed(6)} GAS
+                    </p>
+                  )}
                 </div>
               </div>
             )}
