@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building } from 'lucide-react';
-import Web3ConnectButton from './Web3ConnectButton';
+import { Menu, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
 
 interface NavigationItem {
   path: string;
@@ -22,6 +23,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   showHomeButton = true,
   showQuickNav = false
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
   // Organized navigation items by functional groups
   const coreNavItems: NavigationItem[] = [
     { path: '/identity', icon: Shield, label: 'Identity', group: 'core' },
@@ -58,59 +60,113 @@ export const Navigation: React.FC<NavigationProps> = ({
   };
 
   return (
-    <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-primary/20 z-10">
-      <div className="container mx-auto px-4 py-4">
+    <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-primary/20 z-50">
+      <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Left side - Back and Home buttons */}
-          <div className="flex items-center gap-1">
-            {showBackButton && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleBack}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="w-5 h-5" />
+          {/* Left side - Hamburger Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-10 w-10">
+                <Menu className="h-6 w-6" />
               </Button>
-            )}
-            {showHomeButton && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleNavigation('/')}
-                className="flex items-center gap-2"
-              >
-                <Home className="w-5 h-5" />
-              </Button>
-            )}
-          </div>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="text-gradient-cosmic">Pitchfork Protocol</SheetTitle>
+              </SheetHeader>
+              
+              <div className="mt-6 space-y-6">
+                {/* Core Features */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    Core Features
+                  </h3>
+                  <div className="space-y-1">
+                    {coreNavItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = window.location.pathname === item.path;
+                      return (
+                        <Button
+                          key={item.path}
+                          variant={isActive ? "secondary" : "ghost"}
+                          className="w-full justify-start h-11"
+                          onClick={() => {
+                            handleNavigation(item.path);
+                            setIsOpen(false);
+                          }}
+                        >
+                          <Icon className="mr-3 h-5 w-5" />
+                          {item.label}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-          {/* Center - Quick navigation (optional) */}
-          {showQuickNav && (
-            <div className="hidden md:flex items-center gap-0.5">
-              {allNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = window.location.pathname === item.path;
-                return (
-                  <Button
-                    key={item.path}
-                    variant={isActive ? "cosmic" : "ghost"}
-                    size="icon"
-                    onClick={() => handleNavigation(item.path)}
-                    title={item.label}
-                    className="w-10 h-10"
-                  >
-                    <Icon className="w-5 h-5" />
-                  </Button>
-                );
-              })}
-            </div>
-          )}
+                <Separator />
 
-          {/* Right side - Web3 Connect and Platform title */}
-          <div className="flex items-center gap-2">
-            <Web3ConnectButton />
-            <div className="text-sm font-semibold text-gradient-cosmic">
+                {/* Consciousness */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    Consciousness
+                  </h3>
+                  <div className="space-y-1">
+                    {consciousnessNavItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = window.location.pathname === item.path;
+                      return (
+                        <Button
+                          key={item.path}
+                          variant={isActive ? "secondary" : "ghost"}
+                          className="w-full justify-start h-11"
+                          onClick={() => {
+                            handleNavigation(item.path);
+                            setIsOpen(false);
+                          }}
+                        >
+                          <Icon className="mr-3 h-5 w-5" />
+                          {item.label}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* System */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    System
+                  </h3>
+                  <div className="space-y-1">
+                    {systemNavItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = window.location.pathname === item.path;
+                      return (
+                        <Button
+                          key={item.path}
+                          variant={isActive ? "secondary" : "ghost"}
+                          className="w-full justify-start h-11"
+                          onClick={() => {
+                            handleNavigation(item.path);
+                            setIsOpen(false);
+                          }}
+                        >
+                          <Icon className="mr-3 h-5 w-5" />
+                          {item.label}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          {/* Center/Right - Platform title */}
+          <div className="flex-1 text-center md:text-right">
+            <div className="text-base md:text-lg font-bold text-gradient-cosmic">
               Pitchfork Protocol
             </div>
           </div>
