@@ -411,15 +411,17 @@ export const PitchforkHero = React.memo(() => {
 
             {/* PFORK Balance Display */}
             {isConnected && chainId === 47763 && (
-              <div className="flex justify-center pt-4">
-                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg px-6 py-4 shadow-lg max-w-md">
-                  <div className="flex items-center gap-3 mb-3">
-                    <img src={neoTokenLogo} alt="PFORK" className="w-8 h-8 rounded-full" />
-                    <div className="text-left flex-1">
-                      <p className="text-xs text-muted-foreground">Your Balance</p>
-                      <p className="text-xl font-bold text-foreground">
-                        {isLoadingBalance ? <span className="animate-pulse">Loading...</span> : `${pforkBalance} PFORK`}
-                      </p>
+              <div className="flex justify-center pt-4 w-full px-4">
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6 shadow-lg w-full max-w-md">
+                  <div className="flex items-center justify-between gap-4 mb-4 pb-4 border-b border-border/50">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <img src={neoTokenLogo} alt="PFORK" className="w-10 h-10 rounded-full flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-muted-foreground whitespace-nowrap">Your Balance</p>
+                        <p className="text-2xl font-bold text-foreground truncate">
+                          {isLoadingBalance ? <span className="animate-pulse">Loading...</span> : `${pforkBalance} PFORK`}
+                        </p>
+                      </div>
                     </div>
                     <Button
                       variant="ghost"
@@ -427,25 +429,27 @@ export const PitchforkHero = React.memo(() => {
                       onClick={fetchFaucetInfo}
                       disabled={isLoadingBalance}
                       title="Refresh info"
+                      className="flex-shrink-0"
                     >
                       <RefreshCw className={`w-4 h-4 ${isLoadingBalance ? 'animate-spin' : ''}`} />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Remaining Cap</p>
-                      <p className="font-semibold">{remainingAllowance} PFORK</p>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Remaining Cap:</span>
+                      <span className="text-sm font-semibold text-foreground">{remainingAllowance} PFORK</span>
                     </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Next Request</p>
-                      <p className="font-semibold">{formatTime(cooldownRemaining)}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Next Request:</span>
+                      <span className="text-sm font-semibold text-foreground">{formatTime(cooldownRemaining)}</span>
                     </div>
+                    {estimatedGas && (
+                      <div className="flex justify-between items-center pt-2 border-t border-border/50">
+                        <span className="text-xs text-muted-foreground">Est. Gas:</span>
+                        <span className="text-xs font-medium text-muted-foreground">{parseFloat(estimatedGas).toFixed(6)} GAS</span>
+                      </div>
+                    )}
                   </div>
-                  {estimatedGas && (
-                    <p className="text-xs text-muted-foreground mt-3 text-center">
-                      Est. gas: {parseFloat(estimatedGas).toFixed(6)} GAS
-                    </p>
-                  )}
                 </div>
               </div>
             )}
