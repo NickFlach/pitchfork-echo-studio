@@ -318,6 +318,14 @@ export const PitchforkHero = React.memo(() => {
     return `${minutes}m ${secs}s`;
   };
 
+  const formatAllowance = (allowance: string): string => {
+    const num = parseFloat(allowance);
+    // If number is extremely large (close to max uint256), show as unlimited
+    if (num > 1e20) return "Unlimited";
+    // Otherwise format to 2 decimal places
+    return `${num.toFixed(2)} PFORK`;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <Navigation showBackButton={false} showQuickNav={true} />
@@ -437,7 +445,7 @@ export const PitchforkHero = React.memo(() => {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Remaining Cap:</span>
-                      <span className="text-sm font-semibold text-foreground">{remainingAllowance} PFORK</span>
+                      <span className="text-sm font-semibold text-foreground">{formatAllowance(remainingAllowance)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Next Request:</span>
