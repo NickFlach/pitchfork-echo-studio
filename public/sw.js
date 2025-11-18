@@ -1,8 +1,8 @@
 // Enhanced Service Worker with advanced caching strategies
-const CACHE_NAME = 'pitchfork-v2';
-const RUNTIME_CACHE = 'pitchfork-runtime';
-const IMAGE_CACHE = 'pitchfork-images';
-const API_CACHE = 'pitchfork-api';
+const CACHE_NAME = 'pitchfork-v3';
+const RUNTIME_CACHE = 'pitchfork-runtime-v3';
+const IMAGE_CACHE = 'pitchfork-images-v3';
+const API_CACHE = 'pitchfork-api-v3';
 
 const STATIC_ASSETS = [
   '/',
