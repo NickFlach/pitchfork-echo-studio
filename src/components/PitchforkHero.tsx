@@ -31,15 +31,21 @@ export const PitchforkHero = React.memo(() => {
   const [isClaiming, setIsClaiming] = useState(false);
   const [pforkBalance, setPforkBalance] = useState<string>("0");
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
-  const [lastClaimTime, setLastClaimTime] = useState<number | null>(null);
+  const [cooldownRemaining, setCooldownRemaining] = useState<number>(0);
+  const [remainingAllowance, setRemainingAllowance] = useState<string>("0");
+  const [amountPerRequest, setAmountPerRequest] = useState<string>("0");
   const [estimatedGas, setEstimatedGas] = useState<string | null>(null);
 
-  const FAUCET_ADDRESS = "0xFb05A4dEf7548C9D4371B56222CaBbac6080885D";
+  const FAUCET_ADDRESS = "0xC938cef0619d74DDc740Cb14490D77E811Ae6841";
   const FAUCET_ABI = [
-    "function claim() external",
-    "function hasClaimed(address) external view returns (bool)",
+    "function request() external",
+    "function canRequest(address) external view returns (bool)",
     "function paused() external view returns (bool)",
-    "function amountPerClaim() external view returns (uint256)",
+    "function amountPerRequest() external view returns (uint256)",
+    "function timeUntilNextRequest(address) external view returns (uint256)",
+    "function remainingAllowance(address) external view returns (uint256)",
+    "function totalClaimed(address) external view returns (uint256)",
+    "function cooldown() external view returns (uint256)",
   ];
 
   const PFORK_TOKEN_ADDRESS = "0x216490C8E6b33b4d8A2390dADcf9f433E30da60F"; // Replace with actual PFORK token address
@@ -49,42 +55,61 @@ export const PitchforkHero = React.memo(() => {
     "function symbol() view returns (string)",
   ];
 
-  const fetchPforkBalance = async () => {
+  const fetchFaucetInfo = async () => {
     if (!isConnected || !account || !signer || chainId !== 47763) {
       setPforkBalance("0");
+      setCooldownRemaining(0);
+      setRemainingAllowance("0");
       return;
     }
 
     try {
       setIsLoadingBalance(true);
       const tokenContract = new ethers.Contract(PFORK_TOKEN_ADDRESS, ERC20_ABI, signer);
-      const balance = await tokenContract.balanceOf(account);
-      const decimals = await tokenContract.decimals();
+      const faucet = new ethers.Contract(FAUCET_ADDRESS, FAUCET_ABI, signer);
+
+      const [balance, decimals, timeUntil, remaining, perRequest] = await Promise.all([
+        tokenContract.balanceOf(account),
+        tokenContract.decimals(),
+        faucet.timeUntilNextRequest(account),
+        faucet.remainingAllowance(account),
+        faucet.amountPerRequest(),
+      ]);
+
       const formattedBalance = ethers.formatUnits(balance, decimals);
       setPforkBalance(parseFloat(formattedBalance).toFixed(2));
+      setCooldownRemaining(Number(timeUntil));
+      setRemainingAllowance(ethers.formatUnits(remaining, decimals));
+      setAmountPerRequest(ethers.formatUnits(perRequest, decimals));
     } catch (error) {
-      console.error("Error fetching PFORK balance:", error);
+      console.error("Error fetching faucet info:", error);
       setPforkBalance("0");
+      setCooldownRemaining(0);
+      setRemainingAllowance("0");
     } finally {
       setIsLoadingBalance(false);
     }
   };
 
   useEffect(() => {
-    fetchPforkBalance();
-    // Load last claim time from localStorage
-    const stored = localStorage.getItem(`pfork_claim_${account}`);
-    if (stored) {
-      setLastClaimTime(parseInt(stored));
-    }
+    fetchFaucetInfo();
   }, [isConnected, account, chainId]);
 
-  // Auto-refresh balance every 30 seconds when connected
+  // Auto-refresh every 10 seconds when connected
   useEffect(() => {
     if (!isConnected || chainId !== 47763) return;
-    const interval = setInterval(fetchPforkBalance, 30000);
+    const interval = setInterval(fetchFaucetInfo, 10000);
     return () => clearInterval(interval);
   }, [isConnected, chainId]);
+
+  // Countdown timer for cooldown
+  useEffect(() => {
+    if (cooldownRemaining <= 0) return;
+    const timer = setInterval(() => {
+      setCooldownRemaining((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownRemaining]);
 
   const checkRPCHealth = async (): Promise<boolean> => {
     try {
@@ -106,22 +131,17 @@ export const PitchforkHero = React.memo(() => {
     }
   };
 
-  const estimateClaimGas = async (): Promise<string | null> => {
+  const estimateRequestGas = async (): Promise<string | null> => {
     try {
       if (!signer || !account) return null;
       const faucet = new ethers.Contract(FAUCET_ADDRESS, FAUCET_ABI, signer);
-      const gasEstimate = await faucet.claim.estimateGas();
+      const gasEstimate = await faucet.request.estimateGas();
       const gasPrice = (await signer.provider.getFeeData()).gasPrice;
       if (!gasPrice) return null;
       const gasCost = gasEstimate * gasPrice;
-      console.log("Gas estimation:", {
-        gasEstimate: gasEstimate.toString(),
-        gasPrice: gasPrice.toString(),
-        totalCost: ethers.formatEther(gasCost)
-      });
       return ethers.formatEther(gasCost);
     } catch (error) {
-      console.log("Gas estimation failed (this is normal if already claimed):", error);
+      console.log("Gas estimation failed:", error);
       return null;
     }
   };
@@ -223,26 +243,36 @@ export const PitchforkHero = React.memo(() => {
         // Continue if paused check fails
       }
 
-      // Check if already claimed
-      const alreadyClaimed = await faucet.hasClaimed(account);
-      if (alreadyClaimed) {
-        const claimTime = lastClaimTime ? new Date(lastClaimTime).toLocaleDateString() : "previously";
-        toast({
-          title: "Already Claimed",
-          description: `You claimed your 10 PFORK ${claimTime}. Each address can only claim once.`,
-          variant: "destructive",
-        });
+      // Check if can request
+      const canRequestNow = await faucet.canRequest(account);
+      if (!canRequestNow) {
+        const remaining = await faucet.remainingAllowance(account);
+        if (remaining === 0n) {
+          toast({
+            title: "Cap Reached",
+            description: "You've reached the maximum PFORK allowance per address.",
+            variant: "destructive",
+          });
+        } else {
+          const timeUntil = await faucet.timeUntilNextRequest(account);
+          const minutes = Math.ceil(Number(timeUntil) / 60);
+          toast({
+            title: "Cooldown Active",
+            description: `Please wait ${minutes} minute${minutes !== 1 ? 's' : ''} before requesting again.`,
+            variant: "destructive",
+          });
+        }
         return;
       }
 
       // Estimate gas
-      const gasCost = await estimateClaimGas();
+      const gasCost = await estimateRequestGas();
       if (gasCost) {
         setEstimatedGas(gasCost);
       }
 
-      // Execute claim
-      const tx = await faucet.claim();
+      // Execute request
+      const tx = await faucet.request();
       
       toast({
         title: "Transaction Submitted",
@@ -250,17 +280,12 @@ export const PitchforkHero = React.memo(() => {
       });
 
       await tx.wait();
-      
-      // Store claim time
-      const claimTime = Date.now();
-      localStorage.setItem(`pfork_claim_${account}`, claimTime.toString());
-      setLastClaimTime(claimTime);
 
       toast({
-        title: "Claim Successful! 🎉",
+        title: "Request Successful! 🎉",
         description: (
           <div className="flex flex-col gap-2">
-            <p>10 PFORK claimed successfully!</p>
+            <p>{amountPerRequest} PFORK claimed successfully!</p>
             <a
               href={`https://xexplorer.neo.org/tx/${tx.hash}`}
               target="_blank"
@@ -273,17 +298,24 @@ export const PitchforkHero = React.memo(() => {
         ),
       });
 
-      await fetchPforkBalance();
+      await fetchFaucetInfo();
     } catch (error: any) {
-      console.error("Error claiming PFORK:", error);
+      console.error("Error requesting PFORK:", error);
       toast({
-        title: "Claim Failed",
-        description: error.message || "Failed to claim PFORK. Please try again.",
+        title: "Request Failed",
+        description: error.message || "Failed to request PFORK. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsClaiming(false);
     }
+  };
+
+  const formatTime = (seconds: number): string => {
+    if (seconds <= 0) return "Ready";
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}m ${secs}s`;
   };
 
   return (
@@ -305,12 +337,18 @@ export const PitchforkHero = React.memo(() => {
                   void handleLogoClick(e);
                 }
               }}
-              className={`rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all ${isClaiming ? "opacity-50 cursor-wait" : "hover:shadow-xl hover:shadow-primary/50"}`}
-              title={isClaiming ? "Claiming PFORK..." : "Click to claim 10 PFORK (NEO X faucet)"}
+              className={`rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all ${isClaiming || cooldownRemaining > 0 ? "opacity-50 cursor-wait" : "hover:shadow-xl hover:shadow-primary/50"}`}
+              title={
+                isClaiming
+                  ? "Requesting PFORK..."
+                  : cooldownRemaining > 0
+                  ? `Cooldown: ${formatTime(cooldownRemaining)}`
+                  : `Click to request ${amountPerRequest} PFORK from faucet`
+              }
               role="button"
               tabIndex={0}
-              aria-label="Click to claim 10 PFORK tokens from faucet"
-              aria-disabled={isClaiming}
+              aria-label={`Click to request ${amountPerRequest} PFORK tokens from faucet`}
+              aria-disabled={isClaiming || cooldownRemaining > 0}
             >
               <img
                 src={neoTokenLogo}
@@ -374,10 +412,10 @@ export const PitchforkHero = React.memo(() => {
             {/* PFORK Balance Display */}
             {isConnected && chainId === 47763 && (
               <div className="flex justify-center pt-4">
-                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg px-6 py-3 shadow-lg">
-                  <div className="flex items-center gap-3">
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg px-6 py-4 shadow-lg max-w-md">
+                  <div className="flex items-center gap-3 mb-3">
                     <img src={neoTokenLogo} alt="PFORK" className="w-8 h-8 rounded-full" />
-                    <div className="text-left">
+                    <div className="text-left flex-1">
                       <p className="text-xs text-muted-foreground">Your Balance</p>
                       <p className="text-xl font-bold text-foreground">
                         {isLoadingBalance ? <span className="animate-pulse">Loading...</span> : `${pforkBalance} PFORK`}
@@ -386,16 +424,25 @@ export const PitchforkHero = React.memo(() => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={fetchPforkBalance}
+                      onClick={fetchFaucetInfo}
                       disabled={isLoadingBalance}
-                      className="ml-2"
-                      title="Refresh balance"
+                      title="Refresh info"
                     >
                       <RefreshCw className={`w-4 h-4 ${isLoadingBalance ? 'animate-spin' : ''}`} />
                     </Button>
                   </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Remaining Cap</p>
+                      <p className="font-semibold">{remainingAllowance} PFORK</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Next Request</p>
+                      <p className="font-semibold">{formatTime(cooldownRemaining)}</p>
+                    </div>
+                  </div>
                   {estimatedGas && (
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-xs text-muted-foreground mt-3 text-center">
                       Est. gas: {parseFloat(estimatedGas).toFixed(6)} GAS
                     </p>
                   )}
