@@ -132,13 +132,17 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
           setProvider(provider);
           setSigner(signer);
           setChainId(Number(network.chainId));
+          setWalletType(localStorage.getItem('walletType') || 'metamask');
           
           console.log('✅ Connection restored successfully!');
         } else {
           console.log('ℹ️ No existing connection found');
+          // Clear any stale wallet type
+          localStorage.removeItem('walletType');
         }
       } catch (error) {
         console.error('❌ Error checking connection:', error);
+        localStorage.removeItem('walletType');
       }
     } else {
       console.log('ℹ️ No Web3 wallet detected or ethers not initialized - this is expected if MetaMask is not installed');
@@ -189,7 +193,9 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
         setProvider(provider);
         setSigner(signer);
         setChainId(Number(network.chainId));
-        setWalletType(walletType || 'metamask');
+        const wType = walletType || 'metamask';
+        setWalletType(wType);
+        localStorage.setItem('walletType', wType);
         
         console.log('✅ Wallet connection successful!');
       }
@@ -263,11 +269,16 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
   };
 
   const disconnectWallet = () => {
+    console.log('🚪 Disconnecting wallet...');
     setIsConnected(false);
     setAccount(null);
     setProvider(null);
     setSigner(null);
     setChainId(null);
+    setWalletType(null);
+    setError(null);
+    localStorage.removeItem('walletType');
+    console.log('✅ Wallet disconnected');
   };
 
   const value: Web3ContextType = {

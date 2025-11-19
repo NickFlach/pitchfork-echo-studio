@@ -83,9 +83,7 @@ export const PitchforkHero = React.memo(() => {
       setAmountPerRequest(ethers.formatUnits(perRequest, decimals));
     } catch (error) {
       console.error("Error fetching faucet info:", error);
-      setPforkBalance("0");
-      setCooldownRemaining(0);
-      setRemainingAllowance("0");
+      // Don't reset to "0" on error to prevent flickering
     } finally {
       setIsLoadingBalance(false);
     }
