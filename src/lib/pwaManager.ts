@@ -35,13 +35,28 @@ class PWAManager {
     // Register service worker
     if ('serviceWorker' in navigator) {
       try {
-        this.swRegistration = await navigator.serviceWorker.register('/sw.js');
+        this.swRegistration = await navigator.serviceWorker.register('/sw.js', {
+          updateViaCache: 'none' // Always check for updates
+        });
         console.log('✅ Service Worker registered successfully');
+        
+        // Check for updates every 60 seconds
+        setInterval(() => {
+          this.swRegistration?.update();
+        }, 60000);
         
         // Listen for service worker updates
         this.swRegistration.addEventListener('updatefound', () => {
-          console.log('🔄 New service worker version available');
-          this.handleServiceWorkerUpdate();
+          const newWorker = this.swRegistration?.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('🔄 New version available, reloading...');
+                // Auto-reload after a short delay to ensure clean transition
+                setTimeout(() => window.location.reload(), 1000);
+              }
+            });
+          }
         });
       } catch (error) {
         console.error('❌ Service Worker registration failed:', error);

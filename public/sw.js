@@ -1,8 +1,10 @@
 // Enhanced Service Worker with advanced caching strategies
-const CACHE_NAME = 'pitchfork-v3';
-const RUNTIME_CACHE = 'pitchfork-runtime-v3';
-const IMAGE_CACHE = 'pitchfork-images-v3';
-const API_CACHE = 'pitchfork-api-v3';
+// Auto-versioned caches that update on each deployment
+const VERSION = new Date().getTime();
+const CACHE_NAME = `pitchfork-${VERSION}`;
+const RUNTIME_CACHE = `pitchfork-runtime-${VERSION}`;
+const IMAGE_CACHE = `pitchfork-images-${VERSION}`;
+const API_CACHE = `pitchfork-api-${VERSION}`;
 
 const STATIC_ASSETS = [
   '/',
@@ -14,7 +16,7 @@ const STATIC_ASSETS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('🔧 Service Worker installing...');
+  console.log('🔧 Service Worker installing with version:', VERSION);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -22,12 +24,13 @@ self.addEventListener('install', (event) => {
         return cache.addAll(STATIC_ASSETS);
       })
   );
+  // Force the waiting service worker to become the active service worker
   self.skipWaiting();
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('🚀 Service Worker activating...');
+  console.log('🚀 Service Worker activating with version:', VERSION);
   const currentCaches = [CACHE_NAME, RUNTIME_CACHE, IMAGE_CACHE, API_CACHE];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -39,9 +42,11 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
+    }).then(() => {
+      // Take control of all pages immediately
+      return self.clients.claim();
     })
   );
-  self.clients.claim();
 });
 
 // Network-first strategy for API calls
