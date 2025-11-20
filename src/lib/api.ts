@@ -180,10 +180,19 @@ export const identityApi = {
 
   // Blockchain-based verification with zero-knowledge proofs
   async verifyLevel(walletAddress: string, targetLevel: 'basic' | 'verified'): Promise<Identity> {
-    const existing = await this.getByWallet(walletAddress);
+    console.log('Starting verification for:', walletAddress, 'level:', targetLevel);
     
-    // Enforce progressive verification
-    if (targetLevel === 'verified' && (!existing || existing.verificationLevel !== 'basic')) {
+    let existing = await this.getByWallet(walletAddress);
+    console.log('Existing identity:', existing);
+    
+    // Create identity if it doesn't exist
+    if (!existing || !existing.id) {
+      console.log('Creating new identity...');
+      existing = await this.create({ walletAddress });
+    }
+    
+    // Enforce progressive verification for 'verified' level
+    if (targetLevel === 'verified' && existing.verificationLevel !== 'basic') {
       throw new Error('Must complete basic verification before full verification');
     }
     
@@ -197,12 +206,8 @@ export const identityApi = {
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     };
 
-    if (existing) {
-      return await this.update(walletAddress, verificationData);
-    } else {
-      const baseIdentity = await this.create({ walletAddress });
-      return await this.update(walletAddress, verificationData);
-    }
+    console.log('Updating identity with verification data:', verificationData);
+    return await this.update(walletAddress, verificationData);
   },
 
   // Generate zero-knowledge proof for verification
