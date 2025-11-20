@@ -198,6 +198,16 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children, config }) 
         localStorage.setItem('walletType', wType);
         
         console.log('✅ Wallet connection successful!');
+        
+        // Auto-verify identity on wallet connection
+        try {
+          const { identityApi } = await import('@/lib/api');
+          await identityApi.verifyLevel(accounts[0], 'basic');
+          console.log('✅ Identity auto-verified');
+        } catch (identityError) {
+          console.warn('⚠️ Auto-verification failed:', identityError);
+          // Don't block wallet connection on identity verification failure
+        }
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to connect wallet';
