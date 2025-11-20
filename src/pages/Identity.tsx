@@ -139,8 +139,8 @@ const Identity = () => {
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-4xl font-bold text-gradient-cosmic">Privacy-First Identity</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Verify your identity without exposing your personal data. Use zero-knowledge proofs 
-            to prove who you are while maintaining complete privacy.
+            Your wallet is your identity. Basic verification happens automatically when you connect.
+            Advanced features with zero-knowledge proofs coming soon.
           </p>
         </div>
 
@@ -182,9 +182,9 @@ const Identity = () => {
           {/* Verification Options */}
           <Card>
             <CardHeader>
-              <CardTitle>Verification Levels</CardTitle>
+              <CardTitle>Verification Status</CardTitle>
               <CardDescription>
-                Choose your verification level based on your privacy needs
+                Your wallet address is your identity
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -194,72 +194,59 @@ const Identity = () => {
                   <span className="font-semibold">Basic Verification</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Prove you're a real person without revealing personal details
+                  Auto-verified on wallet connection
                 </p>
-                <Button 
-                  onClick={() => handleVerification('basic')}
-                  disabled={isVerifying || currentLevel !== 'none'}
-                  className="w-full"
-                  variant={currentLevel === 'basic' ? 'cosmicOutline' : 'cosmic'}
-                  data-testid="button-verify-basic"
-                >
-                  {currentLevel === 'basic' ? 'Verified' : 'Verify Basic'}
-                </Button>
+                <div className="flex items-center gap-2 text-sm text-green-500">
+                  <Check className="w-4 h-4" />
+                  <span>Active</span>
+                </div>
               </div>
 
-              <div className="p-4 border border-accent/20 rounded-lg space-y-3">
+              <div className="p-4 border border-accent/20 rounded-lg space-y-3 opacity-60">
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-accent" />
-                  <span className="font-semibold">Full Verification</span>
+                  <span className="font-semibold">Advanced Verification (Coming Soon)</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Higher trust level for organizing sensitive actions
+                  Zero-knowledge proofs for enhanced privacy while proving credentials
                 </p>
-                <Button 
-                  onClick={() => handleVerification('verified')}
-                  disabled={isVerifying || currentLevel !== 'basic'}
-                  className="w-full"
-                  variant={currentLevel === 'verified' ? 'cosmicOutline' : 'cosmic'}
-                  data-testid="button-verify-full"
-                >
-                  {currentLevel === 'verified' ? 'Fully Verified' : 'Full Verification'}
-                </Button>
+                <Badge variant="secondary">Under Development</Badge>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Privacy Guarantees */}
+        {/* How It Works */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" />
-              Privacy Guarantees
+              <Shield className="w-5 h-5" />
+              How Wallet-Based Identity Works
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center space-y-2">
                 <Shield className="w-8 h-8 mx-auto text-primary" />
-                <h3 className="font-semibold">Zero Knowledge</h3>
+                <h3 className="font-semibold">Wallet Address</h3>
                 <p className="text-sm text-muted-foreground">
-                  Prove facts about yourself without revealing the underlying data
+                  Your unique blockchain address serves as your verifiable identity
                 </p>
               </div>
               
               <div className="text-center space-y-2">
-                <EyeOff className="w-8 h-8 mx-auto text-primary" />
-                <h3 className="font-semibold">No Data Storage</h3>
+                <Lock className="w-8 h-8 mx-auto text-primary" />
+                <h3 className="font-semibold">Cryptographic Security</h3>
                 <p className="text-sm text-muted-foreground">
-                  Your personal information is never stored on our servers
+                  Secured by the same technology that protects digital assets
                 </p>
               </div>
               
               <div className="text-center space-y-2">
-                <Eye className="w-8 h-8 mx-auto text-primary" />
-                <h3 className="font-semibold">Selective Disclosure</h3>
+                <Key className="w-8 h-8 mx-auto text-primary" />
+                <h3 className="font-semibold">You Control Access</h3>
                 <p className="text-sm text-muted-foreground">
-                  Share only what's necessary for each specific purpose
+                  Only you have the keys, ensuring complete ownership and control
                 </p>
               </div>
             </div>
