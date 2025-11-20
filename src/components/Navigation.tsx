@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building } from 'lucide-react';
+import { Menu, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building, Home } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 
@@ -164,12 +164,22 @@ export const Navigation: React.FC<NavigationProps> = ({
             </SheetContent>
           </Sheet>
 
-          {/* Center/Right - Platform title */}
-          <div className="flex-1 text-center md:text-right">
+          {/* Center - Platform title */}
+          <div className="flex-1 text-center">
             <div className="text-base md:text-lg font-bold text-gradient-cosmic">
               Pitchfork Protocol
             </div>
           </div>
+          
+          {/* Right - Home Button */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-10 w-10"
+            onClick={() => handleNavigation('/')}
+          >
+            <Home className="h-6 w-6" />
+          </Button>
         </div>
       </div>
     </div>
