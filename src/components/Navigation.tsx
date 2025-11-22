@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building, Home } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -24,6 +25,9 @@ export const Navigation: React.FC<NavigationProps> = ({
   showQuickNav = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   // Organized navigation items by functional groups
   const coreNavItems: NavigationItem[] = [
     { path: '/identity', icon: Shield, label: 'Identity', group: 'core' },
@@ -50,13 +54,8 @@ export const Navigation: React.FC<NavigationProps> = ({
   // Combine all navigation items for backward compatibility
   const allNavItems = [...coreNavItems, ...consciousnessNavItems, ...systemNavItems];
 
-  // Fallback navigation functions that don't require Router context
   const handleNavigation = (path: string) => {
-    window.location.href = path;
-  };
-
-  const handleBack = () => {
-    window.history.back();
+    navigate(path);
   };
 
   return (
@@ -84,7 +83,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                   <div className="space-y-1">
                     {coreNavItems.map((item) => {
                       const Icon = item.icon;
-                      const isActive = window.location.pathname === item.path;
+                      const isActive = location.pathname === item.path;
                       return (
                         <Button
                           key={item.path}
@@ -113,7 +112,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                   <div className="space-y-1">
                     {consciousnessNavItems.map((item) => {
                       const Icon = item.icon;
-                      const isActive = window.location.pathname === item.path;
+                      const isActive = location.pathname === item.path;
                       return (
                         <Button
                           key={item.path}
@@ -142,7 +141,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                   <div className="space-y-1">
                     {systemNavItems.map((item) => {
                       const Icon = item.icon;
-                      const isActive = window.location.pathname === item.path;
+                      const isActive = location.pathname === item.path;
                       return (
                         <Button
                           key={item.path}
