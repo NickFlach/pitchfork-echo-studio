@@ -79,6 +79,9 @@
 		{
 			"name": "SpaceChildCollective",
 			"path": "../SpaceChildCollective"
+		},
+		{
+			"path": "../FerrymanX"
 		}
 	],
 	"settings": {}
