@@ -85,6 +85,9 @@
 		},
 		{
 			"path": "../PFORK_MCP"
+		},
+		{
+			"path": "../PitchforkDex"
 		}
 	],
 	"settings": {}
