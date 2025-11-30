@@ -16,11 +16,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@pitchfork/wallet": "file:../@pitchfork/shared/packages/wallet",
-    "@pitchfork/consciousness": "file:../@pitchfork/shared/packages/consciousness",
-    "@pitchfork/database": "file:../@pitchfork/shared/packages/database",
-    "@pitchfork/mcp-protocol": "file:../@pitchfork/shared/packages/mcp-protocol",
-    "@hookform/resolvers": "^3.10.0",
+    
     "@nomicfoundation/hardhat-ethers": "^3.1.0",
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "@openzeppelin/contracts": "^5.4.0",
