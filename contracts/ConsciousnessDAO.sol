@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./interfaces/IConsciousnessToken.sol";
+import "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import "./interfaces/IConsciousnessIdentity.sol";
 import "./interfaces/ILeadershipSubscription.sol";
 
@@ -120,7 +120,7 @@ contract ConsciousnessDAO is AccessControl, ReentrancyGuard, Pausable {
     mapping(address => uint256) public delegatedVotes;
     mapping(address => address) public delegates;
     
-    IConsciousnessToken public consciousnessToken;
+    IVotes public gPforkToken;
     IConsciousnessIdentity public identityContract;
     ILeadershipSubscription public subscriptionContract;
     
@@ -135,12 +135,12 @@ contract ConsciousnessDAO is AccessControl, ReentrancyGuard, Pausable {
     
     // Voting configuration
     uint256 public constant BASIS_POINTS = 10000;
-    uint256 public constant MIN_PROPOSAL_THRESHOLD = 1000 * 10**18; // 1000 CONS
+    uint256 public constant MIN_PROPOSAL_THRESHOLD = 1000 * 10**18; // 1000 gPFORK
     uint256 public constant MAX_VOTING_PERIOD = 7 days;
     uint256 public constant MIN_QUORUM = 300; // 3%
     
     // Emergency controls
-    bool public emergencyPause;
+    bool public emergencyPaused;
     mapping(address => bool) public emergencyGuardians;
     
     // Events
@@ -155,7 +155,7 @@ contract ConsciousnessDAO is AccessControl, ReentrancyGuard, Pausable {
     event EmergencyActionExecuted(address indexed guardian, string action);
     
     constructor(
-        address _consciousnessToken,
+        address _gPforkToken,
         address _identityContract,
         address _subscriptionContract
     ) {
@@ -165,7 +165,7 @@ contract ConsciousnessDAO is AccessControl, ReentrancyGuard, Pausable {
         _grantRole(EXECUTION_ADMIN_ROLE, msg.sender);
         _grantRole(GUARDIAN_ROLE, msg.sender);
         
-        consciousnessToken = IConsciousnessToken(_consciousnessToken);
+        gPforkToken = IVotes(_gPforkToken);
         identityContract = IConsciousnessIdentity(_identityContract);
         subscriptionContract = ILeadershipSubscription(_subscriptionContract);
         
@@ -349,7 +349,7 @@ contract ConsciousnessDAO is AccessControl, ReentrancyGuard, Pausable {
         require(delegatee != msg.sender, "Cannot delegate to self");
         
         address oldDelegate = delegates[msg.sender];
-        uint256 delegatorBalance = consciousnessToken.totalStakedByUser(msg.sender);
+        uint256 delegatorBalance = gPforkToken.getVotes(msg.sender);
         
         // Remove delegation from old delegate
         if (oldDelegate != address(0)) {
@@ -474,7 +474,7 @@ contract ConsciousnessDAO is AccessControl, ReentrancyGuard, Pausable {
         require(proposalId > 0 && proposalId < currentProposalId, "Invalid proposal ID");
         
         Proposal storage proposal = proposals[proposalId];
-        uint256 totalSupply = consciousnessToken.totalSupply();
+        uint256 totalSupply = IERC20(address(gPforkToken)).totalSupply();
         
         // Calculate quorum
         uint256 requiredQuorum = (totalSupply * proposal.quorumRequired) / BASIS_POINTS;
@@ -521,7 +521,7 @@ contract ConsciousnessDAO is AccessControl, ReentrancyGuard, Pausable {
      * @param reason Reason for emergency pause
      */
     function emergencyPause(string memory reason) external onlyRole(GUARDIAN_ROLE) {
-        emergencyPause = true;
+        emergencyPaused = true;
         _pause();
         emit EmergencyActionExecuted(msg.sender, reason);
     }
@@ -530,18 +530,18 @@ contract ConsciousnessDAO is AccessControl, ReentrancyGuard, Pausable {
      * @notice Emergency unpause
      */
     function emergencyUnpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        emergencyPause = false;
+        emergencyPaused = false;
         _unpause();
     }
     
     // Internal functions
     function _getVotingPower(address account) internal view returns (uint256) {
-        uint256 stakedBalance = consciousnessToken.totalStakedByUser(account);
+        uint256 votesBalance = gPforkToken.getVotes(account);
         uint256 subscriptionPower = subscriptionContract.getVotingPower(account);
         uint256 delegated = delegatedVotes[account];
         
-        // Base voting power from staked tokens (1:1)
-        uint256 totalPower = stakedBalance;
+        // Base voting power from gPFORK votes (1:1)
+        uint256 totalPower = votesBalance;
         
         // Add subscription-based voting power multiplier
         totalPower += subscriptionPower * 100; // Subscription power is significant
@@ -549,18 +549,13 @@ contract ConsciousnessDAO is AccessControl, ReentrancyGuard, Pausable {
         // Add delegated votes
         totalPower += delegated;
         
-        // Consciousness verification bonus (20% increase)
-        if (consciousnessToken.consciousnessVerified(account)) {
-            totalPower = totalPower * 120 / 100;
-        }
-        
         return totalPower;
     }
     
     function _canCreateProposal(address proposer, ProposalCategory category) internal view returns (bool) {
         // Check minimum token requirement
-        uint256 stakedBalance = consciousnessToken.totalStakedByUser(proposer);
-        if (stakedBalance < categoryParameters[category].proposalThreshold) {
+        uint256 votesBalance = gPforkToken.getVotes(proposer);
+        if (votesBalance < categoryParameters[category].proposalThreshold) {
             return false;
         }
         

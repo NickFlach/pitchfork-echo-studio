@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./interfaces/IConsciousnessToken.sol";
 
 /**
  * @title AIServicePayment
@@ -36,10 +35,10 @@ contract AIServicePayment is AccessControl, ReentrancyGuard, Pausable {
     struct ServiceConfig {
         uint256 baseCostPerQuery;
         uint256 maxQueriesPerDay;
-        uint256 discountForCONSHolders;
+        uint256 discountForStakers;
         bool isActive;
         string serviceName;
-        uint256 minimumStakeRequired; // Minimum CONS tokens staked for access
+        uint256 minimumStakeRequired; // Minimum gPFORK tokens (staked PFORK) for access
     }
     
     struct UserAccount {
@@ -77,7 +76,8 @@ contract AIServicePayment is AccessControl, ReentrancyGuard, Pausable {
     mapping(bytes32 => PaymentRecord) public paymentRecords;
     
     // Platform settings
-    IConsciousnessToken public consciousnessToken;
+    IERC20 public pforkToken;
+    IERC20 public gPforkToken;
     address public treasuryAddress;
     uint256 public platformFeePercentage = 500; // 5% in basis points
     uint256 public constant MAX_DAILY_QUERIES = 1000;
@@ -98,7 +98,8 @@ contract AIServicePayment is AccessControl, ReentrancyGuard, Pausable {
     event EmergencyWithdrawal(address indexed token, uint256 amount);
     
     constructor(
-        address _consciousnessToken,
+        address _pforkToken,
+        address _gPforkToken,
         address _treasuryAddress
     ) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -106,7 +107,8 @@ contract AIServicePayment is AccessControl, ReentrancyGuard, Pausable {
         _grantRole(BILLING_ADMIN_ROLE, msg.sender);
         _grantRole(REFUND_MANAGER_ROLE, msg.sender);
         
-        consciousnessToken = IConsciousnessToken(_consciousnessToken);
+        pforkToken = IERC20(_pforkToken);
+        gPforkToken = IERC20(_gPforkToken);
         treasuryAddress = _treasuryAddress;
         
         _initializeServices();
@@ -313,7 +315,7 @@ contract AIServicePayment is AccessControl, ReentrancyGuard, Pausable {
         ServiceConfig storage config = serviceConfigs[serviceType];
         config.baseCostPerQuery = baseCost;
         config.maxQueriesPerDay = maxQueries;
-        config.discountForCONSHolders = discount;
+        config.discountForStakers = discount;
         config.isActive = isActive;
         config.serviceName = serviceName;
         config.minimumStakeRequired = minimumStake;
@@ -389,10 +391,10 @@ contract AIServicePayment is AccessControl, ReentrancyGuard, Pausable {
         if (!userAccounts[user].isActive) return (false, "Account not active");
         if (!serviceConfigs[serviceType].isActive) return (false, "Service not active");
         
-        // Check CONS staking requirement
-        uint256 stakedAmount = consciousnessToken.totalStakedByUser(user);
+        // Check gPFORK staking requirement
+        uint256 stakedAmount = gPforkToken.balanceOf(user);
         if (stakedAmount < serviceConfigs[serviceType].minimumStakeRequired) {
-            return (false, "Insufficient CONS tokens staked");
+            return (false, "Insufficient gPFORK tokens (staked PFORK)");
         }
         
         // Check daily limits
@@ -421,16 +423,11 @@ contract AIServicePayment is AccessControl, ReentrancyGuard, Pausable {
     function _calculateServiceCost(address user, ServiceType serviceType) internal view returns (uint256) {
         uint256 baseCost = serviceConfigs[serviceType].baseCostPerQuery;
         
-        // Apply CONS holder discount
-        uint256 stakedAmount = consciousnessToken.totalStakedByUser(user);
+        // Apply staker discount based on gPFORK balance
+        uint256 stakedAmount = gPforkToken.balanceOf(user);
         if (stakedAmount > 0) {
-            uint256 discount = serviceConfigs[serviceType].discountForCONSHolders;
+            uint256 discount = serviceConfigs[serviceType].discountForStakers;
             baseCost = baseCost * (10000 - discount) / 10000;
-        }
-        
-        // Additional discount for verified consciousness
-        if (consciousnessToken.consciousnessVerified(user)) {
-            baseCost = baseCost * 9000 / 10000; // 10% additional discount
         }
         
         return baseCost;
@@ -460,10 +457,10 @@ contract AIServicePayment is AccessControl, ReentrancyGuard, Pausable {
             ServiceConfig storage config = serviceConfigs[ServiceType(i)];
             config.baseCostPerQuery = (i + 1) * 10**16; // 0.01 ETH base, increasing
             config.maxQueriesPerDay = 100 - (i * 10); // Decreasing limits for premium services
-            config.discountForCONSHolders = 1000 + (i * 500); // 10-45% discount range
+            config.discountForStakers = 1000 + (i * 500); // 10-45% discount range
             config.isActive = true;
             config.serviceName = services[i];
-            config.minimumStakeRequired = (i + 1) * 100 * 10**18; // 100-800 CONS staking requirement
+            config.minimumStakeRequired = (i + 1) * 100 * 10**18; // 100-800 gPFORK staking requirement
         }
     }
     
@@ -473,9 +470,9 @@ contract AIServicePayment is AccessControl, ReentrancyGuard, Pausable {
         tokenNames[address(0)] = "Ethereum";
         tokenDecimals[address(0)] = 18;
         
-        // CONS token support
-        supportedTokens[address(consciousnessToken)] = true;
-        tokenNames[address(consciousnessToken)] = "Consciousness Token";
-        tokenDecimals[address(consciousnessToken)] = 18;
+        // PFORK token support
+        supportedTokens[address(pforkToken)] = true;
+        tokenNames[address(pforkToken)] = "Pitchfork Token";
+        tokenDecimals[address(pforkToken)] = 18;
     }
 }

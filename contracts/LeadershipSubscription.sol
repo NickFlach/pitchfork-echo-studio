@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./interfaces/IConsciousnessToken.sol";
 import "./interfaces/IConsciousnessAchievements.sol";
 
 /**
@@ -71,7 +70,7 @@ contract LeadershipSubscription is AccessControl, ReentrancyGuard, Pausable {
     mapping(address => bool) public supportedPaymentTokens;
     mapping(address => RevenueShare) public revenueShares;
     
-    IConsciousnessToken public consciousnessToken;
+    IERC20 public pforkToken;
     IConsciousnessAchievements public achievementContract;
     
     address[] public stakeholders;
@@ -102,7 +101,7 @@ contract LeadershipSubscription is AccessControl, ReentrancyGuard, Pausable {
     event PaymentTokenUpdated(address indexed token, bool supported);
     
     constructor(
-        address _consciousnessToken,
+        address _pforkToken,
         address _achievementContract
     ) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -110,7 +109,7 @@ contract LeadershipSubscription is AccessControl, ReentrancyGuard, Pausable {
         _grantRole(REVENUE_MANAGER_ROLE, msg.sender);
         _grantRole(GOVERNANCE_ADMIN_ROLE, msg.sender);
         
-        consciousnessToken = IConsciousnessToken(_consciousnessToken);
+        pforkToken = IERC20(_pforkToken);
         achievementContract = IConsciousnessAchievements(_achievementContract);
         
         _initializeTierConfigs();
@@ -432,8 +431,8 @@ contract LeadershipSubscription is AccessControl, ReentrancyGuard, Pausable {
         
         pendingPayouts[msg.sender] = 0;
         
-        // For simplicity, assume CONS token payouts
-        consciousnessToken.transfer(msg.sender, amount);
+        // PFORK token payouts
+        pforkToken.safeTransfer(msg.sender, amount);
     }
     
     /**
