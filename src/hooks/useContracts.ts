@@ -18,13 +18,14 @@ export const useContracts = () => {
   return contractService;
 };
 
-export const useConsciousnessToken = () => {
+export const usePforkToken = () => {
   const contractService = useContracts();
   const { account } = useWeb3();
   
   const [balance, setBalance] = useState<string>('0');
   const [stakedBalance, setStakedBalance] = useState<string>('0');
   const [pendingRewards, setPendingRewards] = useState<string>('0');
+  const [votes, setVotes] = useState<string>('0');
   const [loading, setLoading] = useState(false);
 
   const fetchBalances = async () => {
@@ -32,15 +33,17 @@ export const useConsciousnessToken = () => {
     
     setLoading(true);
     try {
-      const [tokenBalance, staked, rewards] = await Promise.all([
-        contractService.getTokenBalance(account),
-        contractService.getStakedBalance(account),
+      const [pforkBalance, gpforkBalance, rewards, votingPower] = await Promise.all([
+        contractService.getPforkBalance(account),
+        contractService.getGpforkBalance(account),
         contractService.getPendingRewards(account),
+        contractService.getVotes(account),
       ]);
       
-      setBalance(tokenBalance);
-      setStakedBalance(staked);
+      setBalance(pforkBalance);
+      setStakedBalance(gpforkBalance);
       setPendingRewards(rewards);
+      setVotes(votingPower);
     } catch (error) {
       console.error('Error fetching token balances:', error);
     } finally {
@@ -52,9 +55,14 @@ export const useConsciousnessToken = () => {
     fetchBalances();
   }, [contractService, account]);
 
-  const stake = async (amount: string, lockPeriod: number) => {
+  const stake = async (amount: string) => {
     if (!contractService) throw new Error('Contract service not available');
-    return await contractService.stakeTokens(amount, lockPeriod);
+    return await contractService.stakeTokens(amount);
+  };
+
+  const unstake = async (amount: string) => {
+    if (!contractService) throw new Error('Contract service not available');
+    return await contractService.unstakeTokens(amount);
   };
 
   const claimRewards = async () => {
@@ -62,16 +70,33 @@ export const useConsciousnessToken = () => {
     return await contractService.claimRewards();
   };
 
+  const exit = async () => {
+    if (!contractService) throw new Error('Contract service not available');
+    return await contractService.exitStaking();
+  };
+
+  const delegate = async (delegatee: string) => {
+    if (!contractService) throw new Error('Contract service not available');
+    return await contractService.delegateVotes(delegatee);
+  };
+
   return {
     balance,
     stakedBalance,
     pendingRewards,
+    votes,
     loading,
     stake,
+    unstake,
     claimRewards,
+    exit,
+    delegate,
     refetch: fetchBalances,
   };
 };
+
+// Alias for backward compatibility
+export const useConsciousnessToken = usePforkToken;
 
 export const useAchievements = () => {
   const contractService = useContracts();
