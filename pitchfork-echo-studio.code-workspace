@@ -88,6 +88,12 @@
 		},
 		{
 			"path": "../PitchforkDex"
+		},
+		{
+			"path": "../0xSCADA"
+		},
+		{
+			"path": "../blueprints"
 		}
 	],
 	"settings": {}
