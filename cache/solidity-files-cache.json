@@ -44,45 +44,6 @@
         "AIServicePayment"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\interfaces\\IConsciousnessToken.sol": {
-      "lastModificationDate": 1758554106851,
-      "contentHash": "d21134ac53efd790462a7c9665554fa5",
-      "sourceName": "contracts/interfaces/IConsciousnessToken.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC20/IERC20.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "IConsciousnessToken"
-      ]
-    },
     "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Pausable.sol": {
       "lastModificationDate": 1759549275909,
       "contentHash": "0d47b53e10b1985efbb396f937626279",
@@ -1802,50 +1763,6 @@
         "ERC20Votes"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\ConsciousnessToken.sol": {
-      "lastModificationDate": 1758554106834,
-      "contentHash": "e57324e03e8403b9546a2172aa625f6e",
-      "sourceName": "contracts/ConsciousnessToken.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
-        "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol",
-        "@openzeppelin/contracts/access/AccessControl.sol",
-        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
-        "@openzeppelin/contracts/utils/Pausable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "ConsciousnessToken"
-      ]
-    },
     "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\LeadershipSubscription.sol": {
       "lastModificationDate": 1767086528051,
       "contentHash": "10c450ed83f572c6351c29ec68d8b54d",
@@ -2209,80 +2126,6 @@
       ],
       "artifacts": [
         "IConsciousnessDAO"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\PitchforkFunding.sol": {
-      "lastModificationDate": 1767085111010,
-      "contentHash": "d271e7a311b4422247ba546ceab32e43",
-      "sourceName": "contracts/PitchforkFunding.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "PitchforkFunding"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\PitchforkGovernance.sol": {
-      "lastModificationDate": 1767085123731,
-      "contentHash": "58fcf3abdb2353a529065fa1caee348c",
-      "sourceName": "contracts/PitchforkGovernance.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "PitchforkGovernance"
       ]
     },
     "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol": {
