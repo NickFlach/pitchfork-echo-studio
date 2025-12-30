@@ -3,30 +3,87 @@ import { BrowserProvider, JsonRpcSigner } from 'ethers';
 
 // Contract addresses (will be populated after deployment)
 export const CONTRACT_ADDRESSES = {
-  CONSCIOUSNESS_TOKEN: process.env.VITE_CONSCIOUSNESS_TOKEN_ADDRESS || '',
+  // Core tokens
+  PFORK_TOKEN: process.env.VITE_PFORK_TOKEN_ADDRESS || '0x216490C8E6b33b4d8A2390dADcf9f433E30da60F', // NEO X mainnet
+  GPFORK_TOKEN: process.env.VITE_GPFORK_TOKEN_ADDRESS || '',
+  
+  // Governance
+  GOVERNOR: process.env.VITE_GOVERNOR_ADDRESS || '',
+  TIMELOCK: process.env.VITE_TIMELOCK_ADDRESS || '',
+  
+  // Application contracts
   NFT_ACHIEVEMENTS: process.env.VITE_NFT_ACHIEVEMENTS_ADDRESS || '',
   AI_PAYMENT: process.env.VITE_AI_PAYMENT_ADDRESS || '',
   SUBSCRIPTION: process.env.VITE_SUBSCRIPTION_ADDRESS || '',
   IDENTITY: process.env.VITE_IDENTITY_ADDRESS || '',
-  DAO_GOVERNANCE: process.env.VITE_DAO_GOVERNANCE_ADDRESS || '',
+  DAO_GOVERNANCE: process.env.VITE_DAO_GOVERNANCE_ADDRESS || '', // Legacy ConsciousnessDAO
 };
 
 // Contract ABIs (simplified for frontend use)
 export const CONTRACT_ABIS = {
-  CONSCIOUSNESS_TOKEN: [
+  // PFORK is a standard ERC20 token
+  PFORK_TOKEN: [
     'function balanceOf(address owner) view returns (uint256)',
-    'function totalStakedByUser(address user) view returns (uint256)',
-    'function consciousnessVerified(address user) view returns (bool)',
-    'function stake(uint256 amount, uint256 lockPeriod)',
-    'function unstake(uint256 positionId)',
-    'function claimRewards()',
-    'function getPendingRewards(address user) view returns (uint256)',
-    'function getStakingPositions(address user) view returns (tuple(uint256,uint256,uint256,uint256,bool)[])',
+    'function totalSupply() view returns (uint256)',
     'function approve(address spender, uint256 amount) returns (bool)',
     'function transfer(address to, uint256 amount) returns (bool)',
-    'event Staked(address indexed user, uint256 amount, uint256 lockPeriod, uint256 positionId)',
-    'event Unstaked(address indexed user, uint256 amount, uint256 positionId)',
-    'event RewardsClaimed(address indexed user, uint256 amount)',
+    'function allowance(address owner, address spender) view returns (uint256)',
+    'event Transfer(address indexed from, address indexed to, uint256 value)',
+    'event Approval(address indexed owner, address indexed spender, uint256 value)',
+  ],
+  
+  // gPFORK is the staking/voting wrapper with rewards
+  GPFORK_TOKEN: [
+    'function balanceOf(address owner) view returns (uint256)',
+    'function totalSupply() view returns (uint256)',
+    'function getVotes(address account) view returns (uint256)',
+    'function delegates(address account) view returns (address)',
+    'function delegate(address delegatee)',
+    'function stake(uint256 amount)',
+    'function unstake(uint256 amount)',
+    'function claimRewards()',
+    'function exit()',
+    'function earned(address account) view returns (uint256)',
+    'function rewardRate() view returns (uint256)',
+    'function rewardsDuration() view returns (uint256)',
+    'function periodFinish() view returns (uint256)',
+    'event Staked(address indexed user, uint256 amount)',
+    'event Unstaked(address indexed user, uint256 amount)',
+    'event RewardPaid(address indexed user, uint256 reward)',
+  ],
+  
+  // OZ Governor
+  GOVERNOR: [
+    'function name() view returns (string)',
+    'function proposalThreshold() view returns (uint256)',
+    'function votingDelay() view returns (uint256)',
+    'function votingPeriod() view returns (uint256)',
+    'function quorum(uint256 blockNumber) view returns (uint256)',
+    'function state(uint256 proposalId) view returns (uint8)',
+    'function proposalSnapshot(uint256 proposalId) view returns (uint256)',
+    'function proposalDeadline(uint256 proposalId) view returns (uint256)',
+    'function proposalProposer(uint256 proposalId) view returns (address)',
+    'function hasVoted(uint256 proposalId, address account) view returns (bool)',
+    'function getVotes(address account, uint256 blockNumber) view returns (uint256)',
+    'function propose(address[] targets, uint256[] values, bytes[] calldatas, string description) returns (uint256)',
+    'function castVote(uint256 proposalId, uint8 support) returns (uint256)',
+    'function castVoteWithReason(uint256 proposalId, uint8 support, string reason) returns (uint256)',
+    'function queue(address[] targets, uint256[] values, bytes[] calldatas, bytes32 descriptionHash) returns (uint256)',
+    'function execute(address[] targets, uint256[] values, bytes[] calldatas, bytes32 descriptionHash) returns (uint256)',
+    'event ProposalCreated(uint256 proposalId, address proposer, address[] targets, uint256[] values, string[] signatures, bytes[] calldatas, uint256 startBlock, uint256 endBlock, string description)',
+    'event VoteCast(address indexed voter, uint256 proposalId, uint8 support, uint256 weight, string reason)',
+  ],
+  
+  // OZ TimelockController
+  TIMELOCK: [
+    'function getMinDelay() view returns (uint256)',
+    'function isOperation(bytes32 id) view returns (bool)',
+    'function isOperationPending(bytes32 id) view returns (bool)',
+    'function isOperationReady(bytes32 id) view returns (bool)',
+    'function isOperationDone(bytes32 id) view returns (bool)',
+    'function getTimestamp(bytes32 id) view returns (uint256)',
+    'event CallScheduled(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data, bytes32 predecessor, uint256 delay)',
+    'event CallExecuted(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data)',
   ],
   
   NFT_ACHIEVEMENTS: [
@@ -191,44 +248,92 @@ export class ContractService {
     return this.contracts.get(name) || null;
   }
 
-  // Consciousness Token methods
-  async getTokenBalance(userAddress: string): Promise<string> {
-    const contract = this.getContract('CONSCIOUSNESS_TOKEN');
-    if (!contract) throw new Error('Contract not available');
+  // PFORK Token methods (standard ERC20)
+  async getPforkBalance(userAddress: string): Promise<string> {
+    const contract = this.getContract('PFORK_TOKEN');
+    if (!contract) throw new Error('PFORK contract not available');
     
     const balance = await contract.balanceOf(userAddress);
     return ethers.formatEther(balance);
   }
 
-  async getStakedBalance(userAddress: string): Promise<string> {
-    const contract = this.getContract('CONSCIOUSNESS_TOKEN');
-    if (!contract) throw new Error('Contract not available');
+  async approvePfork(spender: string, amount: string): Promise<ethers.ContractTransactionResponse> {
+    const contract = this.getContract('PFORK_TOKEN');
+    if (!contract || !this.signer) throw new Error('PFORK contract or signer not available');
     
-    const staked = await contract.totalStakedByUser(userAddress);
-    return ethers.formatEther(staked);
+    const amountWei = ethers.parseEther(amount);
+    return await contract.approve(spender, amountWei);
+  }
+
+  // gPFORK Token methods (staking + voting + rewards)
+  async getGpforkBalance(userAddress: string): Promise<string> {
+    const contract = this.getContract('GPFORK_TOKEN');
+    if (!contract) throw new Error('gPFORK contract not available');
+    
+    const balance = await contract.balanceOf(userAddress);
+    return ethers.formatEther(balance);
+  }
+
+  async getVotes(userAddress: string): Promise<string> {
+    const contract = this.getContract('GPFORK_TOKEN');
+    if (!contract) throw new Error('gPFORK contract not available');
+    
+    const votes = await contract.getVotes(userAddress);
+    return ethers.formatEther(votes);
   }
 
   async getPendingRewards(userAddress: string): Promise<string> {
-    const contract = this.getContract('CONSCIOUSNESS_TOKEN');
-    if (!contract) throw new Error('Contract not available');
+    const contract = this.getContract('GPFORK_TOKEN');
+    if (!contract) throw new Error('gPFORK contract not available');
     
-    const rewards = await contract.getPendingRewards(userAddress);
+    const rewards = await contract.earned(userAddress);
     return ethers.formatEther(rewards);
   }
 
-  async stakeTokens(amount: string, lockPeriod: number): Promise<ethers.ContractTransactionResponse> {
-    const contract = this.getContract('CONSCIOUSNESS_TOKEN');
-    if (!contract || !this.signer) throw new Error('Contract or signer not available');
+  async stakeTokens(amount: string): Promise<ethers.ContractTransactionResponse> {
+    const contract = this.getContract('GPFORK_TOKEN');
+    if (!contract || !this.signer) throw new Error('gPFORK contract or signer not available');
     
     const amountWei = ethers.parseEther(amount);
-    return await contract.stake(amountWei, lockPeriod);
+    return await contract.stake(amountWei);
+  }
+
+  async unstakeTokens(amount: string): Promise<ethers.ContractTransactionResponse> {
+    const contract = this.getContract('GPFORK_TOKEN');
+    if (!contract || !this.signer) throw new Error('gPFORK contract or signer not available');
+    
+    const amountWei = ethers.parseEther(amount);
+    return await contract.unstake(amountWei);
   }
 
   async claimRewards(): Promise<ethers.ContractTransactionResponse> {
-    const contract = this.getContract('CONSCIOUSNESS_TOKEN');
-    if (!contract || !this.signer) throw new Error('Contract or signer not available');
+    const contract = this.getContract('GPFORK_TOKEN');
+    if (!contract || !this.signer) throw new Error('gPFORK contract or signer not available');
     
     return await contract.claimRewards();
+  }
+
+  async exitStaking(): Promise<ethers.ContractTransactionResponse> {
+    const contract = this.getContract('GPFORK_TOKEN');
+    if (!contract || !this.signer) throw new Error('gPFORK contract or signer not available');
+    
+    return await contract.exit();
+  }
+
+  async delegateVotes(delegatee: string): Promise<ethers.ContractTransactionResponse> {
+    const contract = this.getContract('GPFORK_TOKEN');
+    if (!contract || !this.signer) throw new Error('gPFORK contract or signer not available');
+    
+    return await contract.delegate(delegatee);
+  }
+
+  // Combined balance helper for UI
+  async getTokenBalance(userAddress: string): Promise<string> {
+    return this.getPforkBalance(userAddress);
+  }
+
+  async getStakedBalance(userAddress: string): Promise<string> {
+    return this.getGpforkBalance(userAddress);
   }
 
   // NFT Achievement methods

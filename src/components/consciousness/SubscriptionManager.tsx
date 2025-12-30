@@ -75,7 +75,7 @@ export const SubscriptionManager = () => {
   
   const [selectedTier, setSelectedTier] = useState<SubscriptionTier>(SubscriptionTier.BASIC);
   const [isAnnual, setIsAnnual] = useState(false);
-  const [paymentToken, setPaymentToken] = useState('CONS');
+  const [paymentToken, setPaymentToken] = useState('PFORK');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [featureAccess, setFeatureAccess] = useState<Record<string, boolean>>({});
 

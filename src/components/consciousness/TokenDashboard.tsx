@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { useConsciousnessToken } from '@/hooks/useContracts';
+import { usePforkToken } from '@/hooks/useContracts';
 import { useToast } from '@/hooks/use-toast';
 import { Coins, TrendingUp, Clock, Zap } from 'lucide-react';
 
@@ -19,7 +19,7 @@ const LOCK_PERIODS = [
 ];
 
 export const TokenDashboard = () => {
-  const { balance, stakedBalance, pendingRewards, loading, stake, claimRewards, refetch } = useConsciousnessToken();
+  const { balance, stakedBalance, pendingRewards, votes, loading, stake, claimRewards, refetch } = usePforkToken();
   const { toast } = useToast();
   
   const [stakeAmount, setStakeAmount] = useState('');
@@ -43,7 +43,7 @@ export const TokenDashboard = () => {
 
     setIsStaking(true);
     try {
-      const tx = await stake(stakeAmount, parseInt(selectedLockPeriod));
+      const tx = await stake(stakeAmount);
       
       toast({
         title: 'Staking Transaction Submitted',
@@ -54,7 +54,7 @@ export const TokenDashboard = () => {
       
       toast({
         title: 'Staking Successful',
-        description: `Successfully staked ${stakeAmount} CONS tokens`,
+        description: `Successfully staked ${stakeAmount} PFORK → gPFORK`,
       });
 
       setStakeAmount('');
@@ -94,7 +94,7 @@ export const TokenDashboard = () => {
       
       toast({
         title: 'Rewards Claimed',
-        description: `Successfully claimed ${pendingRewards} CONS tokens`,
+        description: `Successfully claimed ${pendingRewards} PFORK rewards`,
       });
 
       await refetch();
@@ -124,7 +124,7 @@ export const TokenDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" data-testid="available-balance">
-              {parseFloat(balance).toFixed(4)} CONS
+              {parseFloat(balance).toFixed(4)} PFORK
             </div>
             <p className="text-xs text-muted-foreground">Ready to stake or use</p>
           </CardContent>
@@ -137,7 +137,7 @@ export const TokenDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" data-testid="staked-balance">
-              {parseFloat(stakedBalance).toFixed(4)} CONS
+              {parseFloat(stakedBalance).toFixed(4)} gPFORK
             </div>
             <p className="text-xs text-muted-foreground">Earning rewards</p>
           </CardContent>
@@ -150,7 +150,7 @@ export const TokenDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600" data-testid="pending-rewards">
-              {parseFloat(pendingRewards).toFixed(4)} CONS
+              {parseFloat(pendingRewards).toFixed(4)} PFORK
             </div>
             <p className="text-xs text-muted-foreground">Ready to claim</p>
           </CardContent>
@@ -175,9 +175,9 @@ export const TokenDashboard = () => {
         {/* Staking Interface */}
         <Card>
           <CardHeader>
-            <CardTitle>Stake CONS Tokens</CardTitle>
+            <CardTitle>Stake PFORK → gPFORK</CardTitle>
             <CardDescription>
-              Stake your tokens to earn rewards and gain governance voting power
+              Stake PFORK to receive gPFORK, earn rewards, and gain governance voting power
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -193,7 +193,7 @@ export const TokenDashboard = () => {
                 data-testid="input-stake-amount"
               />
               <p className="text-sm text-muted-foreground">
-                Available: {parseFloat(balance).toFixed(4)} CONS
+                PFORK Rewards Available: {parseFloat(balance).toFixed(4)} PFORK
               </p>
             </div>
 
@@ -221,7 +221,7 @@ export const TokenDashboard = () => {
             {stakeAmount && (
               <div className="p-3 bg-muted rounded-lg">
                 <p className="text-sm">
-                  <strong>Estimated Annual Reward:</strong> {estimatedReward} CONS
+                  <strong>Estimated Annual Reward:</strong> {estimatedReward} PFORK
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Based on 5% base APY with {selectedPeriod?.multiplier}x multiplier
@@ -253,7 +253,7 @@ export const TokenDashboard = () => {
               <div className="text-3xl font-bold text-green-600 mb-2">
                 {parseFloat(pendingRewards).toFixed(4)}
               </div>
-              <p className="text-sm text-muted-foreground mb-4">CONS Rewards Available</p>
+              <p className="text-sm text-muted-foreground mb-4">PFORK Rewards Available</p>
               <Button
                 onClick={handleClaimRewards}
                 disabled={isClaiming || parseFloat(pendingRewards) <= 0}
@@ -271,7 +271,7 @@ export const TokenDashboard = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Total Staked</span>
-                <span className="text-sm font-medium">{parseFloat(stakedBalance).toFixed(4)} CONS</span>
+                <span className="text-sm font-medium">{parseFloat(stakedBalance).toFixed(4)} gPFORK</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Rewards Multiplier</span>
