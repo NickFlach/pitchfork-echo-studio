@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-import "./interfaces/IConsciousnessToken.sol";
 import "./interfaces/IConsciousnessAchievements.sol";
 
 /**
@@ -101,7 +100,6 @@ contract ConsciousnessIdentity is AccessControl, ReentrancyGuard, Pausable {
     mapping(address => uint256) public verificationScores;
     mapping(CredentialType => uint256) public minimumScoresRequired;
     
-    IConsciousnessToken public consciousnessToken;
     IConsciousnessAchievements public achievementsContract;
     
     // Platform settings
@@ -126,7 +124,6 @@ contract ConsciousnessIdentity is AccessControl, ReentrancyGuard, Pausable {
     event VerificationLevelUpgraded(address indexed user, VerificationLevel oldLevel, VerificationLevel newLevel);
     
     constructor(
-        address _consciousnessToken,
         address _achievementsContract
     ) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -135,7 +132,6 @@ contract ConsciousnessIdentity is AccessControl, ReentrancyGuard, Pausable {
         _grantRole(ENTERPRISE_ADMIN_ROLE, msg.sender);
         _grantRole(PRIVACY_GUARDIAN_ROLE, msg.sender);
         
-        consciousnessToken = IConsciousnessToken(_consciousnessToken);
         achievementsContract = IConsciousnessAchievements(_achievementsContract);
         
         _initializeMinimumScores();
@@ -289,9 +285,6 @@ contract ConsciousnessIdentity is AccessControl, ReentrancyGuard, Pausable {
         identities[user].consciousnessScore = newScore;
         identities[user].lastScoreUpdate = block.timestamp;
         identities[user].lastUpdated = block.timestamp;
-        
-        // Update consciousness token contract
-        consciousnessToken.setConsciousnessVerified(user, newScore >= 500);
         
         // Update achievements contract
         achievementsContract.updateConsciousnessScore(user, newScore);
