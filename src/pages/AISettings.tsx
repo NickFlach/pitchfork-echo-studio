@@ -76,6 +76,7 @@ const aiSettingsFormSchema = insertAISettingsSchema.extend({
     gemini: z.string().optional(),
     xai: z.string().optional(),
     litellm: z.string().optional(),
+    lovable: z.string().optional(),
   }).optional(),
   // Add base URLs for custom endpoints
   baseUrls: z.object({
@@ -172,6 +173,22 @@ const PROVIDER_INFO = {
     leadershipUseCase: 'Allows strategic model selection based on specific campaign needs and budget',
     pricing: { model: 'various', inputPrice: 'varies', outputPrice: 'varies', currency: 'depends on proxied model' },
     testPrompt: 'Test custom model configuration for consciousness and leadership applications',
+  },
+  lovable: {
+    name: 'Lovable AI',
+    description: 'Lovable AI Gateway - Access to Gemini & GPT-5 models with no API key required',
+    models: ['google/gemini-2.5-flash', 'google/gemini-2.5-pro', 'openai/gpt-5', 'openai/gpt-5-mini'],
+    apiKeyUrl: '',
+    defaultModel: 'google/gemini-2.5-flash',
+    requiresApiKey: false,
+    requiresBaseUrl: false as const,
+    defaultBaseUrl: undefined as string | undefined,
+    strengths: ['No API key required', 'Built-in rate limiting', 'Multi-model access', 'Seamless integration'],
+    bestFor: ['Quick integration', 'Production apps', 'Cost-effective AI'],
+    consciousnessUseCase: 'Seamless AI integration for consciousness exploration without configuration',
+    leadershipUseCase: 'Ready-to-use AI for campaign strategies with automatic model routing',
+    pricing: { model: 'gemini-2.5-flash', inputPrice: 0.0, outputPrice: 0.0, currency: 'Included with Lovable' },
+    testPrompt: 'Analyze consciousness development strategies for social movements',
   },
 } as const;
 

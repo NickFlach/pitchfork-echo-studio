@@ -8,6 +8,7 @@ import { ClaudeAdapter } from './providers/ClaudeAdapter';
 import { GeminiAdapter } from './providers/GeminiAdapter';
 import { XAIAdapter } from './providers/XAIAdapter';
 import { LiteLLMAdapter } from './providers/LiteLLMAdapter';
+import { LovableAIAdapter } from './providers/LovableAIAdapter';
 
 /**
  * Main AI Service Manager - handles routing, fallbacks, and provider selection
@@ -50,6 +51,7 @@ export class AIServiceManager {
       
       // Initialize providers with stored credentials or fallback to env vars
       const providers = [
+        { name: 'lovable' as AIProvider, envKey: 'LOVABLE_API_KEY', AdapterClass: LovableAIAdapter },
         { name: 'openai' as AIProvider, envKey: 'OPENAI_API_KEY', AdapterClass: OpenAIAdapter },
         { name: 'claude' as AIProvider, envKey: 'ANTHROPIC_API_KEY', AdapterClass: ClaudeAdapter },
         { name: 'gemini' as AIProvider, envKey: 'GOOGLE_AI_API_KEY', AdapterClass: GeminiAdapter },
@@ -119,6 +121,9 @@ export class AIServiceManager {
       let adapter: AIProviderAdapter;
 
       switch (provider) {
+        case 'lovable':
+          adapter = new LovableAIAdapter(apiKey);
+          break;
         case 'openai':
           adapter = new OpenAIAdapter(apiKey);
           break;
@@ -158,8 +163,8 @@ export class AIServiceManager {
           id: 'default',
           mode: 'direct',
           routing: {
-            primary: 'openai',
-            fallbacks: ['claude', 'gemini'],
+            primary: 'lovable',
+            fallbacks: ['openai', 'claude', 'gemini'],
             timeoutMs: 30000,
             retry: {
               maxAttempts: 3,
