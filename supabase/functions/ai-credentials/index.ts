@@ -33,6 +33,11 @@ serve(async (req) => {
       // Return masked credentials showing which providers are configured
       const maskedCredentials: MaskedCredential[] = [
         {
+          provider: 'lovable',
+          hasApiKey: !!Deno.env.get('LOVABLE_API_KEY'),
+          lastUpdated: new Date().toISOString()
+        },
+        {
           provider: 'openai',
           hasApiKey: !!Deno.env.get('OPENAI_API_KEY'),
           lastUpdated: new Date().toISOString()
