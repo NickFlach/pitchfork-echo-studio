@@ -103,7 +103,7 @@ export type Donation = z.infer<typeof donationSchema>;
 export type InsertDonation = z.infer<typeof insertDonationSchema>;
 
 // AI Settings Models
-export const AIProviderEnum = z.enum(['openai', 'claude', 'gemini', 'xai', 'litellm']);
+export const AIProviderEnum = z.enum(['openai', 'claude', 'gemini', 'xai', 'litellm', 'lovable']);
 export type AIProvider = z.infer<typeof AIProviderEnum>;
 
 export const aiModelConfigSchema = z.object({
