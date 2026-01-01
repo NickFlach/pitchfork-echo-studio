@@ -26,6 +26,7 @@ const Consciousness = lazy(() => import("./pages/Consciousness"));
 const AISettings = lazy(() => import("./pages/AISettings"));
 const ProviderHealthDashboard = lazy(() => import("./pages/ProviderHealthDashboard"));
 const PerformanceMonitor = lazy(() => import("./pages/PerformanceMonitor"));
+const DecentralizationDashboard = lazy(() => import("./pages/DecentralizationDashboard"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -86,6 +87,7 @@ const App = () => (
                   <Route path="/ai-settings" element={<AISettings />} />
                   <Route path="/provider-health" element={<ProviderHealthDashboard />} />
                   <Route path="/performance" element={<PerformanceMonitor />} />
+                  <Route path="/decentralization" element={<DecentralizationDashboard />} />
 
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
