@@ -1,0 +1,652 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IDecentralizationMetrics",
+  "sourceName": "contracts/interfaces/IDecentralizationMetrics.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "enum IDecentralizationMetrics.MetricType",
+          "name": "metricType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "currentValue",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "threshold",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IDecentralizationMetrics.HealthStatus",
+          "name": "severity",
+          "type": "uint8"
+        }
+      ],
+      "name": "ConcentrationAlert",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "enum IDecentralizationMetrics.HealthStatus",
+          "name": "oldStatus",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IDecentralizationMetrics.HealthStatus",
+          "name": "newStatus",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "HealthStatusChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "enum IDecentralizationMetrics.MetricType",
+          "name": "metricType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "oldThreshold",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newThreshold",
+          "type": "uint256"
+        }
+      ],
+      "name": "MetricThresholdUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "blockNumber",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "nakamoto",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "gini",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "hhi",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IDecentralizationMetrics.HealthStatus",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "name": "MetricsUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "analyzeDistribution",
+      "outputs": [
+        {
+          "internalType": "uint256[7]",
+          "name": "percentiles",
+          "type": "uint256[7]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "calculateMetrics",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "nakamotoCoefficient",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "giniCoefficient",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hhiIndex",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "topOnePercent",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "topTenPercent",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "topFiftyPercent",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "uniqueHolders",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "activeVoters",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "averageTurnout",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "uniqueProposers",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "delegationRate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "avgDelegationChain",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxDelegationConcentration",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum IDecentralizationMetrics.HealthStatus",
+              "name": "overallHealth",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "decentralizationScore",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IDecentralizationMetrics.FullMetrics",
+          "name": "metrics",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getCurrentMetrics",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "nakamotoCoefficient",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "giniCoefficient",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hhiIndex",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "topOnePercent",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "topTenPercent",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "topFiftyPercent",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "uniqueHolders",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "activeVoters",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "averageTurnout",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "uniqueProposers",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "delegationRate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "avgDelegationChain",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxDelegationConcentration",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum IDecentralizationMetrics.HealthStatus",
+              "name": "overallHealth",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "decentralizationScore",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IDecentralizationMetrics.FullMetrics",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getDecentralizationScore",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getHealthStatus",
+      "outputs": [
+        {
+          "internalType": "enum IDecentralizationMetrics.HealthStatus",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "fromTimestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "toTimestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "getHistoricalMetrics",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nakamoto",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "gini",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "decentralizationScore",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum IDecentralizationMetrics.HealthStatus",
+              "name": "status",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct IDecentralizationMetrics.HistoricalDataPoint[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IDecentralizationMetrics.MetricType",
+          "name": "metricType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getMetric",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IDecentralizationMetrics.MetricType",
+          "name": "metricType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "periods",
+          "type": "uint256"
+        }
+      ],
+      "name": "getMetricTrend",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "trend",
+          "type": "int256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getThresholds",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "nakamotoMin",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "giniMax",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hhiMax",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "topHolderMax",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minActiveVoters",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minUniqueProposers",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IDecentralizationMetrics.MetricThresholds",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "count",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTopHolders",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "holders",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "balances",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "percentages",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "identifyConcentrationRisks",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "riskHolders",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "riskLevels",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "riskDescriptions",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IDecentralizationMetrics.MetricType",
+          "name": "metricType",
+          "type": "uint8"
+        }
+      ],
+      "name": "isMetricCritical",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "nakamotoMin",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "giniMax",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hhiMax",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "topHolderMax",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minActiveVoters",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minUniqueProposers",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IDecentralizationMetrics.MetricThresholds",
+          "name": "thresholds",
+          "type": "tuple"
+        }
+      ],
+      "name": "setThresholds",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "simulateTransferImpact",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "nakamotoChange",
+          "type": "int256"
+        },
+        {
+          "internalType": "int256",
+          "name": "giniChange",
+          "type": "int256"
+        },
+        {
+          "internalType": "int256",
+          "name": "scoreChange",
+          "type": "int256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
