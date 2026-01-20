@@ -10,8 +10,8 @@ import { StrategicIntelligenceEngine } from './StrategicIntelligenceEngine';
 import { RecursiveInsightAnalysisEngine } from './RecursiveInsightAnalysisEngine';
 import { MultidimensionalReflectionEngine } from './MultidimensionalReflectionEngine';
 import { ConsciousnessStatePredictionEngine } from './ConsciousnessStatePredictionEngine';
-// import { ConsciousnessPatternAnalysisEngine } from './ConsciousnessPatternAnalysisEngine';
-// import { CrossModelValidationEngine } from './CrossModelValidationEngine';
+import { ConsciousnessPatternAnalysisEngine } from './ConsciousnessPatternAnalysisEngine';
+import { CrossModelValidationEngine } from './CrossModelValidationEngine';
 
 // Security middleware imports
 import { 
@@ -88,8 +88,8 @@ const strategicIntelligenceEngine = new StrategicIntelligenceEngine('strategic-i
 const recursiveInsightAnalysisEngine = new RecursiveInsightAnalysisEngine('recursive-analysis-ai');
 const multidimensionalReflectionEngine = new MultidimensionalReflectionEngine('multidimensional-reflection-ai');
 const consciousnessStatePredictionEngine = new ConsciousnessStatePredictionEngine('state-prediction-ai');
-// const consciousnessPatternAnalysisEngine = new ConsciousnessPatternAnalysisEngine('pattern-analysis-ai');
-// const crossModelValidationEngine = new CrossModelValidationEngine('cross-model-validation-ai');
+const consciousnessPatternAnalysisEngine = new ConsciousnessPatternAnalysisEngine('pattern-analysis-ai');
+const crossModelValidationEngine = new CrossModelValidationEngine('cross-model-validation-ai');
 
 // Apply global security middleware for all routes
 // Note: rateLimitGeneral now handles both authenticated and unauthenticated requests
@@ -2824,29 +2824,36 @@ router.post('/api/consciousness/cross-model-validation',
       };
       
       const startTime = Date.now();
-      
-      // TODO: Implement CrossModelValidationEngine
-      const result = {
-        validationId: `validation-${Date.now()}`,
-        consensusAnalysis: {
-          overallConsensus: 0.8,
-          modelAgreement: 'high',
-          conflictingViewpoints: [],
-          validationStatus: 'engine-not-implemented'
-        },
-        message: 'Cross-model validation engine not yet implemented - route secured'
-      };
-      
+
+      // Execute cross-model validation using the engine
+      const result = await crossModelValidationEngine.validateAcrossModels(
+        safeValidationRequest.promptContent || safeValidationRequest.content || '',
+        safeValidationRequest.promptType || 'reflection',
+        safeValidationRequest.modelList || ['openai', 'claude', 'gemini'],
+        safeValidationRequest.context || {},
+        `session-${Date.now()}`,
+        securityContext.userId
+      );
+
       const duration = Date.now() - startTime;
       trackAIUsage(400, req);
-      
+
       res.json({
-        ...result,
+        validationId: result.id,
+        consensusAnalysis: {
+          overallConsensus: result.consensusScore,
+          modelAgreement: result.consensusScore >= 0.8 ? 'high' : result.consensusScore >= 0.5 ? 'moderate' : 'low',
+          convergentInsights: result.convergentInsights,
+          divergentInsights: result.divergentInsights,
+          synthesizedConclusion: result.synthesizedConclusion,
+          validationStatus: 'completed'
+        },
+        providerResponses: result.providerResponses,
         securityInfo: {
           userId: securityContext.userId,
           processingTime: duration,
           costEstimate: 400,
-          modelsUsed: safeValidationRequest.modelList.length
+          modelsUsed: safeValidationRequest.modelList?.length || 3
         }
       });
       
@@ -2895,21 +2902,37 @@ router.post('/api/consciousness/pattern-analysis',
       };
       
       const startTime = Date.now();
-      
-      // TODO: Implement ConsciousnessPatternAnalysisEngine
-      const result = {
-        analysisId: `pattern-analysis-${Date.now()}`,
-        patternsFound: [],
-        analysisDepth: 'basic',
-        insights: ['Pattern analysis engine not yet implemented'],
-        message: 'Consciousness pattern analysis engine not yet implemented - route secured'
-      };
-      
+
+      // Execute pattern analysis using the engine
+      const result = await consciousnessPatternAnalysisEngine.analyzeConsciousnessPatterns(
+        agentId,
+        sanitizedRequest.analysisType || 'growth-patterns',
+        sanitizedRequest.timeframeStart || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        sanitizedRequest.timeframeEnd || new Date().toISOString(),
+        {
+          focusAreas: sanitizedRequest.focusAreas,
+          includeDecisions: sanitizedRequest.includeDecisions ?? true,
+          includeLearning: sanitizedRequest.includeLearning ?? true,
+          minFrequency: sanitizedRequest.minFrequency
+        }
+      );
+
       const duration = Date.now() - startTime;
       trackAIUsage(120, req);
-      
+
       res.json({
-        ...result,
+        analysisId: result.id,
+        agentId: result.agentId,
+        analysisType: result.analysisType,
+        timeframe: {
+          start: result.timeframeStart,
+          end: result.timeframeEnd
+        },
+        detectedPatterns: result.detectedPatterns,
+        insights: result.insights,
+        growthMetrics: result.growthMetrics,
+        personalizedRecommendations: result.personalizedRecommendations,
+        analysisDepth: 'comprehensive',
         securityInfo: {
           userId: securityContext.userId,
           processingTime: duration,
