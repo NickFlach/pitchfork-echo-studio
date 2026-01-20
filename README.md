@@ -366,6 +366,37 @@ Together, we can create a world where **truth prevails**, **justice is served**,
 
 *Powered by advanced AI and decentralized technology*
 
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Branch strategy and PR policy
+- Code standards and commit guidelines
+- Development workflow
+
+### Quick Start for Contributors
+
+```bash
+# Clone and setup
+git clone https://github.com/NickFlach/pitchfork-echo-studio.git
+cd pitchfork-echo-studio
+npm install
+
+# Create feature branch
+git checkout -b feature/your-feature
+
+# Run tests before committing
+npm run lint
+npx hardhat test
+
+# Open PR
+gh pr create --base develop
+```
+
+See [TESTING.md](TESTING.md) for testing guidelines.
+
+---
+
 ## Environment setup (.env example)
 
 Create a `.env` file at project root with strong secrets and required URLs:
