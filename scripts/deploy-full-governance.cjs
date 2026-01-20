@@ -16,52 +16,10 @@
  * - Sets up proper role hierarchy
  */
 
-import { ethers, upgrades, network } from "hardhat";
-import { writeFileSync, readFileSync, existsSync, mkdirSync, copyFileSync } from "fs";
-import { join, dirname } from "path";
-
-interface DeploymentAddresses {
-  // Core tokens
-  PFORK: string;
-  gPFORK: string;
-  gPFORK_Implementation: string;
-
-  // Governance
-  PitchforkTimelock: string;
-  PitchforkGovernor: string;
-  DualGovernance: string;
-
-  // Application contracts
-  ConsciousnessAchievements: string;
-  ConsciousnessIdentity: string;
-  AIServicePayment: string;
-  AIServicePayment_Implementation?: string;
-  LeadershipSubscription: string;
-  ConsciousnessDAO: string;
-
-  // Decentralization
-  DecentralizationMetrics: string;
-  PowerDiffusion: string;
-}
-
-interface DeploymentConfig {
-  network: string;
-  chainId: number;
-  deployer: string;
-  deploymentDate: string;
-  contracts: DeploymentAddresses;
-  timelockConfig: {
-    minDelay: number;
-    proposers: string[];
-    executors: string[];
-  };
-  governorConfig: {
-    votingDelay: number;
-    votingPeriod: number;
-    proposalThreshold: string;
-    quorumNumerator: number;
-  };
-}
+const hre = require("hardhat");
+const { ethers, network, upgrades } = hre;
+const { writeFileSync, readFileSync, existsSync, mkdirSync, copyFileSync } = require("fs");
+const { join, dirname } = require("path");
 
 // Configuration constants
 const TIMELOCK_MIN_DELAY = 2 * 24 * 60 * 60; // 2 days in seconds
@@ -88,7 +46,7 @@ async function main() {
   console.log(`Chain ID: ${chainId}`);
   console.log("");
 
-  const addresses: Partial<DeploymentAddresses> = {};
+  const addresses = {};
 
   // ============================================================
   // PHASE 1: Deploy PFORK Token
@@ -340,12 +298,12 @@ async function main() {
   console.log("\nPHASE 9: Saving Deployment Information");
   console.log("-".repeat(40));
 
-  const deploymentConfig: DeploymentConfig = {
+  const deploymentConfig = {
     network: network.name,
     chainId,
     deployer: deployer.address,
     deploymentDate: new Date().toISOString(),
-    contracts: addresses as DeploymentAddresses,
+    contracts: addresses,
     timelockConfig: {
       minDelay: TIMELOCK_MIN_DELAY,
       proposers: [deployer.address, addresses.PitchforkGovernor],
@@ -369,7 +327,7 @@ async function main() {
 
   // Update consolidated addresses file
   const addressesPath = join(__dirname, "..", "contracts", "addresses.json");
-  let allAddresses: Record<string, any> = {};
+  let allAddresses = {};
   if (existsSync(addressesPath)) {
     allAddresses = JSON.parse(readFileSync(addressesPath, "utf-8"));
   }
@@ -465,7 +423,6 @@ VITE_CHAIN_ID=${chainId}
     console.log("-".repeat(60));
     console.log(`npx hardhat verify --network ${network.name} ${addresses.PFORK} "Pitchfork Token" "PFORK" "${INITIAL_PFORK_SUPPLY}"`);
     console.log(`npx hardhat verify --network ${network.name} ${addresses.PitchforkTimelock} ${TIMELOCK_MIN_DELAY} "[${deployer.address}]" "[${deployer.address}]" ${deployer.address}`);
-    console.log(`npx hardhat verify --network ${network.name} ${addresses.PitchforkGovernor} ${addresses.gPFORK} ${addresses.PitchforkTimelock} "Pitchfork Governor" ${GOVERNOR_VOTING_DELAY} ${GOVERNOR_VOTING_PERIOD} "${GOVERNOR_PROPOSAL_THRESHOLD}" ${GOVERNOR_QUORUM_NUMERATOR}`);
   }
 }
 
