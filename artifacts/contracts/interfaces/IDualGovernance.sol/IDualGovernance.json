@@ -1,0 +1,461 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IDualGovernance",
+  "sourceName": "contracts/interfaces/IDualGovernance.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "enum IDualGovernance.GovernanceMode",
+          "name": "oldMode",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IDualGovernance.GovernanceMode",
+          "name": "newMode",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "GovernanceModeChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "unlockTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "RageQuitInitiated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalVetoVotes",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "threshold",
+          "type": "uint256"
+        }
+      ],
+      "name": "VetoExecuted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalVetoVotes",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "threshold",
+          "type": "uint256"
+        }
+      ],
+      "name": "VetoFailed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "signaler",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalSignaled",
+          "type": "uint256"
+        }
+      ],
+      "name": "VetoSignaled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "windowStart",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "windowEnd",
+          "type": "uint256"
+        }
+      ],
+      "name": "VetoWindowOpened",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "withdrawer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "VetoWithdrawn",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "completeRageQuit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "emergencyPauseDualGovernance",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "finalizeVeto",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getDualGovernanceConfig",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "vetoWindowDuration",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "vetoThreshold",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "vetoMinDelay",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "rageQuitDelay",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "escalationThreshold",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "dynamicThreshold",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct IDualGovernance.DualGovernanceConfig",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getGovernanceMode",
+      "outputs": [
+        {
+          "internalType": "enum IDualGovernance.GovernanceMode",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "getUserVetoSignal",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getVetoInfo",
+      "outputs": [
+        {
+          "internalType": "enum IDualGovernance.VetoState",
+          "name": "state",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "vetoVotesFor",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "vetoVotesAgainst",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "threshold",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "windowEnd",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "initiateRageQuit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "isInVetoWindow",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "isVetoThresholdMet",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "vetoWindowDuration",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "vetoThreshold",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "vetoMinDelay",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "rageQuitDelay",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "escalationThreshold",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "dynamicThreshold",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct IDualGovernance.DualGovernanceConfig",
+          "name": "config",
+          "type": "tuple"
+        }
+      ],
+      "name": "setDualGovernanceConfig",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "signalVeto",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawVetoSignal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

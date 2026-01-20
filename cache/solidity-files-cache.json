@@ -1,8 +1,8 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\AIServicePayment.sol": {
-      "lastModificationDate": 1767086159800,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\AIServicePayment.sol": {
+      "lastModificationDate": 1767374590014,
       "contentHash": "94cf769450729521aa7a009fd870e617",
       "sourceName": "contracts/AIServicePayment.sol",
       "solcConfig": {
@@ -21,7 +21,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -44,84 +45,8 @@
         "AIServicePayment"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Pausable.sol": {
-      "lastModificationDate": 1759549275909,
-      "contentHash": "0d47b53e10b1985efbb396f937626279",
-      "sourceName": "@openzeppelin/contracts/utils/Pausable.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../utils/Context.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Pausable"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\ReentrancyGuard.sol": {
-      "lastModificationDate": 1759549275926,
-      "contentHash": "190613e556d509d9e9a0ea43dc5d891d",
-      "sourceName": "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ReentrancyGuard"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\access\\AccessControl.sol": {
-      "lastModificationDate": 1759549274117,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\access\\AccessControl.sol": {
+      "lastModificationDate": 1768944853202,
       "contentHash": "d0e2c05f09a3aea7cd299bbd4a435ee2",
       "sourceName": "@openzeppelin/contracts/access/AccessControl.sol",
       "solcConfig": {
@@ -140,7 +65,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -161,8 +87,86 @@
         "AccessControl"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\IERC20.sol": {
-      "lastModificationDate": 1759549275619,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\ReentrancyGuard.sol": {
+      "lastModificationDate": 1768944861331,
+      "contentHash": "190613e556d509d9e9a0ea43dc5d891d",
+      "sourceName": "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ReentrancyGuard"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Pausable.sol": {
+      "lastModificationDate": 1768944861241,
+      "contentHash": "0d47b53e10b1985efbb396f937626279",
+      "sourceName": "@openzeppelin/contracts/utils/Pausable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/Context.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Pausable"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\IERC20.sol": {
+      "lastModificationDate": 1768944860116,
       "contentHash": "9261adf6457863de3e9892f51317ec89",
       "sourceName": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
       "solcConfig": {
@@ -181,7 +185,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -198,8 +203,8 @@
         "IERC20"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\utils\\SafeERC20.sol": {
-      "lastModificationDate": 1759549275949,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\utils\\SafeERC20.sol": {
+      "lastModificationDate": 1768944861408,
       "contentHash": "1fb9edee1d763745a62d0b1954998792",
       "sourceName": "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
       "solcConfig": {
@@ -218,7 +223,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -238,8 +244,8 @@
         "SafeERC20"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Context.sol": {
-      "lastModificationDate": 1759549274552,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Context.sol": {
+      "lastModificationDate": 1768944854493,
       "contentHash": "67bfbc07588eb8683b3fd8f6f909563e",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
@@ -258,7 +264,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -275,8 +282,8 @@
         "Context"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\introspection\\ERC165.sol": {
-      "lastModificationDate": 1759549275050,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\introspection\\ERC165.sol": {
+      "lastModificationDate": 1768944857576,
       "contentHash": "0906d06dca25210d4696dcef6dad2909",
       "sourceName": "@openzeppelin/contracts/utils/introspection/ERC165.sol",
       "solcConfig": {
@@ -295,7 +302,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -314,8 +322,8 @@
         "ERC165"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\access\\IAccessControl.sol": {
-      "lastModificationDate": 1759549275446,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\access\\IAccessControl.sol": {
+      "lastModificationDate": 1768944859565,
       "contentHash": "def1e8f7b6cac577cf2600655bf3bdf8",
       "sourceName": "@openzeppelin/contracts/access/IAccessControl.sol",
       "solcConfig": {
@@ -334,7 +342,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -351,8 +360,8 @@
         "IAccessControl"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\introspection\\IERC165.sol": {
-      "lastModificationDate": 1759549275588,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\introspection\\IERC165.sol": {
+      "lastModificationDate": 1768944860008,
       "contentHash": "7074c93b1ea0a122063f26ddd1db1032",
       "sourceName": "@openzeppelin/contracts/utils/introspection/IERC165.sol",
       "solcConfig": {
@@ -371,7 +380,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -388,8 +398,8 @@
         "IERC165"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1363.sol": {
-      "lastModificationDate": 1759549275564,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1363.sol": {
+      "lastModificationDate": 1768944859913,
       "contentHash": "a7fd0f05e36b0d0a21c75340c9c639ec",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC1363.sol",
       "solcConfig": {
@@ -408,7 +418,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -428,8 +439,8 @@
         "IERC1363"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC165.sol": {
-      "lastModificationDate": 1759549275582,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC165.sol": {
+      "lastModificationDate": 1768944859986,
       "contentHash": "947853028399b7de34bcc3704ee06e99",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC165.sol",
       "solcConfig": {
@@ -448,7 +459,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -465,8 +477,8 @@
       ],
       "artifacts": []
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC20.sol": {
-      "lastModificationDate": 1759549275612,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC20.sol": {
+      "lastModificationDate": 1768944860092,
       "contentHash": "68620db2da7583d9a4919096ac77f577",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC20.sol",
       "solcConfig": {
@@ -485,7 +497,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -502,8 +515,8 @@
       ],
       "artifacts": []
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\IERC20Metadata.sol": {
-      "lastModificationDate": 1759549275629,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\IERC20Metadata.sol": {
+      "lastModificationDate": 1768944860181,
       "contentHash": "513778b30d2750f5d2b9b19bbcf748a5",
       "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
       "solcConfig": {
@@ -522,7 +535,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -541,8 +555,8 @@
         "IERC20Metadata"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol": {
-      "lastModificationDate": 1759549275088,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol": {
+      "lastModificationDate": 1768944857710,
       "contentHash": "59dfce11284f2636db261df9b6a18f81",
       "sourceName": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
       "solcConfig": {
@@ -561,7 +575,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -583,8 +598,8 @@
         "ERC20"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\draft-IERC6093.sol": {
-      "lastModificationDate": 1759549274840,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\draft-IERC6093.sol": {
+      "lastModificationDate": 1768944855163,
       "contentHash": "5041977bbe908de2e6ed0270447f79ad",
       "sourceName": "@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
       "solcConfig": {
@@ -603,7 +618,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -622,10 +638,10 @@
         "IERC721Errors"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC20Permit.sol": {
-      "lastModificationDate": 1759549275133,
-      "contentHash": "2343c0c3b51267f4f2639ec3f99cd63e",
-      "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC20Burnable.sol": {
+      "lastModificationDate": 1768944857736,
+      "contentHash": "273d8d24b06f67207dd5f35c3a0c1086",
+      "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -642,7 +658,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -652,562 +669,18 @@
         }
       },
       "imports": [
-        "./IERC20Permit.sol",
         "../ERC20.sol",
-        "../../../utils/cryptography/ECDSA.sol",
-        "../../../utils/cryptography/EIP712.sol",
-        "../../../utils/Nonces.sol"
+        "../../../utils/Context.sol"
       ],
       "versionPragmas": [
         "^0.8.20"
       ],
       "artifacts": [
-        "ERC20Permit"
+        "ERC20Burnable"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\cryptography\\ECDSA.sol": {
-      "lastModificationDate": 1759549274907,
-      "contentHash": "81de029d56aa803972be03c5d277cb6c",
-      "sourceName": "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ECDSA"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Nonces.sol": {
-      "lastModificationDate": 1759549275853,
-      "contentHash": "c32d108058718efb9061b88e83a83f79",
-      "sourceName": "@openzeppelin/contracts/utils/Nonces.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Nonces"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\cryptography\\EIP712.sol": {
-      "lastModificationDate": 1759549274918,
-      "contentHash": "d67dfba302ed2489324d7584625c3bde",
-      "sourceName": "@openzeppelin/contracts/utils/cryptography/EIP712.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./MessageHashUtils.sol",
-        "../ShortStrings.sol",
-        "../../interfaces/IERC5267.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "EIP712"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\IERC20Permit.sol": {
-      "lastModificationDate": 1759549275635,
-      "contentHash": "b01905745d47df90c7bd5dd70d498cb7",
-      "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.4.16"
-      ],
-      "artifacts": [
-        "IERC20Permit"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\cryptography\\MessageHashUtils.sol": {
-      "lastModificationDate": 1759549275828,
-      "contentHash": "260f3968eefa3bbd30520cff5384cd93",
-      "sourceName": "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../Strings.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "MessageHashUtils"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\ShortStrings.sol": {
-      "lastModificationDate": 1759549275954,
-      "contentHash": "c1be9487e5a64acf23b5d8028482e748",
-      "sourceName": "@openzeppelin/contracts/utils/ShortStrings.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./StorageSlot.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ShortStrings"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC5267.sol": {
-      "lastModificationDate": 1759549275691,
-      "contentHash": "6e00d2fe4bc0d5f1add753824498bb35",
-      "sourceName": "@openzeppelin/contracts/interfaces/IERC5267.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.4.16"
-      ],
-      "artifacts": [
-        "IERC5267"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Strings.sol": {
-      "lastModificationDate": 1759549276014,
-      "contentHash": "d8f70caf0e0c77dc908176ed44812fb7",
-      "sourceName": "@openzeppelin/contracts/utils/Strings.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./math/Math.sol",
-        "./math/SafeCast.sol",
-        "./math/SignedMath.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Strings"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\math\\SignedMath.sol": {
-      "lastModificationDate": 1759549275964,
-      "contentHash": "ae3528afb8bdb0a7dcfba5b115ee8074",
-      "sourceName": "@openzeppelin/contracts/utils/math/SignedMath.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./SafeCast.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "SignedMath"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\math\\SafeCast.sol": {
-      "lastModificationDate": 1759549275946,
-      "contentHash": "2adca1150f58fc6f3d1f0a0f22ee7cca",
-      "sourceName": "@openzeppelin/contracts/utils/math/SafeCast.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "SafeCast"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\math\\Math.sol": {
-      "lastModificationDate": 1759549275809,
-      "contentHash": "5ec781e33d3a9ac91ffdc83d94420412",
-      "sourceName": "@openzeppelin/contracts/utils/math/Math.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../Panic.sol",
-        "./SafeCast.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Math"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Panic.sol": {
-      "lastModificationDate": 1759549275900,
-      "contentHash": "2133dc13536b4a6a98131e431fac59e1",
-      "sourceName": "@openzeppelin/contracts/utils/Panic.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Panic"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\StorageSlot.sol": {
-      "lastModificationDate": 1759549276009,
-      "contentHash": "e656d64c4ce918f3d13030b91c935134",
-      "sourceName": "@openzeppelin/contracts/utils/StorageSlot.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "StorageSlot"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\extensions\\ERC721URIStorage.sol": {
-      "lastModificationDate": 1759549275242,
-      "contentHash": "0b00dd0d9f2738855f17aa283bfa3ff5",
-      "sourceName": "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../ERC721.sol",
-        "./IERC721Metadata.sol",
-        "../../../utils/Strings.sol",
-        "../../../interfaces/IERC4906.sol",
-        "../../../interfaces/IERC165.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ERC721URIStorage"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol": {
-      "lastModificationDate": 1759549275193,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol": {
+      "lastModificationDate": 1768944858252,
       "contentHash": "522ec023bce510c30dfbf61584f5a190",
       "sourceName": "@openzeppelin/contracts/token/ERC721/ERC721.sol",
       "solcConfig": {
@@ -1226,7 +699,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -1251,10 +725,10 @@
         "ERC721"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC4906.sol": {
-      "lastModificationDate": 1759549275685,
-      "contentHash": "4386d2e9b1578157802062e156bd9ae1",
-      "sourceName": "@openzeppelin/contracts/interfaces/IERC4906.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Strings.sol": {
+      "lastModificationDate": 1768944861611,
+      "contentHash": "d8f70caf0e0c77dc908176ed44812fb7",
+      "sourceName": "@openzeppelin/contracts/utils/Strings.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -1271,7 +745,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -1281,57 +756,19 @@
         }
       },
       "imports": [
-        "./IERC165.sol",
-        "./IERC721.sol"
+        "./math/Math.sol",
+        "./math/SafeCast.sol",
+        "./math/SignedMath.sol"
       ],
       "versionPragmas": [
-        ">=0.6.2"
+        "^0.8.20"
       ],
       "artifacts": [
-        "IERC4906"
+        "Strings"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\extensions\\IERC721Metadata.sol": {
-      "lastModificationDate": 1759549275741,
-      "contentHash": "136c64eca25bcb8a68f43ac6605559f9",
-      "sourceName": "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../IERC721.sol"
-      ],
-      "versionPragmas": [
-        ">=0.6.2"
-      ],
-      "artifacts": [
-        "IERC721Metadata"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\IERC721.sol": {
-      "lastModificationDate": 1759549275719,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\IERC721.sol": {
+      "lastModificationDate": 1768944860478,
       "contentHash": "f62e11dbd302e17a5621a1438f4e054c",
       "sourceName": "@openzeppelin/contracts/token/ERC721/IERC721.sol",
       "solcConfig": {
@@ -1350,7 +787,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -1369,8 +807,8 @@
         "IERC721"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\utils\\ERC721Utils.sol": {
-      "lastModificationDate": 1759549275248,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\utils\\ERC721Utils.sol": {
+      "lastModificationDate": 1768944858540,
       "contentHash": "4cefad279a37c895b709bce2b901816e",
       "sourceName": "@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
       "solcConfig": {
@@ -1389,7 +827,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -1409,8 +848,205 @@
         "ERC721Utils"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\IERC721Receiver.sol": {
-      "lastModificationDate": 1759549275756,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\extensions\\IERC721Metadata.sol": {
+      "lastModificationDate": 1768944860539,
+      "contentHash": "136c64eca25bcb8a68f43ac6605559f9",
+      "sourceName": "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../IERC721.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2"
+      ],
+      "artifacts": [
+        "IERC721Metadata"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\math\\SafeCast.sol": {
+      "lastModificationDate": 1768944861395,
+      "contentHash": "2adca1150f58fc6f3d1f0a0f22ee7cca",
+      "sourceName": "@openzeppelin/contracts/utils/math/SafeCast.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "SafeCast"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\math\\Math.sol": {
+      "lastModificationDate": 1768944860757,
+      "contentHash": "5ec781e33d3a9ac91ffdc83d94420412",
+      "sourceName": "@openzeppelin/contracts/utils/math/Math.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../Panic.sol",
+        "./SafeCast.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Math"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\math\\SignedMath.sol": {
+      "lastModificationDate": 1768944861465,
+      "contentHash": "ae3528afb8bdb0a7dcfba5b115ee8074",
+      "sourceName": "@openzeppelin/contracts/utils/math/SignedMath.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./SafeCast.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "SignedMath"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Panic.sol": {
+      "lastModificationDate": 1768944861220,
+      "contentHash": "2133dc13536b4a6a98131e431fac59e1",
+      "sourceName": "@openzeppelin/contracts/utils/Panic.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Panic"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\IERC721Receiver.sol": {
+      "lastModificationDate": 1768944860571,
       "contentHash": "d61660a41ce200e99816e4734f7fd202",
       "sourceName": "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
       "solcConfig": {
@@ -1429,7 +1065,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -1446,8 +1083,93 @@
         "IERC721Receiver"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC721.sol": {
-      "lastModificationDate": 1759549275714,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\extensions\\ERC721URIStorage.sol": {
+      "lastModificationDate": 1768944858521,
+      "contentHash": "0b00dd0d9f2738855f17aa283bfa3ff5",
+      "sourceName": "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../ERC721.sol",
+        "./IERC721Metadata.sol",
+        "../../../utils/Strings.sol",
+        "../../../interfaces/IERC4906.sol",
+        "../../../interfaces/IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC721URIStorage"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC4906.sol": {
+      "lastModificationDate": 1768944860378,
+      "contentHash": "4386d2e9b1578157802062e156bd9ae1",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC4906.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IERC165.sol",
+        "./IERC721.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2"
+      ],
+      "artifacts": [
+        "IERC4906"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC721.sol": {
+      "lastModificationDate": 1768944860460,
       "contentHash": "6b9716905fb42874ed1769ae7f7458b1",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC721.sol",
       "solcConfig": {
@@ -1466,7 +1188,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -1483,10 +1206,10 @@
       ],
       "artifacts": []
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\utils\\Votes.sol": {
-      "lastModificationDate": 1759549276072,
-      "contentHash": "95aceafdc639babdd22576e5e3774d64",
-      "sourceName": "@openzeppelin/contracts/governance/utils/Votes.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\IGovernor.sol": {
+      "lastModificationDate": 1768944860677,
+      "contentHash": "b0ce196e16378f83aac8db45e86ac1f2",
+      "sourceName": "@openzeppelin/contracts/governance/IGovernor.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -1503,7 +1226,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -1513,24 +1237,56 @@
         }
       },
       "imports": [
-        "../../interfaces/IERC5805.sol",
-        "../../utils/Context.sol",
-        "../../utils/Nonces.sol",
-        "../../utils/cryptography/EIP712.sol",
-        "../../utils/structs/Checkpoints.sol",
-        "../../utils/math/SafeCast.sol",
-        "../../utils/cryptography/ECDSA.sol",
-        "../../utils/types/Time.sol"
+        "../interfaces/IERC165.sol",
+        "../interfaces/IERC6372.sol"
       ],
       "versionPragmas": [
-        "^0.8.20"
+        ">=0.8.4"
       ],
       "artifacts": [
-        "Votes"
+        "IGovernor"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC5805.sol": {
-      "lastModificationDate": 1759549275704,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC6372.sol": {
+      "lastModificationDate": 1768944860446,
+      "contentHash": "af8cb4a1b941a8230c36de0b4aacf653",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC6372.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.16"
+      ],
+      "artifacts": [
+        "IERC6372"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC5805.sol": {
+      "lastModificationDate": 1768944860426,
       "contentHash": "4ca519ef7ae252e5aaff422172d4e8a9",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC5805.sol",
       "solcConfig": {
@@ -1549,7 +1305,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -1569,87 +1326,8 @@
         "IERC5805"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\types\\Time.sol": {
-      "lastModificationDate": 1759549276020,
-      "contentHash": "d83e7814a059fc1287fd765f424ce004",
-      "sourceName": "@openzeppelin/contracts/utils/types/Time.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../math/Math.sol",
-        "../math/SafeCast.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Time"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\structs\\Checkpoints.sol": {
-      "lastModificationDate": 1759549274503,
-      "contentHash": "7e3b3e7a04ea9d446b39835a2f6a58cd",
-      "sourceName": "@openzeppelin/contracts/utils/structs/Checkpoints.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../math/Math.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Checkpoints"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\utils\\IVotes.sol": {
-      "lastModificationDate": 1759549275798,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\utils\\IVotes.sol": {
+      "lastModificationDate": 1768944860733,
       "contentHash": "61c6e9b90081d85a755a3107dcaacc26",
       "sourceName": "@openzeppelin/contracts/governance/utils/IVotes.sol",
       "solcConfig": {
@@ -1668,7 +1346,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -1685,694 +1364,8 @@
         "IVotes"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC6372.sol": {
-      "lastModificationDate": 1759549275709,
-      "contentHash": "af8cb4a1b941a8230c36de0b4aacf653",
-      "sourceName": "@openzeppelin/contracts/interfaces/IERC6372.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.4.16"
-      ],
-      "artifacts": [
-        "IERC6372"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC20Votes.sol": {
-      "lastModificationDate": 1759549275139,
-      "contentHash": "51c2083b160453420aaa0a046c16d5ca",
-      "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../ERC20.sol",
-        "../../../governance/utils/Votes.sol",
-        "../../../utils/structs/Checkpoints.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ERC20Votes"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\LeadershipSubscription.sol": {
-      "lastModificationDate": 1767086528051,
-      "contentHash": "10c450ed83f572c6351c29ec68d8b54d",
-      "sourceName": "contracts/LeadershipSubscription.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/access/AccessControl.sol",
-        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
-        "@openzeppelin/contracts/utils/Pausable.sol",
-        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
-        "./interfaces/IConsciousnessAchievements.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "LeadershipSubscription"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\interfaces\\IConsciousnessAchievements.sol": {
-      "lastModificationDate": 1758554106844,
-      "contentHash": "79a01e1968709975c5bf1c94e76eae39",
-      "sourceName": "contracts/interfaces/IConsciousnessAchievements.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/IERC721.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "IConsciousnessAchievements"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\ConsciousnessIdentity.sol": {
-      "lastModificationDate": 1767086212032,
-      "contentHash": "412aac3d92f4747a79bd1df495dd401f",
-      "sourceName": "contracts/ConsciousnessIdentity.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/access/AccessControl.sol",
-        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
-        "@openzeppelin/contracts/utils/Pausable.sol",
-        "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
-        "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol",
-        "./interfaces/IConsciousnessAchievements.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "ConsciousnessIdentity"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\ConsciousnessDAO.sol": {
-      "lastModificationDate": 1767086333964,
-      "contentHash": "5bf61f9efdd503f7770b700d3e8a1776",
-      "sourceName": "contracts/ConsciousnessDAO.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/access/AccessControl.sol",
-        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
-        "@openzeppelin/contracts/utils/Pausable.sol",
-        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
-        "@openzeppelin/contracts/governance/utils/IVotes.sol",
-        "./interfaces/IConsciousnessIdentity.sol",
-        "./interfaces/ILeadershipSubscription.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "ConsciousnessDAO"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\interfaces\\IConsciousnessIdentity.sol": {
-      "lastModificationDate": 1758554106849,
-      "contentHash": "7f2a8711174d9f046357c72e49023fdb",
-      "sourceName": "contracts/interfaces/IConsciousnessIdentity.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "IConsciousnessIdentity"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\interfaces\\ILeadershipSubscription.sol": {
-      "lastModificationDate": 1758554106853,
-      "contentHash": "7b500dc1b896b55b1d74c39061455d0f",
-      "sourceName": "contracts/interfaces/ILeadershipSubscription.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "ILeadershipSubscription"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\ConsciousnessAchievements.sol": {
-      "lastModificationDate": 1758554106820,
-      "contentHash": "4d8aa080e6cfd71e73f1068027024d9b",
-      "sourceName": "contracts/ConsciousnessAchievements.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
-        "@openzeppelin/contracts/access/AccessControl.sol",
-        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
-        "@openzeppelin/contracts/utils/Pausable.sol",
-        "@openzeppelin/contracts/utils/Strings.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "ConsciousnessAchievements"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\interfaces\\IAIServicePayment.sol": {
-      "lastModificationDate": 1758554106841,
-      "contentHash": "bf1c7b10470801392e47c966c649e3dd",
-      "sourceName": "contracts/interfaces/IAIServicePayment.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "IAIServicePayment"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\interfaces\\IConsciousnessDAO.sol": {
-      "lastModificationDate": 1758554106847,
-      "contentHash": "7afd5014abee93ebcb03ddaf96e20edb",
-      "sourceName": "contracts/interfaces/IConsciousnessDAO.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "IConsciousnessDAO"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol": {
-      "lastModificationDate": 1759549271938,
-      "contentHash": "f5cb0cb4dcb2ad0074b448995119804b",
-      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
-        "../../utils/ContextUpgradeable.sol",
-        "@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
-        "../../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ERC20Upgradeable"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol": {
-      "lastModificationDate": 1759549270689,
-      "contentHash": "c28aaa25d083a9a55bd9ec9e0b785122",
-      "sourceName": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ContextUpgradeable"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol": {
-      "lastModificationDate": 1759549273028,
-      "contentHash": "2acae54ad209714bca07edf4bae32f72",
-      "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Initializable"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\extensions\\ERC20PermitUpgradeable.sol": {
-      "lastModificationDate": 1759549271847,
-      "contentHash": "9e6f7892f3911a565a7747a7f0185883",
-      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol",
-        "../ERC20Upgradeable.sol",
-        "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
-        "../../../utils/cryptography/EIP712Upgradeable.sol",
-        "../../../utils/NoncesUpgradeable.sol",
-        "../../../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ERC20PermitUpgradeable"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\NoncesUpgradeable.sol": {
-      "lastModificationDate": 1759549273141,
-      "contentHash": "42abaa30579e947b1f601ff9756eb47c",
-      "sourceName": "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "NoncesUpgradeable"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\cryptography\\EIP712Upgradeable.sol": {
-      "lastModificationDate": 1759549271208,
-      "contentHash": "f8055e450e39c5c05fe8765503402e52",
-      "sourceName": "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol",
-        "@openzeppelin/contracts/interfaces/IERC5267.sol",
-        "../../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "EIP712Upgradeable"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\governance\\utils\\VotesUpgradeable.sol": {
-      "lastModificationDate": 1759549273448,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\governance\\utils\\VotesUpgradeable.sol": {
+      "lastModificationDate": 1768944851828,
       "contentHash": "c1ced7ce42768948b420e56366d609b2",
       "sourceName": "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol",
       "solcConfig": {
@@ -2391,7 +1384,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2418,10 +1412,10 @@
         "VotesUpgradeable"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\IGovernor.sol": {
-      "lastModificationDate": 1759549275785,
-      "contentHash": "b0ce196e16378f83aac8db45e86ac1f2",
-      "sourceName": "@openzeppelin/contracts/governance/IGovernor.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol": {
+      "lastModificationDate": 1768944845536,
+      "contentHash": "c28aaa25d083a9a55bd9ec9e0b785122",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -2438,7 +1432,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2448,20 +1443,19 @@
         }
       },
       "imports": [
-        "../interfaces/IERC165.sol",
-        "../interfaces/IERC6372.sol"
+        "../proxy/utils/Initializable.sol"
       ],
       "versionPragmas": [
-        ">=0.8.4"
+        "^0.8.20"
       ],
       "artifacts": [
-        "IGovernor"
+        "ContextUpgradeable"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorVotes.sol": {
-      "lastModificationDate": 1759549275405,
-      "contentHash": "18d5ae4d7219d4615dee2b592bb0eea4",
-      "sourceName": "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\NoncesUpgradeable.sol": {
+      "lastModificationDate": 1768944851010,
+      "contentHash": "42abaa30579e947b1f601ff9756eb47c",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -2478,7 +1472,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2488,20 +1483,611 @@
         }
       },
       "imports": [
-        "../Governor.sol",
-        "../utils/IVotes.sol",
-        "../../interfaces/IERC5805.sol",
-        "../../utils/types/Time.sol"
+        "../proxy/utils/Initializable.sol"
       ],
       "versionPragmas": [
-        "^0.8.24"
+        "^0.8.20"
       ],
       "artifacts": [
-        "GovernorVotes"
+        "NoncesUpgradeable"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\Governor.sol": {
-      "lastModificationDate": 1759549275306,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\cryptography\\EIP712Upgradeable.sol": {
+      "lastModificationDate": 1768944846558,
+      "contentHash": "f8055e450e39c5c05fe8765503402e52",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol",
+        "@openzeppelin/contracts/interfaces/IERC5267.sol",
+        "../../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "EIP712Upgradeable"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol": {
+      "lastModificationDate": 1768944850696,
+      "contentHash": "2acae54ad209714bca07edf4bae32f72",
+      "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Initializable"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\structs\\Checkpoints.sol": {
+      "lastModificationDate": 1768944854333,
+      "contentHash": "7e3b3e7a04ea9d446b39835a2f6a58cd",
+      "sourceName": "@openzeppelin/contracts/utils/structs/Checkpoints.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../math/Math.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Checkpoints"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\cryptography\\ECDSA.sol": {
+      "lastModificationDate": 1768944855361,
+      "contentHash": "81de029d56aa803972be03c5d277cb6c",
+      "sourceName": "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ECDSA"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\types\\Time.sol": {
+      "lastModificationDate": 1768944861639,
+      "contentHash": "d83e7814a059fc1287fd765f424ce004",
+      "sourceName": "@openzeppelin/contracts/utils/types/Time.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../math/Math.sol",
+        "../math/SafeCast.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Time"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\cryptography\\MessageHashUtils.sol": {
+      "lastModificationDate": 1768944860817,
+      "contentHash": "260f3968eefa3bbd30520cff5384cd93",
+      "sourceName": "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../Strings.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "MessageHashUtils"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC5267.sol": {
+      "lastModificationDate": 1768944860395,
+      "contentHash": "6e00d2fe4bc0d5f1add753824498bb35",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC5267.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.16"
+      ],
+      "artifacts": [
+        "IERC5267"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\cryptography\\EIP712.sol": {
+      "lastModificationDate": 1768944855386,
+      "contentHash": "d67dfba302ed2489324d7584625c3bde",
+      "sourceName": "@openzeppelin/contracts/utils/cryptography/EIP712.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./MessageHashUtils.sol",
+        "../ShortStrings.sol",
+        "../../interfaces/IERC5267.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "EIP712"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\ShortStrings.sol": {
+      "lastModificationDate": 1768944861425,
+      "contentHash": "c1be9487e5a64acf23b5d8028482e748",
+      "sourceName": "@openzeppelin/contracts/utils/ShortStrings.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./StorageSlot.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ShortStrings"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\StorageSlot.sol": {
+      "lastModificationDate": 1768944861589,
+      "contentHash": "e656d64c4ce918f3d13030b91c935134",
+      "sourceName": "@openzeppelin/contracts/utils/StorageSlot.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "StorageSlot"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\proxy\\ERC1967\\ERC1967Utils.sol": {
+      "lastModificationDate": 1768944857668,
+      "contentHash": "2741625b983eb412cfdd8aa55a7671c1",
+      "sourceName": "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../beacon/IBeacon.sol",
+        "../../interfaces/IERC1967.sol",
+        "../../utils/Address.sol",
+        "../../utils/StorageSlot.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.21"
+      ],
+      "artifacts": [
+        "ERC1967Utils"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Address.sol": {
+      "lastModificationDate": 1768944853813,
+      "contentHash": "2a06d82f31f75087bf90231599da4f1c",
+      "sourceName": "@openzeppelin/contracts/utils/Address.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./Errors.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Address"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1967.sol": {
+      "lastModificationDate": 1768944860071,
+      "contentHash": "3c9577899f440b0c66e880c96e9250bb",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC1967.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.11"
+      ],
+      "artifacts": [
+        "IERC1967"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\proxy\\beacon\\IBeacon.sol": {
+      "lastModificationDate": 1768944859689,
+      "contentHash": "ee2e46607ed2be58bd554306d068acba",
+      "sourceName": "@openzeppelin/contracts/proxy/beacon/IBeacon.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.16"
+      ],
+      "artifacts": [
+        "IBeacon"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Errors.sol": {
+      "lastModificationDate": 1768944858827,
+      "contentHash": "6b5eac2b85500c3012977849cfd633d8",
+      "sourceName": "@openzeppelin/contracts/utils/Errors.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Errors"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\Governor.sol": {
+      "lastModificationDate": 1768944858927,
       "contentHash": "958ac1efb8710bb9f9a97ee5e809c4a8",
       "sourceName": "@openzeppelin/contracts/governance/Governor.sol",
       "solcConfig": {
@@ -2520,7 +2106,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2550,10 +2137,10 @@
         "Governor"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Address.sol": {
-      "lastModificationDate": 1759549274341,
-      "contentHash": "2a06d82f31f75087bf90231599da4f1c",
-      "sourceName": "@openzeppelin/contracts/utils/Address.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Nonces.sol": {
+      "lastModificationDate": 1768944860903,
+      "contentHash": "c32d108058718efb9061b88e83a83f79",
+      "sourceName": "@openzeppelin/contracts/utils/Nonces.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -2570,7 +2157,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2579,18 +2167,16 @@
           }
         }
       },
-      "imports": [
-        "./Errors.sol"
-      ],
+      "imports": [],
       "versionPragmas": [
         "^0.8.20"
       ],
       "artifacts": [
-        "Address"
+        "Nonces"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\IERC1155Receiver.sol": {
-      "lastModificationDate": 1759549275547,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\IERC1155Receiver.sol": {
+      "lastModificationDate": 1768944859861,
       "contentHash": "9bb9e05bd69d13dd8c8b098ecb542e6d",
       "sourceName": "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol",
       "solcConfig": {
@@ -2609,7 +2195,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2628,8 +2215,8 @@
         "IERC1155Receiver"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\cryptography\\SignatureChecker.sol": {
-      "lastModificationDate": 1759549275960,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\cryptography\\SignatureChecker.sol": {
+      "lastModificationDate": 1768944861445,
       "contentHash": "baa80edaa1f29dd1b855e91b2bd7e0f2",
       "sourceName": "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol",
       "solcConfig": {
@@ -2648,7 +2235,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2670,8 +2258,8 @@
         "SignatureChecker"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\structs\\DoubleEndedQueue.sol": {
-      "lastModificationDate": 1759549274575,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\structs\\DoubleEndedQueue.sol": {
+      "lastModificationDate": 1768944854563,
       "contentHash": "cab08a09ef0cf9bb7a0f731c7e585b69",
       "sourceName": "@openzeppelin/contracts/utils/structs/DoubleEndedQueue.sol",
       "solcConfig": {
@@ -2690,7 +2278,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2709,82 +2298,8 @@
         "DoubleEndedQueue"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Errors.sol": {
-      "lastModificationDate": 1759549275293,
-      "contentHash": "6b5eac2b85500c3012977849cfd633d8",
-      "sourceName": "@openzeppelin/contracts/utils/Errors.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Errors"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1271.sol": {
-      "lastModificationDate": 1759549275554,
-      "contentHash": "97c727fa357056eddfe826ab58943611",
-      "sourceName": "@openzeppelin/contracts/interfaces/IERC1271.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "IERC1271"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC7913.sol": {
-      "lastModificationDate": 1759549275775,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC7913.sol": {
+      "lastModificationDate": 1768944860645,
       "contentHash": "a051a14c8a262117cb4c5f4cbd13ed95",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC7913.sol",
       "solcConfig": {
@@ -2803,7 +2318,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2820,8 +2336,8 @@
         "IERC7913SignatureVerifier"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Bytes.sol": {
-      "lastModificationDate": 1759549274458,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\utils\\Bytes.sol": {
+      "lastModificationDate": 1768944854192,
       "contentHash": "62cf590c82c84688c7271f98842cf8f3",
       "sourceName": "@openzeppelin/contracts/utils/Bytes.sol",
       "solcConfig": {
@@ -2840,7 +2356,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2859,10 +2376,10 @@
         "Bytes"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorVotesQuorumFraction.sol": {
-      "lastModificationDate": 1759549275412,
-      "contentHash": "984f2df69f7193eed53493a38d720dd6",
-      "sourceName": "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1271.sol": {
+      "lastModificationDate": 1768944859887,
+      "contentHash": "97c727fa357056eddfe826ab58943611",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC1271.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -2879,7 +2396,46 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IERC1271"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorTimelockControl.sol": {
+      "lastModificationDate": 1768944859370,
+      "contentHash": "ae1c9ce0a37e799330270cfd6d4da83d",
+      "sourceName": "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -2889,142 +2445,19 @@
         }
       },
       "imports": [
-        "./GovernorVotes.sol",
-        "../../utils/math/Math.sol",
-        "../../utils/math/SafeCast.sol",
-        "../../utils/structs/Checkpoints.sol"
+        "../Governor.sol",
+        "../TimelockController.sol",
+        "../../utils/math/SafeCast.sol"
       ],
       "versionPragmas": [
         "^0.8.24"
       ],
       "artifacts": [
-        "GovernorVotesQuorumFraction"
+        "GovernorTimelockControl"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\extensions\\ERC20VotesUpgradeable.sol": {
-      "lastModificationDate": 1759549271954,
-      "contentHash": "b41e4fe35151d0c778a4f082e79246c9",
-      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../ERC20Upgradeable.sol",
-        "../../../governance/utils/VotesUpgradeable.sol",
-        "@openzeppelin/contracts/utils/structs/Checkpoints.sol",
-        "../../../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ERC20VotesUpgradeable"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol": {
-      "lastModificationDate": 1759549271551,
-      "contentHash": "4d250f562322f9c023c5503064ffc12f",
-      "sourceName": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/utils/introspection/IERC165.sol",
-        "../../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ERC165Upgradeable"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\utils\\ERC1155Holder.sol": {
-      "lastModificationDate": 1759549274989,
-      "contentHash": "2f898a5ad6c39a1a075c745998a69f5b",
-      "sourceName": "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../../../utils/introspection/ERC165.sol",
-        "../IERC1155Receiver.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ERC1155Holder"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\TimelockController.sol": {
-      "lastModificationDate": 1759549276025,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\TimelockController.sol": {
+      "lastModificationDate": 1768944861670,
       "contentHash": "d268a65ef1de709a29320dfab7ae4afd",
       "sourceName": "@openzeppelin/contracts/governance/TimelockController.sol",
       "solcConfig": {
@@ -3043,7 +2476,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3066,8 +2500,8 @@
         "TimelockController"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\utils\\ERC721Holder.sol": {
-      "lastModificationDate": 1759549275222,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\utils\\ERC721Holder.sol": {
+      "lastModificationDate": 1768944858411,
       "contentHash": "8cd14f03f1cc06f0a638da5209d716d4",
       "sourceName": "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol",
       "solcConfig": {
@@ -3086,7 +2520,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3105,10 +2540,10 @@
         "ERC721Holder"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorTimelockControl.sol": {
-      "lastModificationDate": 1759549275401,
-      "contentHash": "ae1c9ce0a37e799330270cfd6d4da83d",
-      "sourceName": "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\utils\\ERC1155Holder.sol": {
+      "lastModificationDate": 1768944855722,
+      "contentHash": "2f898a5ad6c39a1a075c745998a69f5b",
+      "sourceName": "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -3125,7 +2560,470 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../../utils/introspection/ERC165.sol",
+        "../IERC1155Receiver.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC1155Holder"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol": {
+      "lastModificationDate": 1768944847725,
+      "contentHash": "4d250f562322f9c023c5503064ffc12f",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/utils/introspection/IERC165.sol",
+        "../../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC165Upgradeable"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\extensions\\ERC20PermitUpgradeable.sol": {
+      "lastModificationDate": 1768944848026,
+      "contentHash": "9e6f7892f3911a565a7747a7f0185883",
+      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol",
+        "../ERC20Upgradeable.sol",
+        "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
+        "../../../utils/cryptography/EIP712Upgradeable.sol",
+        "../../../utils/NoncesUpgradeable.sol",
+        "../../../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC20PermitUpgradeable"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\ERC20Upgradeable.sol": {
+      "lastModificationDate": 1768944848126,
+      "contentHash": "f5cb0cb4dcb2ad0074b448995119804b",
+      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+        "../../utils/ContextUpgradeable.sol",
+        "@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+        "../../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC20Upgradeable"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\IERC20Permit.sol": {
+      "lastModificationDate": 1768944860219,
+      "contentHash": "b01905745d47df90c7bd5dd70d498cb7",
+      "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.16"
+      ],
+      "artifacts": [
+        "IERC20Permit"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC20Permit.sol": {
+      "lastModificationDate": 1768944857875,
+      "contentHash": "2343c0c3b51267f4f2639ec3f99cd63e",
+      "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IERC20Permit.sol",
+        "../ERC20.sol",
+        "../../../utils/cryptography/ECDSA.sol",
+        "../../../utils/cryptography/EIP712.sol",
+        "../../../utils/Nonces.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC20Permit"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\token\\ERC20\\extensions\\ERC20VotesUpgradeable.sol": {
+      "lastModificationDate": 1768944848173,
+      "contentHash": "b41e4fe35151d0c778a4f082e79246c9",
+      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../ERC20Upgradeable.sol",
+        "../../../governance/utils/VotesUpgradeable.sol",
+        "@openzeppelin/contracts/utils/structs/Checkpoints.sol",
+        "../../../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC20VotesUpgradeable"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol": {
+      "lastModificationDate": 1768944845283,
+      "contentHash": "1460918cfe408f7a514ff980f638fecc",
+      "sourceName": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/IAccessControl.sol",
+        "../utils/ContextUpgradeable.sol",
+        "@openzeppelin/contracts/utils/introspection/IERC165.sol",
+        "../utils/introspection/ERC165Upgradeable.sol",
+        "../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "AccessControlUpgradeable"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\PowerDiffusion.sol": {
+      "lastModificationDate": 1767374590020,
+      "contentHash": "6b076f2a61fd6cd86fc18e99570378e1",
+      "sourceName": "contracts/PowerDiffusion.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/AccessControl.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+        "@openzeppelin/contracts/governance/utils/IVotes.sol",
+        "./interfaces/IBalanceOfPower.sol",
+        "./interfaces/IDecentralizationMetrics.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "PowerDiffusion"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\interfaces\\IBalanceOfPower.sol": {
+      "lastModificationDate": 1767374590023,
+      "contentHash": "868cf60918f436e956babf8f81fe5cfe",
+      "sourceName": "contracts/interfaces/IBalanceOfPower.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "IBalanceOfPower"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\interfaces\\IDecentralizationMetrics.sol": {
+      "lastModificationDate": 1767374590026,
+      "contentHash": "e8a4b2134f5000539a2a8888cdbecdc2",
+      "sourceName": "contracts/interfaces/IDecentralizationMetrics.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "IDecentralizationMetrics"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorVotes.sol": {
+      "lastModificationDate": 1768944859448,
+      "contentHash": "18d5ae4d7219d4615dee2b592bb0eea4",
+      "sourceName": "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3136,20 +3034,21 @@
       },
       "imports": [
         "../Governor.sol",
-        "../TimelockController.sol",
-        "../../utils/math/SafeCast.sol"
+        "../utils/IVotes.sol",
+        "../../interfaces/IERC5805.sol",
+        "../../utils/types/Time.sol"
       ],
       "versionPragmas": [
         "^0.8.24"
       ],
       "artifacts": [
-        "GovernorTimelockControl"
+        "GovernorVotes"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorCountingSimple.sol": {
-      "lastModificationDate": 1759549275326,
-      "contentHash": "19009f7f63fff2b57507e4908e5e54a3",
-      "sourceName": "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorVotesQuorumFraction.sol": {
+      "lastModificationDate": 1768944859464,
+      "contentHash": "984f2df69f7193eed53493a38d720dd6",
+      "sourceName": "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -3166,7 +3065,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3176,17 +3076,20 @@
         }
       },
       "imports": [
-        "../Governor.sol"
+        "./GovernorVotes.sol",
+        "../../utils/math/Math.sol",
+        "../../utils/math/SafeCast.sol",
+        "../../utils/structs/Checkpoints.sol"
       ],
       "versionPragmas": [
         "^0.8.24"
       ],
       "artifacts": [
-        "GovernorCountingSimple"
+        "GovernorVotesQuorumFraction"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\PitchforkGovernor.sol": {
-      "lastModificationDate": 1767085300489,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\PitchforkGovernor.sol": {
+      "lastModificationDate": 1767374590019,
       "contentHash": "6e878ed5489755e0d02356d7139962cf",
       "sourceName": "contracts/PitchforkGovernor.sol",
       "solcConfig": {
@@ -3205,7 +3108,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3229,8 +3133,8 @@
         "PitchforkGovernor"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorSettings.sol": {
-      "lastModificationDate": 1759549275361,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorSettings.sol": {
+      "lastModificationDate": 1768944859211,
       "contentHash": "891d04a1d436a5c780119208d5bf1e41",
       "sourceName": "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol",
       "solcConfig": {
@@ -3249,7 +3153,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3268,10 +3173,10 @@
         "GovernorSettings"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol": {
-      "lastModificationDate": 1759549270563,
-      "contentHash": "1460918cfe408f7a514ff980f638fecc",
-      "sourceName": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorCountingSimple.sol": {
+      "lastModificationDate": 1768944859043,
+      "contentHash": "19009f7f63fff2b57507e4908e5e54a3",
+      "sourceName": "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -3288,7 +3193,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3298,21 +3204,482 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/access/IAccessControl.sol",
-        "../utils/ContextUpgradeable.sol",
-        "@openzeppelin/contracts/utils/introspection/IERC165.sol",
-        "../utils/introspection/ERC165Upgradeable.sol",
-        "../proxy/utils/Initializable.sol"
+        "../Governor.sol"
       ],
       "versionPragmas": [
-        "^0.8.20"
+        "^0.8.24"
       ],
       "artifacts": [
-        "AccessControlUpgradeable"
+        "GovernorCountingSimple"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\gPFORK.sol": {
-      "lastModificationDate": 1767085949251,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\DualGovernance.sol": {
+      "lastModificationDate": 1767374590018,
+      "contentHash": "d3cc2a06c2dca23e093441aad1f3df7c",
+      "sourceName": "contracts/DualGovernance.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/AccessControl.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "@openzeppelin/contracts/utils/Pausable.sol",
+        "@openzeppelin/contracts/governance/utils/IVotes.sol",
+        "./interfaces/IDualGovernance.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "DualGovernance"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\interfaces\\IDualGovernance.sol": {
+      "lastModificationDate": 1767374590027,
+      "contentHash": "a195d55401596bc16688eecf5b65a579",
+      "sourceName": "contracts/interfaces/IDualGovernance.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "IDualGovernance"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\LeadershipSubscription.sol": {
+      "lastModificationDate": 1767374590019,
+      "contentHash": "10c450ed83f572c6351c29ec68d8b54d",
+      "sourceName": "contracts/LeadershipSubscription.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/AccessControl.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "@openzeppelin/contracts/utils/Pausable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+        "./interfaces/IConsciousnessAchievements.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "LeadershipSubscription"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\interfaces\\IConsciousnessAchievements.sol": {
+      "lastModificationDate": 1767374590024,
+      "contentHash": "79a01e1968709975c5bf1c94e76eae39",
+      "sourceName": "contracts/interfaces/IConsciousnessAchievements.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "IConsciousnessAchievements"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\ConsciousnessIdentity.sol": {
+      "lastModificationDate": 1767374590017,
+      "contentHash": "412aac3d92f4747a79bd1df495dd401f",
+      "sourceName": "contracts/ConsciousnessIdentity.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/AccessControl.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "@openzeppelin/contracts/utils/Pausable.sol",
+        "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
+        "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol",
+        "./interfaces/IConsciousnessAchievements.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "ConsciousnessIdentity"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\ConsciousnessDAO.sol": {
+      "lastModificationDate": 1767374590016,
+      "contentHash": "5bf61f9efdd503f7770b700d3e8a1776",
+      "sourceName": "contracts/ConsciousnessDAO.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/AccessControl.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "@openzeppelin/contracts/utils/Pausable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+        "@openzeppelin/contracts/governance/utils/IVotes.sol",
+        "./interfaces/IConsciousnessIdentity.sol",
+        "./interfaces/ILeadershipSubscription.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "ConsciousnessDAO"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\interfaces\\IConsciousnessIdentity.sol": {
+      "lastModificationDate": 1767374590025,
+      "contentHash": "7f2a8711174d9f046357c72e49023fdb",
+      "sourceName": "contracts/interfaces/IConsciousnessIdentity.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "IConsciousnessIdentity"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\interfaces\\ILeadershipSubscription.sol": {
+      "lastModificationDate": 1767374590027,
+      "contentHash": "7b500dc1b896b55b1d74c39061455d0f",
+      "sourceName": "contracts/interfaces/ILeadershipSubscription.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "ILeadershipSubscription"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\ConsciousnessAchievements.sol": {
+      "lastModificationDate": 1767374590015,
+      "contentHash": "4d8aa080e6cfd71e73f1068027024d9b",
+      "sourceName": "contracts/ConsciousnessAchievements.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "@openzeppelin/contracts/access/AccessControl.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "@openzeppelin/contracts/utils/Pausable.sol",
+        "@openzeppelin/contracts/utils/Strings.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "ConsciousnessAchievements"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\DecentralizationMetrics.sol": {
+      "lastModificationDate": 1767374590017,
+      "contentHash": "9b2b56dc5c3eb3543f6659f13368926f",
+      "sourceName": "contracts/DecentralizationMetrics.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/AccessControl.sol",
+        "@openzeppelin/contracts/governance/utils/IVotes.sol",
+        "./interfaces/IDecentralizationMetrics.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "DecentralizationMetrics"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\PFORK.sol": {
+      "lastModificationDate": 1768940088833,
+      "contentHash": "02ded943283068f51d06b638dc949562",
+      "sourceName": "contracts/PFORK.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol",
+        "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
+        "@openzeppelin/contracts/access/AccessControl.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "PFORK"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\gPFORK.sol": {
+      "lastModificationDate": 1767374590021,
       "contentHash": "49abeced01d8ac454cb7babe1f6fbc6f",
       "sourceName": "contracts/gPFORK.sol",
       "solcConfig": {
@@ -3331,7 +3698,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3358,8 +3726,48 @@
         "gPFORK"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol": {
-      "lastModificationDate": 1759549273357,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\ReentrancyGuardUpgradeable.sol": {
+      "lastModificationDate": 1768944851321,
+      "contentHash": "24562076b21756e3358ede5e844008ce",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ReentrancyGuardUpgradeable"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol": {
+      "lastModificationDate": 1768944851635,
       "contentHash": "08db0b4bea3d52072346c326c5b857b7",
       "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
       "solcConfig": {
@@ -3378,7 +3786,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3399,8 +3808,8 @@
         "UUPSUpgradeable"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\draft-IERC1822.sol": {
-      "lastModificationDate": 1759549274807,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\draft-IERC1822.sol": {
+      "lastModificationDate": 1768944855101,
       "contentHash": "9b2cafd2153b51bcfd7f4cb4cfc975aa",
       "sourceName": "@openzeppelin/contracts/interfaces/draft-IERC1822.sol",
       "solcConfig": {
@@ -3419,7 +3828,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3436,10 +3846,10 @@
         "IERC1822Proxiable"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\proxy\\ERC1967\\ERC1967Utils.sol": {
-      "lastModificationDate": 1759549275077,
-      "contentHash": "2741625b983eb412cfdd8aa55a7671c1",
-      "sourceName": "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\AIServicePaymentUpgradeable.sol": {
+      "lastModificationDate": 1768940002256,
+      "contentHash": "962ec0cab84921ca8fbb41d877a79f94",
+      "sourceName": "contracts/AIServicePaymentUpgradeable.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -3456,7 +3866,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3466,22 +3877,25 @@
         }
       },
       "imports": [
-        "../beacon/IBeacon.sol",
-        "../../interfaces/IERC1967.sol",
-        "../../utils/Address.sol",
-        "../../utils/StorageSlot.sol"
+        "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol"
       ],
       "versionPragmas": [
-        "^0.8.21"
+        "^0.8.24"
       ],
       "artifacts": [
-        "ERC1967Utils"
+        "AIServicePaymentUpgradeable"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1967.sol": {
-      "lastModificationDate": 1759549275608,
-      "contentHash": "3c9577899f440b0c66e880c96e9250bb",
-      "sourceName": "@openzeppelin/contracts/interfaces/IERC1967.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\PausableUpgradeable.sol": {
+      "lastModificationDate": 1768944851254,
+      "contentHash": "a77dad8312dfaddab72fab403ee0c0a6",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -3498,7 +3912,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3507,53 +3922,19 @@
           }
         }
       },
-      "imports": [],
+      "imports": [
+        "../utils/ContextUpgradeable.sol",
+        "../proxy/utils/Initializable.sol"
+      ],
       "versionPragmas": [
-        ">=0.4.11"
+        "^0.8.20"
       ],
       "artifacts": [
-        "IERC1967"
+        "PausableUpgradeable"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts\\proxy\\beacon\\IBeacon.sol": {
-      "lastModificationDate": 1759549275491,
-      "contentHash": "ee2e46607ed2be58bd554306d068acba",
-      "sourceName": "@openzeppelin/contracts/proxy/beacon/IBeacon.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "cancun",
-          "viaIR": true,
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.4.16"
-      ],
-      "artifacts": [
-        "IBeacon"
-      ]
-    },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\contracts\\PitchforkTimelock.sol": {
-      "lastModificationDate": 1767085068264,
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\PitchforkTimelock.sol": {
+      "lastModificationDate": 1767374590020,
       "contentHash": "5be87ef6e2c061766fb14dc7a09bc63c",
       "sourceName": "contracts/PitchforkTimelock.sol",
       "solcConfig": {
@@ -3572,7 +3953,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3591,10 +3973,10 @@
         "PitchforkTimelock"
       ]
     },
-    "C:\\Users\\nflach\\source\\pitchfork-echo-studio\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\ReentrancyGuardUpgradeable.sol": {
-      "lastModificationDate": 1759549273238,
-      "contentHash": "24562076b21756e3358ede5e844008ce",
-      "sourceName": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol",
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\interfaces\\IAIServicePayment.sol": {
+      "lastModificationDate": 1767374590022,
+      "contentHash": "bf1c7b10470801392e47c966c649e3dd",
+      "sourceName": "contracts/interfaces/IAIServicePayment.sol",
       "solcConfig": {
         "version": "0.8.24",
         "settings": {
@@ -3611,7 +3993,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -3620,14 +4003,50 @@
           }
         }
       },
-      "imports": [
-        "../proxy/utils/Initializable.sol"
-      ],
+      "imports": [],
       "versionPragmas": [
-        "^0.8.20"
+        "^0.8.24"
       ],
       "artifacts": [
-        "ReentrancyGuardUpgradeable"
+        "IAIServicePayment"
+      ]
+    },
+    "C:\\Users\\nickf\\Source\\pitchfork-echo-studio\\contracts\\interfaces\\IConsciousnessDAO.sol": {
+      "lastModificationDate": 1767374590024,
+      "contentHash": "7afd5014abee93ebcb03ddaf96e20edb",
+      "sourceName": "contracts/interfaces/IConsciousnessDAO.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "cancun",
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "IConsciousnessDAO"
       ]
     }
   }
