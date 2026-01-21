@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building, Home, BarChart3 } from 'lucide-react';
+import { Menu, Shield, Users, MessageCircle, Scale, FileCheck, Heart, BookOpen, Brain, UserCheck, DollarSign, Settings, Activity, Building, Home, BarChart3, Vote } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 
@@ -34,6 +34,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     { path: '/organize', icon: Users, label: 'Organize', group: 'core' },
     { path: '/messages', icon: MessageCircle, label: 'Messages', group: 'core' },
     { path: '/governance', icon: Scale, label: 'Governance', group: 'core' },
+    { path: '/zk-voting', icon: Vote, label: 'ZK Voting', group: 'core' },
     { path: '/verify', icon: FileCheck, label: 'Verify', group: 'core' },
     { path: '/support', icon: Heart, label: 'Support', group: 'core' },
   ];

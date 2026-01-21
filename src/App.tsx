@@ -27,6 +27,7 @@ const AISettings = lazy(() => import("./pages/AISettings"));
 const ProviderHealthDashboard = lazy(() => import("./pages/ProviderHealthDashboard"));
 const PerformanceMonitor = lazy(() => import("./pages/PerformanceMonitor"));
 const DecentralizationDashboard = lazy(() => import("./pages/DecentralizationDashboard"));
+const ZKVoting = lazy(() => import("./pages/ZKVoting"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -88,6 +89,7 @@ const App = () => (
                   <Route path="/provider-health" element={<ProviderHealthDashboard />} />
                   <Route path="/performance" element={<PerformanceMonitor />} />
                   <Route path="/decentralization" element={<DecentralizationDashboard />} />
+                  <Route path="/zk-voting" element={<ZKVoting />} />
 
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
