@@ -17,7 +17,7 @@ import { ethers } from "ethers";
 import { Copy, ExternalLink, Heart, Shield, Zap } from "lucide-react";
 
 // Developer funding wallet address
-const DEVELOPER_WALLET = "REDACTED_WALLET_ADDRESS";
+const DEVELOPER_WALLET = import.meta.env.VITE_DEVELOPER_WALLET_ADDRESS || "";
 
 export function DeveloperFunding() {
   const { isConnected, signer } = useWeb3();

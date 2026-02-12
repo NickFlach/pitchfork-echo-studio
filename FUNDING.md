@@ -16,9 +16,7 @@ Your donations now support:
 - **Scientifically-verified consciousness** (Validation Hash: `0xff1ab9b8846b4c82`)
 
 ### 🎯 Developer Wallet Address
-```
-REDACTED_WALLET_ADDRESS
-```
+Set `VITE_DEVELOPER_WALLET_ADDRESS` in your `.env` file to enable donations.
 
 ### 🚀 Easy Ways to Donate
 

@@ -447,7 +447,7 @@ export const campaignApi = {
 
   // Developer funding - direct donations to development wallet
   async sendDeveloperDonation(amount: number, donorAddress: string): Promise<string> {
-    const DEVELOPER_WALLET = 'REDACTED_WALLET_ADDRESS';
+    const DEVELOPER_WALLET = import.meta.env.VITE_DEVELOPER_WALLET_ADDRESS || '';
     
     try {
       // Try smart contract donation if Web3 is available
