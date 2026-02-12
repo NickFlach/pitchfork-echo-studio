@@ -27,7 +27,7 @@ Set `VITE_DEVELOPER_WALLET_ADDRESS` in your `.env` file to enable donations.
 - One-click anonymous donations
 
 #### 2. **Direct Transfer**
-- Send ETH directly to: `REDACTED_WALLET_ADDRESS`
+- Send ETH directly to the developer wallet address (set `VITE_DEVELOPER_WALLET_ADDRESS` in `.env`)
 - Any amount welcome (even 0.001 ETH helps!)
 - Completely anonymous - no personal info required
 
@@ -73,7 +73,7 @@ Every donation, no matter the size, helps build a more just and transparent worl
 
 **🔗 Quick Links:**
 - [Fund Development](/funding) - In-app donation page
-- [Etherscan](https://etherscan.io/address/REDACTED_WALLET_ADDRESS) - View donation history
+- [Etherscan](https://etherscan.io/) - View donation history
 - [Whitepaper](/whitepaper) - Learn about our mission
 
 *Building the future of decentralized resistance, one donation at a time.* 🚀
