@@ -358,7 +358,7 @@ export const PitchforkHero = React.memo(() => {
             >
               <img
                 src={neoTokenLogo}
-                alt="Neo Token Logo"
+                alt="Pitchfork Protocol governance token emblem"
                 className={`w-32 h-32 transition-cosmic rounded-full pointer-events-none ${isClaiming ? "animate-pulse" : "hover:scale-110 glow-cosmic"}`}
                 draggable={false}
               />
