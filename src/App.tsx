@@ -9,6 +9,7 @@ import { TierProvider, useTier } from "@/contexts/TierContext";
 import { UpgradePromptModal } from "@/components/ui/upgrade-prompt";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { queryClient } from "@/lib/queryClient";
+import { RouteSEO } from "@/lib/routeSEO";
 
 // Lazy load components
 const Index = lazy(() => import("./pages/Index"));
