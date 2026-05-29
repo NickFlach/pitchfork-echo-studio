@@ -1,0 +1,27 @@
+# Pitchfork Protocol
+
+> Decentralized governance platform for building better DAOs — privacy-preserving voting, AI-assisted decision making, and tools for genuine power diffusion inspired by Vitalik Buterin's vision for DAOs.
+
+Pitchfork Protocol is an open platform for decentralized autonomous organizations that prioritize decentralization, privacy, and resistance to capture. It combines ZK private voting, AI voting assistance, consciousness-driven governance, and transparent power-distribution metrics.
+
+## Pages
+
+- [Home](/): Overview of Pitchfork Protocol and its mission.
+- [Whitepaper](/whitepaper): The Fighting Back whitepaper outlining the protocol's vision and design.
+- [Governance](/governance): Participate in proposals and on-chain governance.
+- [Decentralization Dashboard](/decentralization): Real-time metrics on power distribution, concentration, and diffusion.
+- [Consciousness](/consciousness): Consciousness engine for reflective, multiscale decision making.
+- [Leadership](/leadership): Leadership subscription and coordination tools.
+- [Enterprise Leadership](/enterprise-leadership): Enterprise-grade leadership and coordination features.
+- [Funding](/funding): Support developers and fund public-goods work.
+- [Organize](/organize): Tools to coordinate activists and movements.
+- [Identity](/identity): Decentralized identity and reputation.
+- [Verify](/verify): Verify on-chain credentials and proofs.
+- [Messages](/messages): Encrypted communication layer.
+- [Support](/support): Help and support resources.
+
+## Optional
+
+- [AI Settings](/ai-settings): Configure the Lovable AI integration powering voting assistance and analysis.
+- [Provider Health](/provider-health): AI provider health and status dashboard.
+- [Performance](/performance): Performance monitoring dashboard.
