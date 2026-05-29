@@ -367,7 +367,7 @@ export const PitchforkHero = React.memo(() => {
 
           {/* Main heading with gradient text */}
           <div className="space-y-4">
-            <h1 className="text-6xl md:text-7xl font-bold text-gradient-cosmic tracking-tight">Pitchfork Protocol</h1>
+            <h1 className="text-6xl md:text-7xl font-bold text-gradient-cosmic tracking-tight">Pitchfork Protocol — Decentralized Tools for Resistance</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Decentralized tools for peaceful resistance against corruption and injustice
             </p>
