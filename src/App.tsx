@@ -68,30 +68,28 @@ const App = () => (
             <BrowserRouter>
               <Suspense fallback={<LoadingSpinner />}>
                 <GlobalUpgradePrompt />
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/whitepaper" element={<Whitepaper />} />
-                  <Route path="/identity" element={<Identity />} />
-                  <Route path="/organize" element={<Organize />} />
-                  <Route path="/verify" element={<Verify />} />
-                  <Route path="/support" element={<Support />} />
-                  <Route path="/messages" element={<Messages />} />
-                  <Route path="/governance" element={<Governance />} />
-                  <Route path="/leadership" element={<Leadership />} />
-                  <Route path="/enterprise-leadership" element={<EnterpriseLeadership />} />
-
-                  <Route path="/consciousness" element={<Consciousness />} />
-
-                  <Route path="/funding" element={<Funding />} />
-
-                  <Route path="/ai-settings" element={<AISettings />} />
-                  <Route path="/provider-health" element={<ProviderHealthDashboard />} />
-                  <Route path="/performance" element={<PerformanceMonitor />} />
-                  <Route path="/decentralization" element={<DecentralizationDashboard />} />
-
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <main>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/whitepaper" element={<Whitepaper />} />
+                    <Route path="/identity" element={<Identity />} />
+                    <Route path="/organize" element={<Organize />} />
+                    <Route path="/verify" element={<Verify />} />
+                    <Route path="/support" element={<Support />} />
+                    <Route path="/messages" element={<Messages />} />
+                    <Route path="/governance" element={<Governance />} />
+                    <Route path="/leadership" element={<Leadership />} />
+                    <Route path="/enterprise-leadership" element={<EnterpriseLeadership />} />
+                    <Route path="/consciousness" element={<Consciousness />} />
+                    <Route path="/funding" element={<Funding />} />
+                    <Route path="/ai-settings" element={<AISettings />} />
+                    <Route path="/provider-health" element={<ProviderHealthDashboard />} />
+                    <Route path="/performance" element={<PerformanceMonitor />} />
+                    <Route path="/decentralization" element={<DecentralizationDashboard />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
               </Suspense>
             </BrowserRouter>
           </TooltipProvider>
