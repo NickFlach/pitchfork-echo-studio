@@ -358,7 +358,7 @@ export const PitchforkHero = React.memo(() => {
             >
               <img
                 src={neoTokenLogo}
-                alt="Neo Token Logo"
+                alt="Pitchfork Protocol governance token emblem"
                 className={`w-32 h-32 transition-cosmic rounded-full pointer-events-none ${isClaiming ? "animate-pulse" : "hover:scale-110 glow-cosmic"}`}
                 draggable={false}
               />
@@ -367,7 +367,7 @@ export const PitchforkHero = React.memo(() => {
 
           {/* Main heading with gradient text */}
           <div className="space-y-4">
-            <h1 className="text-6xl md:text-7xl font-bold text-gradient-cosmic tracking-tight">Pitchfork Protocol</h1>
+            <h1 className="text-6xl md:text-7xl font-bold text-gradient-cosmic tracking-tight">Pitchfork Protocol — Decentralized Tools for Resistance</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Decentralized tools for peaceful resistance against corruption and injustice
             </p>
@@ -421,7 +421,7 @@ export const PitchforkHero = React.memo(() => {
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6 shadow-lg w-full max-w-md">
                   <div className="flex items-center justify-between gap-4 mb-4 pb-4 border-b border-border/50">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <img src={neoTokenLogo} alt="PFORK" className="w-10 h-10 rounded-full flex-shrink-0" />
+                      <img src={neoTokenLogo} alt="PFORK governance token icon" className="w-10 h-10 rounded-full flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-xs text-muted-foreground whitespace-nowrap">Your Balance</p>
                         <p className="text-2xl font-bold text-foreground truncate">
@@ -435,6 +435,7 @@ export const PitchforkHero = React.memo(() => {
                       onClick={fetchFaucetInfo}
                       disabled={isLoadingBalance}
                       title="Refresh info"
+                      aria-label="Refresh faucet and balance info"
                       className="flex-shrink-0"
                     >
                       <RefreshCw className={`w-4 h-4 ${isLoadingBalance ? 'animate-spin' : ''}`} />

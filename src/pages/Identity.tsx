@@ -144,6 +144,7 @@ const Identity = () => {
           </p>
         </div>
 
+        <h2 className="sr-only">Identity Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Current Status */}
           <Card>

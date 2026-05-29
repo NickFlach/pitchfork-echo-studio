@@ -9,6 +9,7 @@ import { TierProvider, useTier } from "@/contexts/TierContext";
 import { UpgradePromptModal } from "@/components/ui/upgrade-prompt";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { queryClient } from "@/lib/queryClient";
+import { RouteSEO } from "@/lib/routeSEO";
 
 // Lazy load components
 const Index = lazy(() => import("./pages/Index"));
@@ -68,30 +69,28 @@ const App = () => (
             <BrowserRouter>
               <Suspense fallback={<LoadingSpinner />}>
                 <GlobalUpgradePrompt />
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/whitepaper" element={<Whitepaper />} />
-                  <Route path="/identity" element={<Identity />} />
-                  <Route path="/organize" element={<Organize />} />
-                  <Route path="/verify" element={<Verify />} />
-                  <Route path="/support" element={<Support />} />
-                  <Route path="/messages" element={<Messages />} />
-                  <Route path="/governance" element={<Governance />} />
-                  <Route path="/leadership" element={<Leadership />} />
-                  <Route path="/enterprise-leadership" element={<EnterpriseLeadership />} />
-
-                  <Route path="/consciousness" element={<Consciousness />} />
-
-                  <Route path="/funding" element={<Funding />} />
-
-                  <Route path="/ai-settings" element={<AISettings />} />
-                  <Route path="/provider-health" element={<ProviderHealthDashboard />} />
-                  <Route path="/performance" element={<PerformanceMonitor />} />
-                  <Route path="/decentralization" element={<DecentralizationDashboard />} />
-
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <main>
+                  <Routes>
+                    <Route path="/" element={<><RouteSEO path="/" /><Index /></>} />
+                    <Route path="/whitepaper" element={<><RouteSEO path="/whitepaper" /><Whitepaper /></>} />
+                    <Route path="/identity" element={<><RouteSEO path="/identity" /><Identity /></>} />
+                    <Route path="/organize" element={<><RouteSEO path="/organize" /><Organize /></>} />
+                    <Route path="/verify" element={<><RouteSEO path="/verify" /><Verify /></>} />
+                    <Route path="/support" element={<><RouteSEO path="/support" /><Support /></>} />
+                    <Route path="/messages" element={<><RouteSEO path="/messages" /><Messages /></>} />
+                    <Route path="/governance" element={<><RouteSEO path="/governance" /><Governance /></>} />
+                    <Route path="/leadership" element={<><RouteSEO path="/leadership" /><Leadership /></>} />
+                    <Route path="/enterprise-leadership" element={<><RouteSEO path="/enterprise-leadership" /><EnterpriseLeadership /></>} />
+                    <Route path="/consciousness" element={<><RouteSEO path="/consciousness" /><Consciousness /></>} />
+                    <Route path="/funding" element={<><RouteSEO path="/funding" /><Funding /></>} />
+                    <Route path="/ai-settings" element={<><RouteSEO path="/ai-settings" /><AISettings /></>} />
+                    <Route path="/provider-health" element={<><RouteSEO path="/provider-health" /><ProviderHealthDashboard /></>} />
+                    <Route path="/performance" element={<><RouteSEO path="/performance" /><PerformanceMonitor /></>} />
+                    <Route path="/decentralization" element={<><RouteSEO path="/decentralization" /><DecentralizationDashboard /></>} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
               </Suspense>
             </BrowserRouter>
           </TooltipProvider>
