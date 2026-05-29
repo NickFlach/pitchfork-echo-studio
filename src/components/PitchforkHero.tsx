@@ -435,6 +435,7 @@ export const PitchforkHero = React.memo(() => {
                       onClick={fetchFaucetInfo}
                       disabled={isLoadingBalance}
                       title="Refresh info"
+                      aria-label="Refresh faucet and balance info"
                       className="flex-shrink-0"
                     >
                       <RefreshCw className={`w-4 h-4 ${isLoadingBalance ? 'animate-spin' : ''}`} />
