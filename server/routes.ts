@@ -1326,7 +1326,7 @@ router.get('/api/admin/ai-credentials', ...protectAIEndpoint('verified'), async 
   }
 });
 
-router.put('/api/admin/ai-credentials', async (req, res) => {
+router.put('/api/admin/ai-credentials', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     const validatedData = updateCredentialsRequestSchema.parse(req.body);
     const updatedCredentials = [];
