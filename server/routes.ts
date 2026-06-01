@@ -1300,7 +1300,7 @@ router.get('/api/admin/ai-settings', ...protectAIEndpoint('verified'), async (re
   }
 });
 
-router.put('/api/admin/ai-settings', async (req, res) => {
+router.put('/api/admin/ai-settings', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     const validatedData = insertAISettingsSchema.parse(req.body);
     const settings = await storage.updateAISettings(validatedData);
