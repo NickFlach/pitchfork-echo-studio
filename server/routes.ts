@@ -1315,7 +1315,7 @@ router.put('/api/admin/ai-settings', ...protectAIEndpoint('verified'), async (re
 });
 
 // Admin AI Credentials API (secure credential management)
-router.get('/api/admin/ai-credentials', async (req, res) => {
+router.get('/api/admin/ai-credentials', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     // Always return masked credentials for security
     const maskedCredentials = await storage.getMaskedAICredentials();
