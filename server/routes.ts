@@ -1275,7 +1275,7 @@ router.get('/api/tactical-frameworks', async (req, res) => {
 });
 
 // Admin AI Settings API
-router.get('/api/admin/ai-settings', async (req, res) => {
+router.get('/api/admin/ai-settings', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     const settings = await storage.getAISettings();
     if (!settings) {
