@@ -11,9 +11,9 @@ const config = {
   apiUrl: process.env.VITE_API_URL || 'http://localhost:3001',
   frontendUrl: process.env.VITE_FRONTEND_URL || 'http://localhost:8080',
 
-  // Security
-  jwtSecret: process.env.JWT_SECRET || '',
-  encryptionKey: process.env.ENCRYPTION_KEY || '',
+  // Security — never fall back to empty strings, JWT/encryption secrets must be explicitly set
+  jwtSecret: process.env.JWT_SECRET,
+  encryptionKey: process.env.ENCRYPTION_KEY,
 
   // Web3
   supportedChains: (process.env.SUPPORTED_CHAINS || '1,137,56,5,11155111,80001,97')
