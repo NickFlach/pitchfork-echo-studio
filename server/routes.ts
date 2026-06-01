@@ -1400,7 +1400,7 @@ router.put('/api/admin/ai-credentials', ...protectAIEndpoint('verified'), async 
   }
 });
 
-router.delete('/api/admin/ai-credentials/:provider', async (req, res) => {
+router.delete('/api/admin/ai-credentials/:provider', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     const provider = req.params.provider;
     
