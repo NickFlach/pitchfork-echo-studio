@@ -11,9 +11,9 @@ const config = {
   apiUrl: process.env.VITE_API_URL || 'http://localhost:3001',
   frontendUrl: process.env.VITE_FRONTEND_URL || 'http://localhost:8080',
 
-  // Security
-  jwtSecret: process.env.JWT_SECRET || '',
-  encryptionKey: process.env.ENCRYPTION_KEY || '',
+  // Security — never fall back to empty strings, JWT/encryption secrets must be explicitly set
+  jwtSecret: process.env.JWT_SECRET,
+  encryptionKey: process.env.ENCRYPTION_KEY,
 
   // Web3
   supportedChains: (process.env.SUPPORTED_CHAINS || '1,137,56,5,11155111,80001,97')
@@ -39,16 +39,14 @@ const config = {
     .map(origin => origin.trim()),
 };
 
-// Basic runtime validation
+// Basic runtime validation — enforced in every environment, not just production.
+// An unset/empty JWT_SECRET would let any caller forge valid tokens, so we fail fast.
 function assertStrongSecrets() {
-  const inProd = config.nodeEnv === 'production';
-  if (inProd) {
-    if (!config.jwtSecret || config.jwtSecret.length < 24) {
-      throw new Error('JWT_SECRET must be set and at least 24 chars in production');
-    }
-    if (!config.encryptionKey || config.encryptionKey.length < 32) {
-      throw new Error('ENCRYPTION_KEY must be set and at least 32 chars in production');
-    }
+  if (!config.jwtSecret || config.jwtSecret.length < 24) {
+    throw new Error('JWT_SECRET must be set and at least 24 chars (no environment may run without it)');
+  }
+  if (!config.encryptionKey || config.encryptionKey.length < 32) {
+    throw new Error('ENCRYPTION_KEY must be set and at least 32 chars (no environment may run without it)');
   }
 }
 

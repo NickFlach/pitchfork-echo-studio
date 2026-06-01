@@ -1275,7 +1275,7 @@ router.get('/api/tactical-frameworks', async (req, res) => {
 });
 
 // Admin AI Settings API
-router.get('/api/admin/ai-settings', async (req, res) => {
+router.get('/api/admin/ai-settings', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     const settings = await storage.getAISettings();
     if (!settings) {
@@ -1300,7 +1300,7 @@ router.get('/api/admin/ai-settings', async (req, res) => {
   }
 });
 
-router.put('/api/admin/ai-settings', async (req, res) => {
+router.put('/api/admin/ai-settings', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     const validatedData = insertAISettingsSchema.parse(req.body);
     const settings = await storage.updateAISettings(validatedData);
@@ -1315,7 +1315,7 @@ router.put('/api/admin/ai-settings', async (req, res) => {
 });
 
 // Admin AI Credentials API (secure credential management)
-router.get('/api/admin/ai-credentials', async (req, res) => {
+router.get('/api/admin/ai-credentials', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     // Always return masked credentials for security
     const maskedCredentials = await storage.getMaskedAICredentials();
@@ -1326,7 +1326,7 @@ router.get('/api/admin/ai-credentials', async (req, res) => {
   }
 });
 
-router.put('/api/admin/ai-credentials', async (req, res) => {
+router.put('/api/admin/ai-credentials', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     const validatedData = updateCredentialsRequestSchema.parse(req.body);
     const updatedCredentials = [];
@@ -1400,7 +1400,7 @@ router.put('/api/admin/ai-credentials', async (req, res) => {
   }
 });
 
-router.delete('/api/admin/ai-credentials/:provider', async (req, res) => {
+router.delete('/api/admin/ai-credentials/:provider', ...protectAIEndpoint('verified'), async (req: AuthenticatedRequest, res) => {
   try {
     const provider = req.params.provider;
     
