@@ -30,6 +30,9 @@ const config = {
   ipfsApiUrl: process.env.IPFS_API_URL,
   ipfsGatewayUrl: process.env.IPFS_GATEWAY_URL,
 
+  // Space Child SSO federation
+  spacechildAuthUrl: process.env.SPACECHILD_AUTH_URL || 'https://auth.spacechild.love',
+
   // Logging
   logLevel: process.env.LOG_LEVEL || 'info',
 

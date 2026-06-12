@@ -1,13 +1,180 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, CheckCircle, AlertCircle, Lock, Key, Eye, EyeOff, Check, AlertTriangle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Shield, CheckCircle, AlertCircle, Lock, Key, Eye, EyeOff, Check, AlertTriangle, Sparkles } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { identityApi } from '@/lib/api';
+import {
+  getStoredSession,
+  login as spacechildLogin,
+  register as spacechildRegister,
+  signOut as spacechildSignOut,
+  SpaceChildSession,
+} from '@/lib/spacechildAuth';
 import { Navigation } from '@/components/Navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+const SpaceChildSignInCard = () => {
+  const { toast } = useToast();
+  const [session, setSession] = useState<SpaceChildSession | null>(() => getStoredSession());
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const result = mode === 'login'
+        ? await spacechildLogin(email, password)
+        : await spacechildRegister(email, password, firstName || undefined, lastName || undefined);
+
+      if (result.session) {
+        setSession(result.session);
+        setPassword('');
+        toast({
+          title: "Signed in with Space Child",
+          description: `Welcome, ${result.session.user.email}`,
+        });
+      } else {
+        toast({
+          title: mode === 'login' ? "Sign In" : "Registration",
+          description: result.message || "Check your email to continue.",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: mode === 'login' ? "Sign In Failed" : "Registration Failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSignOut = () => {
+    spacechildSignOut();
+    setSession(null);
+    toast({
+      title: "Signed Out",
+      description: "Your Space Child session has been cleared.",
+    });
+  };
+
+  if (session) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-primary" />
+            Space Child Account
+          </CardTitle>
+          <CardDescription>
+            Federated sign-in via auth.spacechild.love
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg" data-testid="status-spacechild-signed-in">
+            <span className="truncate">{session.user.email}</span>
+            <Check className="w-5 h-5 text-green-500 shrink-0" />
+          </div>
+          <Button variant="outline" className="w-full" onClick={handleSignOut} data-testid="button-spacechild-signout">
+            Sign Out of Space Child
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-primary" />
+          Sign in with Space Child
+        </CardTitle>
+        <CardDescription>
+          Use your Space Child account as an alternative to wallet-based identity
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="spacechild-email">Email</Label>
+            <Input
+              id="spacechild-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              data-testid="input-spacechild-email"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="spacechild-password">Password</Label>
+            <Input
+              id="spacechild-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={mode === 'register' ? 8 : undefined}
+              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              data-testid="input-spacechild-password"
+            />
+          </div>
+          {mode === 'register' && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="spacechild-first-name">First name</Label>
+                <Input
+                  id="spacechild-first-name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  data-testid="input-spacechild-first-name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="spacechild-last-name">Last name</Label>
+                <Input
+                  id="spacechild-last-name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  data-testid="input-spacechild-last-name"
+                />
+              </div>
+            </div>
+          )}
+          <Button type="submit" className="w-full" disabled={isSubmitting} data-testid="button-spacechild-submit">
+            {isSubmitting
+              ? 'Please wait...'
+              : mode === 'login' ? 'Sign in with Space Child' : 'Create Space Child Account'}
+          </Button>
+          <button
+            type="button"
+            className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+            data-testid="button-spacechild-toggle-mode"
+          >
+            {mode === 'login'
+              ? "Don't have an account? Create one"
+              : 'Already have an account? Sign in'}
+          </button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
 
 const Identity = () => {
   const { isConnected, account } = useWeb3();
@@ -118,15 +285,18 @@ const Identity = () => {
       <div className="min-h-screen bg-gradient-subtle">
         <Navigation />
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
-          <Card className="w-full max-w-md">
-            <CardHeader className="text-center">
-              <Shield className="w-12 h-12 mx-auto text-primary mb-4" />
-              <CardTitle>Connect Your Wallet</CardTitle>
-              <CardDescription>
-                Connect your wallet to access identity verification features
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          <div className="w-full max-w-md space-y-6">
+            <Card>
+              <CardHeader className="text-center">
+                <Shield className="w-12 h-12 mx-auto text-primary mb-4" />
+                <CardTitle>Connect Your Wallet</CardTitle>
+                <CardDescription>
+                  Connect your wallet to access identity verification features
+                </CardDescription>
+              </CardHeader>
+            </Card>
+            <SpaceChildSignInCard />
+          </div>
         </div>
       </div>
     );
@@ -216,6 +386,9 @@ const Identity = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Space Child SSO Federation */}
+        <SpaceChildSignInCard />
 
         {/* How It Works */}
         <Card>

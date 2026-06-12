@@ -10,6 +10,7 @@ import { storage } from './storage.js';
 // If needed to switch to DB storage, change the import to:
 // import { storage } from './db-storage.js';
 import router from './routes.js';
+import spacechildAuthRouter from './spacechild-auth.js';
 import * as config from './config.js';
 import { logger, logRequest, logApiCall } from './logger.js';
 import { pool, checkDatabaseConnection } from '../db/index.js';
@@ -198,6 +199,9 @@ app.get('/provider-health', async (_req, res) => {
     res.status(500).json({ status: 'unhealthy', error: e?.message || 'unknown' });
   }
 });
+
+// Mount Space Child SSO federation routes
+app.use('/api/auth/spacechild', spacechildAuthRouter);
 
 // Mount API routes
 app.use(router);
