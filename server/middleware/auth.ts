@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 
-const config = require('../config.js');
+import config from '../config.js';
 
 // Types for authentication
 export interface AuthenticatedRequest extends Request {

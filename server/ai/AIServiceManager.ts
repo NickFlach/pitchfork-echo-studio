@@ -1,6 +1,6 @@
 import { AISettings, AIProvider, AIModelConfig } from '../../shared/schema';
 // Switch to Drizzle-backed storage
-import { storage } from '../db-storage';
+import { storage } from '../storage';
 import type { InsertAIUsageAnalytics } from '../../shared/schema';
 import { AIProviderAdapter, AIResponse, AIRequest, AIStreamResponse } from './AIProviderAdapter';
 import { OpenAIAdapter } from './providers/OpenAIAdapter';

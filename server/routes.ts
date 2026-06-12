@@ -1,6 +1,6 @@
 import express from 'express';
 import { z } from 'zod';
-import { storage } from './db-storage';
+import { storage } from './storage';
 import { ConsciousnessEngine } from './ConsciousnessEngine';
 import { MultiscaleAwarenessEngine } from './MultiscaleAwarenessEngine';
 import { DecisionSynthesisEngine } from './DecisionSynthesisEngine';
@@ -32,26 +32,26 @@ import {
   getMonitoringStats 
 } from './middleware/monitoring';
 import { 
-  insertConsciousnessStateSchema,
-  insertDecisionRecordSchema,
-  insertLearningCycleSchema,
-  insertReflectionLogSchema,
-  insertComplexityMapSchema,
+  consciousnessStateSchema as insertConsciousnessStateSchema,
+  decisionRecordSchema as insertDecisionRecordSchema,
+  learningCycleSchema as insertLearningCycleSchema,
+  reflectionLogSchema as insertReflectionLogSchema,
+  complexityMapSchema as insertComplexityMapSchema,
   insertDecisionSynthesisSchema,
   insertDecisionArchetypeSchema,
   insertDecisionEvolutionSchema,
   decisionOptionSchema,
-  insertCorruptionAnalysisResultSchema,
-  insertSystemicCorruptionReportSchema,
-  insertCampaignStrategyPlanSchema,
-  insertResourceProfileSchema,
+  corruptionAnalysisResultSchema as insertCorruptionAnalysisResultSchema,
+  systemicCorruptionReportSchema as insertSystemicCorruptionReportSchema,
+  campaignStrategyPlanSchema as insertCampaignStrategyPlanSchema,
+  resourceProfileSchema as insertResourceProfileSchema,
   insertAISettingsSchema,
   aiSettingsSchema,
   updateCredentialsRequestSchema,
   AIProviderEnum,
-  insertAIUsageAnalyticsSchema,
+  aiUsageAnalyticsSchema as insertAIUsageAnalyticsSchema,
   insertAIProviderPerformanceSchema,
-  insertAIUserFeedbackSchema,
+  aiUserFeedbackSchema as insertAIUserFeedbackSchema,
   insertAIFeatureAdoptionSchema,
   insertAIProviderFallbackEventSchema,
   insertAIProviderRecommendationSchema,
@@ -61,11 +61,11 @@ import {
   insertRecursiveInsightAnalysisSchema,
   insertMultidimensionalReflectionSchema,
   insertConsciousnessStatePredictionSchema,
-  insertExecutiveAssessmentSchema,
-  insertStrategicPlanSchema,
-  insertTeamConsciousnessAssessmentSchema,
-  insertLeadershipDevelopmentTrackingSchema,
-  insertEnterpriseAnalyticsSchema
+  executiveAssessmentSchema as insertExecutiveAssessmentSchema,
+  strategicPlanSchema as insertStrategicPlanSchema,
+  teamConsciousnessAssessmentSchema as insertTeamConsciousnessAssessmentSchema,
+  leadershipDevelopmentTrackingSchema as insertLeadershipDevelopmentTrackingSchema,
+  enterpriseAnalyticsSchema as insertEnterpriseAnalyticsSchema
 } from '../shared/schema';
 import { aiService } from './ai/AIServiceManager';
 import { AIRequest } from './ai/AIProviderAdapter';

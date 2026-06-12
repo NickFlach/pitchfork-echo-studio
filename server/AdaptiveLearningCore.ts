@@ -1,4 +1,4 @@
-import { storage } from './db-storage';
+import { storage } from './storage';
 import { 
   InsertLearningCycle,
   LearningCycle,

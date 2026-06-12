@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
 
 const config = {
@@ -55,4 +55,4 @@ function assertStrongSecrets() {
 
 assertStrongSecrets();
 
-module.exports = config;
+export default config;

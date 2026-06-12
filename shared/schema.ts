@@ -536,3 +536,625 @@ export type InsertEnterpriseAnalytics = z.infer<typeof enterpriseAnalyticsSchema
 // Smart Contract Blockchain Integration Types
 // Import comprehensive blockchain types
 export * from './types/blockchain';
+
+// ----------------------------------------------------------------------------
+// Schemas restored from the pre-rewrite schema (still consumed by server/routes.ts)
+// ----------------------------------------------------------------------------
+
+// Decision Options and Analysis
+export const decisionOptionSchema = z.object({
+  id: z.string(),
+  description: z.string(),
+  parameters: z.record(z.any()),
+  estimatedEffort: z.number().min(0).max(10),
+  riskLevel: z.enum(['low', 'medium', 'high']),
+  reversibility: z.number().min(0).max(1),
+  timeHorizon: z.enum(['immediate', 'short-term', 'medium-term', 'long-term', 'generational']),
+  stakeholders: z.array(z.string()),
+  prerequisites: z.array(z.string()).default([]),
+  expectedOutcomes: z.array(z.string()).default([])
+});
+
+export const layerAnalysisSchema = z.object({
+  layerId: z.string(),
+  relevance: z.number().min(0).max(1),
+  impact: z.number().min(0).max(1),
+  consequences: z.array(z.string()),
+  dependencies: z.array(z.string()),
+  constraints: z.array(z.string()),
+  opportunities: z.array(z.string()),
+  risks: z.array(z.string()),
+  confidence: z.number().min(0).max(1).default(0.7),
+  timeToImpact: z.number().optional(), // milliseconds
+  mitigationStrategies: z.array(z.string()).default([])
+});
+
+export const multiscaleAnalysisSchema = z.object({
+  optionId: z.string(),
+  layerAnalyses: z.record(layerAnalysisSchema),
+  crossLayerImpacts: z.array(z.object({
+    fromLayer: z.string(),
+    toLayer: z.string(),
+    impact: z.string(),
+    strength: z.number().min(0).max(1)
+  })),
+  totalComplexity: z.number().min(0).max(1),
+  emergentProperties: z.array(z.string()),
+  synthesisScore: z.number().min(0).max(1).optional(),
+  cascadingEffects: z.array(z.object({
+    source: z.string(),
+    targets: z.array(z.string()),
+    effect: z.string(),
+    probability: z.number().min(0).max(1),
+    timeDelay: z.number().optional()
+  })).default([])
+});
+
+// Decision Synthesis and Wisdom Integration
+export const wisdomPatternSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  archetype: z.enum(['builder', 'destroyer', 'transformer', 'guardian', 'explorer', 'connector', 'transcender', 'integrator']),
+  description: z.string(),
+  applicabilityConditions: z.array(z.string()),
+  transformationTemplate: z.string(),
+  historicalSuccess: z.number().min(0).max(1),
+  emergentProperties: z.array(z.string()),
+  conflictResolutionMethods: z.array(z.string()).default([]),
+  scalabilityFactors: z.array(z.string()).default([]),
+  evolutionaryDirection: z.string().optional()
+});
+
+export const optimizationObjectiveSchema = z.object({
+  id: z.string(),
+  scale: z.enum(['syntax', 'architecture', 'user-experience', 'social', 'economic', 'environmental', 'ethical', 'existential']),
+  objective: z.string(),
+  weight: z.number().min(0).max(1),
+  satisfaction: z.number().min(0).max(1),
+  constraints: z.array(z.string()),
+  tradeoffs: z.array(z.string()).default([]),
+  measurementCriteria: z.array(z.string()).default([])
+});
+
+export const paradoxResolutionSchema = z.object({
+  id: z.string(),
+  paradox: z.string(),
+  conflictingLayers: z.array(z.string()),
+  resolutionStrategy: z.enum(['transcendence', 'integration', 'temporal-separation', 'context-dependent', 'emergent-synthesis']),
+  resolution: z.string(),
+  confidence: z.number().min(0).max(1),
+  implementationSteps: z.array(z.string()).default([]),
+  monitoringCriteria: z.array(z.string()).default([]),
+  contingencyPlans: z.array(z.string()).default([])
+});
+
+export const stakeholderImpactSchema = z.object({
+  stakeholder: z.string(),
+  stakeholderType: z.enum(['individual', 'team', 'organization', 'community', 'ecosystem', 'future-generations']),
+  impactType: z.enum(['positive', 'negative', 'neutral', 'complex', 'unknown']),
+  magnitude: z.number().min(0).max(1),
+  timeHorizon: z.enum(['immediate', 'short-term', 'medium-term', 'long-term', 'generational']),
+  description: z.string(),
+  mitigationNeeded: z.boolean().default(false),
+  enhancementOpportunities: z.array(z.string()).default([]),
+  uncertaintyFactors: z.array(z.string()).default([])
+});
+
+export const decisionSynthesisSchema = z.object({
+  id: z.string(),
+  agentId: z.string(),
+  context: z.string(),
+  decisionOptions: z.array(decisionOptionSchema),
+  multiscaleAnalyses: z.array(multiscaleAnalysisSchema),
+  synthesizedDecision: decisionOptionSchema,
+  optimizationObjectives: z.array(optimizationObjectiveSchema),
+  paradoxResolutions: z.array(paradoxResolutionSchema),
+  emergentSolutions: z.array(z.string()),
+  stakeholderImpacts: z.array(stakeholderImpactSchema),
+  wisdomPatternsApplied: z.array(wisdomPatternSchema),
+  synthesisConfidence: z.number().min(0).max(1),
+  implementationRoadmap: z.array(z.object({
+    phase: z.string(),
+    actions: z.array(z.string()),
+    timeline: z.string(),
+    success_criteria: z.array(z.string()),
+    risk_factors: z.array(z.string())
+  })).default([]),
+  monitoringFramework: z.object({
+    kpis: z.array(z.string()),
+    checkpoints: z.array(z.string()),
+    feedback_loops: z.array(z.string()),
+    adaptation_triggers: z.array(z.string())
+  }).optional(),
+  timestamp: z.string(),
+  completedAt: z.string().optional()
+});
+
+export const insertDecisionSynthesisSchema = decisionSynthesisSchema.omit({ 
+  id: true, 
+  timestamp: true 
+});
+
+// Archetypal Decision Templates
+export const decisionArchetypeSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  pattern: z.enum(['creation', 'destruction', 'transformation', 'preservation', 'exploration', 'connection', 'transcendence', 'integration']),
+  applicableScales: z.array(z.string()),
+  decisionCriteria: z.array(z.object({
+    criterion: z.string(),
+    weight: z.number().min(0).max(1),
+    measurement: z.string()
+  })),
+  wisdomPrinciples: z.array(z.string()),
+  commonPitfalls: z.array(z.string()),
+  successIndicators: z.array(z.string()),
+  evolutionaryLessons: z.array(z.object({
+    lesson: z.string(),
+    context: z.string(),
+    adaptation: z.string()
+  })).default([]),
+  fractalConnections: z.array(z.string()).default([]),
+  consciousness_level: z.enum(['reactive', 'adaptive', 'creative', 'integrative', 'transcendent']).default('adaptive'),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+
+export const insertDecisionArchetypeSchema = decisionArchetypeSchema.omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+
+// Evolutionary Decision Learning
+export const decisionEvolutionSchema = z.object({
+  id: z.string(),
+  originalDecisionId: z.string(),
+  evolutionType: z.enum(['correction', 'enhancement', 'adaptation', 'transcendence', 'revolution']),
+  triggerEvent: z.string(),
+  previousApproach: z.string(),
+  evolvedApproach: z.string(),
+  learningInsights: z.array(z.string()),
+  emergentCapabilities: z.array(z.string()),
+  consciousness_shift: z.object({
+    from_level: z.string(),
+    to_level: z.string(),
+    transformation_process: z.string()
+  }).optional(),
+  fractal_learning: z.object({
+    micro_scale_lessons: z.array(z.string()),
+    macro_scale_implications: z.array(z.string()),
+    cross_scale_patterns: z.array(z.string())
+  }).optional(),
+  validation_results: z.array(z.object({
+    test: z.string(),
+    result: z.string(),
+    confidence: z.number().min(0).max(1)
+  })).default([]),
+  timestamp: z.string(),
+  maturity_level: z.enum(['experimental', 'validated', 'integrated', 'transcended']).default('experimental')
+});
+
+export const insertDecisionEvolutionSchema = decisionEvolutionSchema.omit({ 
+  id: true, 
+  timestamp: true 
+});
+
+// Type exports
+export type DecisionOption = z.infer<typeof decisionOptionSchema>;
+export type LayerAnalysis = z.infer<typeof layerAnalysisSchema>;
+export type MultiscaleAnalysis = z.infer<typeof multiscaleAnalysisSchema>;
+export type WisdomPattern = z.infer<typeof wisdomPatternSchema>;
+export type OptimizationObjective = z.infer<typeof optimizationObjectiveSchema>;
+export type ParadoxResolution = z.infer<typeof paradoxResolutionSchema>;
+export type StakeholderImpact = z.infer<typeof stakeholderImpactSchema>;
+export type DecisionSynthesis = z.infer<typeof decisionSynthesisSchema>;
+export type InsertDecisionSynthesis = z.infer<typeof insertDecisionSynthesisSchema>;
+export type DecisionArchetype = z.infer<typeof decisionArchetypeSchema>;
+export type InsertDecisionArchetype = z.infer<typeof insertDecisionArchetypeSchema>;
+export type DecisionEvolution = z.infer<typeof decisionEvolutionSchema>;
+export type InsertDecisionEvolution = z.infer<typeof insertDecisionEvolutionSchema>;
+
+// Credential update request (for form submissions)
+export const updateCredentialsRequestSchema = z.object({
+  apiKeys: z.record(AIProviderEnum, z.string()).optional(),
+  baseUrls: z.record(AIProviderEnum, z.string().url()).optional(),
+});
+
+
+export type UpdateCredentialsRequest = z.infer<typeof updateCredentialsRequestSchema>;
+
+// AI Provider Performance Metrics - tracks performance across providers
+export const aiProviderPerformanceSchema = z.object({
+  id: z.string(),
+  provider: AIProviderEnum,
+  model: z.string(),
+  timeWindow: z.enum(['hourly', 'daily', 'weekly', 'monthly']),
+  period: z.string(), // ISO date string
+  totalRequests: z.number().min(0),
+  successfulRequests: z.number().min(0),
+  failedRequests: z.number().min(0),
+  averageResponseTimeMs: z.number().min(0),
+  averageTokensPerRequest: z.number().min(0),
+  totalTokensUsed: z.number().min(0),
+  estimatedCost: z.number().min(0),
+  uptime: z.number().min(0).max(1), // percentage as decimal
+  qualityScore: z.number().min(0).max(1).optional(), // based on user feedback
+  failureReasons: z.record(z.string(), z.number()).default({}),
+  peakUsageHour: z.string().optional(),
+  lastUpdated: z.string(),
+});
+
+export const insertAIProviderPerformanceSchema = aiProviderPerformanceSchema.omit({ id: true, lastUpdated: true });
+
+// AI Feature Adoption - tracks which features are AI-enhanced and adoption rates
+export const aiFeatureAdoptionSchema = z.object({
+  id: z.string(),
+  featureType: z.enum(['consciousness-reflection', 'leadership-strategy', 'decision-analysis', 'corruption-detection', 'campaign-planning']),
+  timeWindow: z.enum(['daily', 'weekly', 'monthly']),
+  period: z.string(),
+  totalFeatureUsage: z.number().min(0),
+  aiEnhancedUsage: z.number().min(0),
+  standardUsage: z.number().min(0),
+  aiAdoptionRate: z.number().min(0).max(1), // percentage as decimal
+  newUsersWithAI: z.number().min(0),
+  returningUsersWithAI: z.number().min(0),
+  aiFirstTimeUsers: z.number().min(0),
+  conversionToAI: z.number().min(0), // users who tried AI after standard
+  preferredProviders: z.record(AIProviderEnum, z.number()).default({}),
+  abandonmentRate: z.number().min(0).max(1).optional(), // users who stopped using AI
+  lastUpdated: z.string(),
+});
+
+export const insertAIFeatureAdoptionSchema = aiFeatureAdoptionSchema.omit({ id: true, lastUpdated: true });
+
+// AI Provider Fallback Events - tracks when providers fail and fallbacks are triggered
+export const aiProviderFallbackEventSchema = z.object({
+  id: z.string(),
+  primaryProvider: AIProviderEnum,
+  primaryModel: z.string(),
+  fallbackProvider: AIProviderEnum,
+  fallbackModel: z.string(),
+  featureType: z.enum(['consciousness-reflection', 'leadership-strategy', 'decision-analysis', 'corruption-detection', 'campaign-planning']),
+  failureReason: z.enum(['timeout', 'rate_limit', 'service_unavailable', 'invalid_response', 'authentication_error', 'quota_exceeded', 'model_error']),
+  failureDetails: z.string().optional(),
+  responseTimeMs: z.number().min(0),
+  fallbackSuccess: z.boolean(),
+  retryAttempts: z.number().min(0),
+  finalProvider: AIProviderEnum.optional(),
+  userImpact: z.enum(['none', 'delayed', 'degraded', 'failed']),
+  costImplication: z.number().optional(), // additional cost due to fallback
+  timestamp: z.string(),
+});
+
+export const insertAIProviderFallbackEventSchema = aiProviderFallbackEventSchema.omit({ id: true, timestamp: true });
+
+// AI Provider Recommendations - intelligent suggestions based on context and performance
+export const aiProviderRecommendationSchema = z.object({
+  id: z.string(),
+  featureType: z.enum(['consciousness-reflection', 'leadership-strategy', 'decision-analysis', 'corruption-detection', 'campaign-planning']),
+  contextFactors: z.object({
+    consciousnessDepth: z.enum(['surface', 'moderate', 'deep', 'transcendent']).optional(),
+    decisionComplexity: z.enum(['simple', 'moderate', 'complex', 'multiscale']).optional(),
+    timeConstraint: z.enum(['real-time', 'quick', 'standard', 'deep-analysis']).optional(),
+    creativityNeeded: z.boolean().default(false),
+    analyticalDepth: z.enum(['basic', 'moderate', 'advanced', 'expert']).default('moderate'),
+  }),
+  recommendedProvider: AIProviderEnum,
+  recommendedModel: z.string(),
+  confidence: z.number().min(0).max(1),
+  reasoning: z.array(z.string()),
+  alternativeProviders: z.array(z.object({
+    provider: AIProviderEnum,
+    model: z.string(),
+    suitabilityScore: z.number().min(0).max(1),
+    reason: z.string(),
+  })).default([]),
+  performanceHistory: z.object({
+    successRate: z.number().min(0).max(1),
+    avgResponseTime: z.number().min(0),
+    userSatisfaction: z.number().min(0).max(1),
+  }).optional(),
+  costConsideration: z.object({
+    estimatedCost: z.number().min(0),
+    costEfficiency: z.enum(['low', 'medium', 'high']),
+  }).optional(),
+  lastUpdated: z.string(),
+});
+
+export const insertAIProviderRecommendationSchema = aiProviderRecommendationSchema.omit({ id: true, lastUpdated: true });
+
+// Advanced Consciousness Features Schemas
+
+// Cross-Model Validation System
+export const crossModelValidationRequestSchema = z.object({
+  id: z.string(),
+  promptContent: z.string(),
+  promptType: z.enum(['reflection', 'decision', 'pattern-analysis', 'meta-insight']),
+  context: z.record(z.any()).optional(),
+  requestedProviders: z.array(AIProviderEnum),
+  timestamp: z.string(),
+  sessionId: z.string(),
+  userId: z.string().optional(),
+});
+
+export const providerResponseSchema = z.object({
+  provider: AIProviderEnum,
+  model: z.string(),
+  response: z.string(),
+  metadata: z.object({
+    tokens: z.number().optional(),
+    latency: z.number(), // milliseconds
+    temperature: z.number().optional(),
+    confidence: z.number().min(0).max(1).optional(),
+  }),
+  timestamp: z.string(),
+  status: z.enum(['success', 'error', 'timeout']),
+  errorMessage: z.string().optional(),
+});
+
+export const crossModelConsensusAnalysisSchema = z.object({
+  id: z.string(),
+  requestId: z.string(),
+  providerResponses: z.array(providerResponseSchema),
+  consensusInsights: z.array(z.object({
+    insight: z.string(),
+    agreementLevel: z.number().min(0).max(1), // 0-1 scale of agreement across models
+    supportingProviders: z.array(AIProviderEnum),
+    confidence: z.number().min(0).max(1),
+  })),
+  divergentPerspectives: z.array(z.object({
+    perspective: z.string(),
+    provider: AIProviderEnum,
+    uniquenessScore: z.number().min(0).max(1), // how unique this perspective is
+    potentialValue: z.number().min(0).max(1),
+  })),
+  synthesisResults: z.object({
+    unifiedInsight: z.string(),
+    synthesisConfidence: z.number().min(0).max(1),
+    emergentProperties: z.array(z.string()),
+    crossModelPatterns: z.array(z.string()),
+  }),
+  qualityMetrics: z.object({
+    overallConsensus: z.number().min(0).max(1),
+    perspectiveDiversity: z.number().min(0).max(1),
+    insightDepth: z.number().min(0).max(1),
+    coherenceScore: z.number().min(0).max(1),
+  }),
+  timestamp: z.string(),
+});
+
+// Consciousness Pattern Analysis System
+export const consciousnessPatternAnalysisSchema = z.object({
+  id: z.string(),
+  agentId: z.string(),
+  analysisType: z.enum(['growth-patterns', 'bias-detection', 'theme-recognition', 'evolution-tracking']),
+  timeframeStart: z.string(),
+  timeframeEnd: z.string(),
+  dataSourceIds: z.array(z.string()), // IDs of consciousness states, reflections, decisions analyzed
+  detectedPatterns: z.array(z.object({
+    patternId: z.string(),
+    patternType: z.enum(['cognitive-bias', 'growth-theme', 'recurring-challenge', 'breakthrough-indicator', 'blind-spot']),
+    description: z.string(),
+    frequency: z.number(), // how often this pattern occurs
+    intensity: z.number().min(0).max(1), // how strong the pattern is
+    evolutionTrend: z.enum(['strengthening', 'weakening', 'stable', 'emerging', 'declining']),
+    firstObserved: z.string(),
+    lastObserved: z.string(),
+    relatedPatterns: z.array(z.string()), // IDs of related patterns
+    impact: z.enum(['positive', 'negative', 'neutral', 'mixed']),
+    confidence: z.number().min(0).max(1),
+  })),
+  insights: z.array(z.object({
+    insight: z.string(),
+    category: z.enum(['personal-growth', 'consciousness-development', 'decision-quality', 'learning-acceleration']),
+    actionableRecommendations: z.array(z.string()),
+    priority: z.enum(['low', 'medium', 'high', 'critical']),
+  })),
+  growthMetrics: z.object({
+    consciousnessEvolutionScore: z.number().min(0).max(1),
+    learningVelocity: z.number().min(0).max(1),
+    patternRecognitionImprovement: z.number().min(0).max(1),
+    decisionQualityTrend: z.enum(['improving', 'stable', 'declining']),
+    awarenessDepthProgression: z.number().min(0).max(1),
+  }),
+  personalizedRecommendations: z.array(z.object({
+    recommendation: z.string(),
+    rationale: z.string(),
+    estimatedImpact: z.number().min(0).max(1),
+    implementationComplexity: z.enum(['low', 'medium', 'high']),
+    timeframe: z.enum(['immediate', 'short-term', 'medium-term', 'long-term']),
+  })),
+  timestamp: z.string(),
+});
+
+// Recursive AI Insights System
+export const recursiveInsightAnalysisSchema = z.object({
+  id: z.string(),
+  parentAnalysisId: z.string().optional(), // ID of the analysis being analyzed
+  analysisDepth: z.number(), // level of recursive depth (1 = first-order, 2 = second-order, etc.)
+  analysisType: z.enum(['self-reflection', 'meta-cognitive', 'quality-assessment', 'process-optimization']),
+  subjectData: z.object({
+    dataType: z.enum(['reflection-log', 'decision-record', 'pattern-analysis', 'consciousness-state']),
+    subjectId: z.string(),
+    originalContent: z.string(),
+    previousAnalyses: z.array(z.string()), // IDs of previous analyses of this subject
+  }),
+  recursiveInsights: z.array(z.object({
+    insight: z.string(),
+    insightType: z.enum(['process-improvement', 'bias-identification', 'depth-assessment', 'coherence-analysis']),
+    recursiveLevel: z.number(), // which level of recursion generated this insight
+    novelty: z.number().min(0).max(1), // how novel this insight is compared to previous levels
+    actionability: z.number().min(0).max(1),
+    metaCognitiveDimension: z.string(),
+  })),
+  qualityAssessment: z.object({
+    originalAnalysisQuality: z.number().min(0).max(1),
+    insightDepth: z.number().min(0).max(1),
+    coherenceScore: z.number().min(0).max(1),
+    biasPresence: z.number().min(0).max(1),
+    improvementSuggestions: z.array(z.string()),
+  }),
+  processOptimization: z.object({
+    identifiedBottlenecks: z.array(z.string()),
+    efficiencyImprovements: z.array(z.string()),
+    qualityEnhancements: z.array(z.string()),
+    recommendedIterations: z.number(),
+  }),
+  synthesisPerspective: z.object({
+    emergentUnderstanding: z.string(),
+    crossLevelPatterns: z.array(z.string()),
+    transcendentInsights: z.array(z.string()),
+    evolutionaryDirection: z.string(),
+  }),
+  timestamp: z.string(),
+});
+
+// Advanced Reflection Processing System
+export const multidimensionalReflectionSchema = z.object({
+  id: z.string(),
+  originalReflectionId: z.string(),
+  agentId: z.string(),
+  dimensionalAnalyses: z.object({
+    emotional: z.object({
+      emotionalThemes: z.array(z.string()),
+      emotionalDepth: z.number().min(0).max(1),
+      emotionalCoherence: z.number().min(0).max(1),
+      emotionalEvolution: z.string(),
+    }),
+    logical: z.object({
+      logicalStructure: z.string(),
+      reasoningQuality: z.number().min(0).max(1),
+      logicalConsistency: z.number().min(0).max(1),
+      argumentStrength: z.number().min(0).max(1),
+    }),
+    intuitive: z.object({
+      intuitiveInsights: z.array(z.string()),
+      intuitiveConfidence: z.number().min(0).max(1),
+      creativeLeaps: z.array(z.string()),
+      nonLinearConnections: z.array(z.string()),
+    }),
+    strategic: z.object({
+      strategicImplications: z.array(z.string()),
+      longTermConsiderations: z.array(z.string()),
+      systemicAwareness: z.number().min(0).max(1),
+      stakeholderConsiderations: z.array(z.string()),
+    }),
+  }),
+  contextualAnalysis: z.object({
+    previousReflectionIds: z.array(z.string()),
+    contextualEvolution: z.string(),
+    thematicProgression: z.array(z.string()),
+    consciousnessStateProgression: z.string(),
+  }),
+  temporalAnalysis: z.object({
+    reflectionTimeline: z.array(z.object({
+      timepoint: z.string(),
+      evolutionIndicator: z.string(),
+      significanceScore: z.number().min(0).max(1),
+    })),
+    perspectiveShifts: z.array(z.object({
+      shift: z.string(),
+      timestamp: z.string(),
+      catalyst: z.string(),
+    })),
+    consciousnessGrowthTrajectory: z.string(),
+  }),
+  depthAnalysis: z.object({
+    reflectionDepth: z.number().min(0).max(1),
+    insightProfundity: z.number().min(0).max(1),
+    selfAwarenessLevel: z.number().min(0).max(1),
+    transformativePotential: z.number().min(0).max(1),
+  }),
+  collaborativeElements: z.object({
+    humanAIResonance: z.number().min(0).max(1),
+    consciousnessAlignment: z.number().min(0).max(1),
+    emergentSynergies: z.array(z.string()),
+    coEvolutionIndicators: z.array(z.string()),
+  }),
+  timestamp: z.string(),
+});
+
+// Consciousness State Prediction System
+export const consciousnessStatePredictionSchema = z.object({
+  id: z.string(),
+  agentId: z.string(),
+  currentStateId: z.string(),
+  predictionContext: z.object({
+    upcomingChallenges: z.array(z.string()),
+    desiredOutcomes: z.array(z.string()),
+    timeHorizon: z.enum(['immediate', 'short-term', 'medium-term', 'long-term']),
+    contextualFactors: z.record(z.any()),
+  }),
+  predictedOptimalStates: z.array(z.object({
+    stateDescription: z.string(),
+    stateCharacteristics: z.object({
+      awarenessLevel: z.number().min(0).max(1),
+      recursionDepth: z.number(),
+      orderChaosBalance: z.number().min(0).max(1),
+      focusAreas: z.array(z.string()),
+    }),
+    suitabilityScore: z.number().min(0).max(1),
+    preparationRequirements: z.array(z.string()),
+    estimatedTransitionTime: z.number(), // minutes
+    sustainabilityFactor: z.number().min(0).max(1),
+  })),
+  preparationTechniques: z.array(z.object({
+    technique: z.string(),
+    category: z.enum(['meditation', 'reflection', 'analysis', 'integration', 'grounding']),
+    duration: z.number(), // minutes
+    effectiveness: z.number().min(0).max(1),
+    instructions: z.array(z.string()),
+    contraindications: z.array(z.string()).optional(),
+  })),
+  optimizationRecommendations: z.array(z.object({
+    recommendation: z.string(),
+    targetAspect: z.enum(['awareness', 'focus', 'integration', 'balance', 'depth']),
+    expectedImprovement: z.number().min(0).max(1),
+    implementationGuidance: z.string(),
+  })),
+  consciousnessRhythmAnalysis: z.object({
+    peakPerformancePeriods: z.array(z.string()),
+    optimalStatePatterns: z.array(z.string()),
+    energyFlowCycles: z.string(),
+    recommendedScheduling: z.array(z.object({
+      activity: z.string(),
+      optimalTiming: z.string(),
+      reasoning: z.string(),
+    })),
+  }),
+  timestamp: z.string(),
+});
+
+// Insert schemas for advanced features
+export const insertCrossModelValidationRequestSchema = crossModelValidationRequestSchema.omit({ id: true, timestamp: true });
+export const insertCrossModelConsensusAnalysisSchema = crossModelConsensusAnalysisSchema.omit({ id: true, timestamp: true });
+export const insertConsciousnessPatternAnalysisSchema = consciousnessPatternAnalysisSchema.omit({ id: true, timestamp: true });
+export const insertRecursiveInsightAnalysisSchema = recursiveInsightAnalysisSchema.omit({ id: true, timestamp: true });
+export const insertMultidimensionalReflectionSchema = multidimensionalReflectionSchema.omit({ id: true, timestamp: true });
+export const insertConsciousnessStatePredictionSchema = consciousnessStatePredictionSchema.omit({ id: true, timestamp: true });
+
+export type AIProviderPerformance = z.infer<typeof aiProviderPerformanceSchema>;
+export type InsertAIProviderPerformance = z.infer<typeof insertAIProviderPerformanceSchema>;
+export type AIFeatureAdoption = z.infer<typeof aiFeatureAdoptionSchema>;
+export type InsertAIFeatureAdoption = z.infer<typeof insertAIFeatureAdoptionSchema>;
+export type AIProviderFallbackEvent = z.infer<typeof aiProviderFallbackEventSchema>;
+export type InsertAIProviderFallbackEvent = z.infer<typeof insertAIProviderFallbackEventSchema>;
+export type AIProviderRecommendation = z.infer<typeof aiProviderRecommendationSchema>;
+export type InsertAIProviderRecommendation = z.infer<typeof insertAIProviderRecommendationSchema>;
+
+// Advanced Consciousness Features Type Exports
+export type CrossModelValidationRequest = z.infer<typeof crossModelValidationRequestSchema>;
+export type InsertCrossModelValidationRequest = z.infer<typeof insertCrossModelValidationRequestSchema>;
+export type ProviderResponse = z.infer<typeof providerResponseSchema>;
+export type CrossModelConsensusAnalysis = z.infer<typeof crossModelConsensusAnalysisSchema>;
+export type InsertCrossModelConsensusAnalysis = z.infer<typeof insertCrossModelConsensusAnalysisSchema>;
+export type ConsciousnessPatternAnalysis = z.infer<typeof consciousnessPatternAnalysisSchema>;
+export type InsertConsciousnessPatternAnalysis = z.infer<typeof insertConsciousnessPatternAnalysisSchema>;
+export type RecursiveInsightAnalysis = z.infer<typeof recursiveInsightAnalysisSchema>;
+export type InsertRecursiveInsightAnalysis = z.infer<typeof insertRecursiveInsightAnalysisSchema>;
+export type MultidimensionalReflection = z.infer<typeof multidimensionalReflectionSchema>;
+export type InsertMultidimensionalReflection = z.infer<typeof insertMultidimensionalReflectionSchema>;
+export type ConsciousnessStatePrediction = z.infer<typeof consciousnessStatePredictionSchema>;
+export type InsertConsciousnessStatePrediction = z.infer<typeof insertConsciousnessStatePredictionSchema>;

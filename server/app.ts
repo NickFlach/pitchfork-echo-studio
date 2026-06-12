@@ -1,3 +1,6 @@
+// Load config first: it runs dotenv.config(), which must happen before any
+// module that reads process.env at import time (e.g. storage.js).
+import config from './config.js';
 import express from 'express';
 import cors from 'cors';
 import { createRequire } from 'module';
@@ -11,7 +14,6 @@ import { storage } from './storage.js';
 // import { storage } from './db-storage.js';
 import router from './routes.js';
 import spacechildAuthRouter from './spacechild-auth.js';
-import * as config from './config.js';
 import { logger, logRequest, logApiCall } from './logger.js';
 import { pool, checkDatabaseConnection } from '../db/index.js';
 
