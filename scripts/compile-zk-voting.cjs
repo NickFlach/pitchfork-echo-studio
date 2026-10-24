@@ -22,7 +22,10 @@ for (const [sourceName, contracts] of Object.entries(output.contracts)) {
     const dir = path.join('artifacts', sourceName); fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, contractName + '.json'), JSON.stringify(artifact));
     if (['ZKCommitRevealVoting', 'Semaphore', 'SemaphoreVerifier', 'PoseidonT3'].includes(contractName)) {
+      // The publisher's size-optimized Poseidon artifact avoids viaIR's oversized assembly output.
+      if (contractName === 'PoseidonT3') artifact.bytecode = require('poseidon-solidity').PoseidonT3.bytecode;
       fs.writeFileSync(`src/contracts/zk/${contractName}.json`, JSON.stringify(artifact));
+      fs.writeFileSync(path.join(dir, contractName + '.json'), JSON.stringify(artifact));
       console.log(contractName, contract.evm.deployedBytecode.object.length / 2, 'runtime bytes');
     }
   }
