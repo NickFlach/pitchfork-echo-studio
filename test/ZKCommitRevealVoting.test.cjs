@@ -59,4 +59,40 @@ describe('Real Semaphore commit/reveal voting', function () {
     expect(result.revealed).to.equal(1);
     await expect(voting.tally(1)).to.be.revertedWith('Already tallied');
   });
+  it('rejects a proof replay on another proposal and excludes unrevealed ballots from quorum', async function () {
+    await voting.createProposal('Second proposal', 'A separate ballot with independent nullifiers and quorum.', voters.slice(0, 3).map(v => v.address), 60, 60, 60, 1);
+    for (let i = 0; i < 3; i++) await voting.connect(voters[i]).register(2, identities[i].commitment);
+    await next((await voting.getProposal(2)).registrationEnd);
+    await expect(voting.commit(2, proof)).to.be.revertedWith('Invalid ballot domain');
+    const scope = await voting.scope(2);
+    const initial = await generateProof(identities[0], group, 1n, scope);
+    const secret = ethers.hexlify(ethers.randomBytes(32));
+    const commitment = await voting.ballotCommitment(2, initial.nullifier, 0, secret);
+    const otherProof = await generateProof(identities[0], group, commitment, scope);
+    expect(otherProof.nullifier).not.to.equal(proof.nullifier);
+    await voting.commit(2, otherProof);
+    await next((await voting.getProposal(2)).revealEnd); await voting.tally(2);
+    const result = await voting.getProposal(2);
+    expect(result.committed).to.equal(1); expect(result.revealed).to.equal(0); expect(result.passed).to.equal(false);
+    await expect(voting.reveal(2, otherProof.nullifier, 0, secret)).to.be.revertedWith('Not reveal phase');
+  });
+  it('does not pass tied For and Against votes even when quorum is reached', async function () {
+    await voting.createProposal('Tie proposal', 'Equal For and Against votes must not pass the proposal.', voters.slice(0, 3).map(v => v.address), 60, 60, 60, 2);
+    for (let i = 0; i < 3; i++) await voting.connect(voters[i]).register(3, identities[i].commitment);
+    await next((await voting.getProposal(3)).registrationEnd);
+    const ballots = [];
+    for (let i = 0; i < 2; i++) {
+      const scope = await voting.scope(3), secret = ethers.hexlify(ethers.randomBytes(32));
+      const initial = await generateProof(identities[i], group, 1n, scope);
+      const commitment = await voting.ballotCommitment(3, initial.nullifier, i, secret);
+      const proof = await generateProof(identities[i], group, commitment, scope);
+      await voting.commit(3, proof); ballots.push({ proof, secret });
+    }
+    await next((await voting.getProposal(3)).commitEnd);
+    for (let i = 0; i < 2; i++) await voting.reveal(3, ballots[i].proof.nullifier, i, ballots[i].secret);
+    await next((await voting.getProposal(3)).revealEnd); await voting.tally(3);
+    const result = await voting.getProposal(3);
+    expect(result.forVotes).to.equal(1); expect(result.againstVotes).to.equal(1);
+    expect(result.revealed).to.equal(2); expect(result.passed).to.equal(false);
+  });
 });

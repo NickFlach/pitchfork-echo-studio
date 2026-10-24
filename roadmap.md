@@ -4,6 +4,7 @@
 - [x] Test wallet ownership, persistence, voting, and the live assistant flow.
 
 # On-chain ZK voting
-- [ ] Implement Semaphore-verified commit, reveal, and final tally contracts with tests.
-- [ ] Add wallet deployment, proposal creation, backup/recovery, and live voting screens.
-- [ ] Verify the full flow locally; enable a shared Neo X proposal after a funded wallet deploys it.
+- [x] Implement Semaphore-verified commit, reveal, and final tally contracts with tests.
+- [x] Add wallet deployment, proposal creation, backup/recovery, and live voting screens.
+- [x] Verify wallet deployment, live proposal, actual browser-generated proof, commit, reveal, tally, and reload on an isolated chain.
+- [ ] Activate shared Neo X proposal — blocked on user's funded wallet deploying contracts and publishing the proposal with its eligible voters.
