@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792876350341,
+      "tag": "0000_ai_proposal_history",
+      "breakpoints": true
+    }
+  ]
+}

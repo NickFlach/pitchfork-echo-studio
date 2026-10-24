@@ -14,7 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_proposal_analyses: {
+        Row: {
+          analysis: Json
+          created_at: string
+          description: string
+          id: string
+          priority: string
+          risk: string
+          title: string
+          wallet_address: string
+        }
+        Insert: {
+          analysis: Json
+          created_at?: string
+          description: string
+          id?: string
+          priority: string
+          risk: string
+          title: string
+          wallet_address: string
+        }
+        Update: {
+          analysis?: Json
+          created_at?: string
+          description?: string
+          id?: string
+          priority?: string
+          risk?: string
+          title?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      ai_proposal_votes: {
+        Row: {
+          choice: string
+          proposal_id: string
+          updated_at: string
+          wallet_address: string
+        }
+        Insert: {
+          choice: string
+          proposal_id: string
+          updated_at?: string
+          wallet_address: string
+        }
+        Update: {
+          choice?: string
+          proposal_id?: string
+          updated_at?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_proposal_votes_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: true
+            referencedRelation: "ai_proposal_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_wallet_challenges: {
+        Row: {
+          action: string
+          expires_at: string
+          id: string
+          payload_hash: string
+          wallet_address: string
+        }
+        Insert: {
+          action: string
+          expires_at?: string
+          id?: string
+          payload_hash: string
+          wallet_address: string
+        }
+        Update: {
+          action?: string
+          expires_at?: string
+          id?: string
+          payload_hash?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
