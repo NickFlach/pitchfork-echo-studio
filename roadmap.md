@@ -8,3 +8,8 @@
 - [x] Add wallet deployment, proposal creation, backup/recovery, and live voting screens.
 - [x] Verify wallet deployment, live proposal, actual browser-generated proof, commit, reveal, tally, and reload on an isolated chain.
 - [ ] Activate shared Neo X proposal — blocked on user's funded wallet deploying contracts and publishing the proposal with its eligible voters.
+
+# Messages forum
+- [x] Persist public threads, replies, and one upvote per wallet through verified signatures.
+- [x] Replace legacy Messages with a searchable forum and thread detail view.
+- [x] Verify persistence, replies, upvotes, and signature protection with tests and the live page.

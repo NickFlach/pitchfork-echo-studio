@@ -15,7 +15,7 @@ Pitchfork Protocol is an open platform for decentralized autonomous organization
 - [Organize](/organize): Tools to coordinate activists and movements.
 - [Identity](/identity): Decentralized identity and reputation.
 - [Verify](/verify): Verify on-chain credentials and proofs.
-- [Messages](/messages): Encrypted communication layer.
+- [Messages](/messages): Public community forum with wallet-verified threads, replies, and upvotes.
 - [Support](/support): Help and support resources.
 
 ## Optional

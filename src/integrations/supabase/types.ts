@@ -100,9 +100,155 @@ export type Database = {
         }
         Relationships: []
       }
+      forum_posts: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          thread_id: string | null
+          title: string | null
+          wallet_address: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          thread_id?: string | null
+          title?: string | null
+          wallet_address: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          thread_id?: string | null
+          title?: string | null
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_posts_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "forum_post_summaries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_posts_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_upvotes: {
+        Row: {
+          created_at: string
+          post_id: string
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_upvotes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_post_summaries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_upvotes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_wallet_challenges: {
+        Row: {
+          action: string
+          expires_at: string
+          id: string
+          payload_hash: string
+          wallet_address: string
+        }
+        Insert: {
+          action: string
+          expires_at?: string
+          id?: string
+          payload_hash: string
+          wallet_address: string
+        }
+        Update: {
+          action?: string
+          expires_at?: string
+          id?: string
+          payload_hash?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      forum_post_summaries: {
+        Row: {
+          body: string | null
+          created_at: string | null
+          id: string | null
+          reply_count: number | null
+          thread_id: string | null
+          title: string | null
+          upvotes: number | null
+          wallet_address: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string | null
+          id?: string | null
+          reply_count?: never
+          thread_id?: string | null
+          title?: string | null
+          upvotes?: never
+          wallet_address?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string | null
+          id?: string | null
+          reply_count?: never
+          thread_id?: string | null
+          title?: string | null
+          upvotes?: never
+          wallet_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_posts_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "forum_post_summaries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_posts_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
