@@ -132,7 +132,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 {/* System */}
                 <div>
                   <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                    System
+                    Platform
                   </h3>
                   <div className="space-y-1">
                     {systemNavItems.map((item) => {
