@@ -79,9 +79,9 @@ export const ROUTE_SEO: Record<string, SEOMeta> = {
       "Verify on-chain credentials, documents, and witness evidence with cryptographic proofs anyone can audit.",
   },
   "/messages": {
-    title: "Encrypted Messages — Pitchfork Protocol",
+    title: "Messages Forum — Pitchfork Protocol",
     description:
-      "End-to-end encrypted messaging for activists, organizers, and DAO contributors building safer coordination.",
+      "Join public DAO discussions with wallet-verified threads, replies, and community upvotes on Pitchfork Protocol.",
   },
   "/support": {
     title: "Support Campaigns — Pitchfork Protocol",
