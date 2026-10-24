@@ -103,7 +103,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 {/* Consciousness */}
                 <div>
                   <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                    Consciousness
+                    Learn
                   </h3>
                   <div className="space-y-1">
                     {consciousnessNavItems.map((item) => {
