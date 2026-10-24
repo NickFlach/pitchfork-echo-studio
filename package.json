@@ -103,7 +103,7 @@
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "autoprefixer": "^10.4.21",
-    "drizzle-kit": "^0.31.11",
+    "drizzle-kit": "0.x",
     "drizzle-orm": "0.x",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",

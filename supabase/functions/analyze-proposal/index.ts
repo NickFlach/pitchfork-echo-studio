@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { z } from "npm:zod@3.23.8";
 import { buildCorsHeaders } from "../_shared/cors.ts";
+import { createClient } from 'npm:@supabase/supabase-js@2';
+import { analysisSchema, walletAddress } from '../_shared/proposal-wallet.ts';
 
 // Public (wallet-based app, no accounts). Inputs are tightly size-limited and
 // CORS restricted to project origins to limit AI budget abuse.
@@ -44,6 +46,12 @@ serve(async (req) => {
     const parsed = Body.safeParse(await req.json().catch(() => ({})));
     if (!parsed.success) return json({ error: parsed.error.flatten().fieldErrors }, 400);
     const { title, description, priority, risk } = parsed.data;
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const storageUrl = Deno.env.get('SUPABASE_URL');
+    if (!serviceKey || !storageUrl || req.headers.get('Authorization') !== `Bearer ${serviceKey}`) {
+      return json({ error: 'Verify your wallet before analyzing a proposal' }, 401);
+    }
+    const wallet = walletAddress.safeParse((await Promise.resolve(parsed)).success ? undefined : undefined);
 
     const key = Deno.env.get("LOVABLE_API_KEY");
     if (!key) return json({ error: "AI is not configured" }, 500);
