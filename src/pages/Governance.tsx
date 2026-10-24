@@ -24,6 +24,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { governanceApi, identityApi } from '@/lib/api';
 import { Navigation } from '@/components/Navigation';
+import { AIProposalAnalyzer } from '@/components/governance/AIProposalAnalyzer';
 import { Proposal, Vote } from '../../shared/schema';
 
 const Governance = () => {
@@ -197,11 +198,16 @@ const Governance = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
             <TabsTrigger value="proposals">Active Proposals</TabsTrigger>
             <TabsTrigger value="history">Voting History</TabsTrigger>
             <TabsTrigger value="create">Create Proposal</TabsTrigger>
+            <TabsTrigger value="ai">AI Assistant</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="ai">
+            <AIProposalAnalyzer />
+          </TabsContent>
 
           {/* Active Proposals */}
           <TabsContent value="proposals" className="space-y-4">
