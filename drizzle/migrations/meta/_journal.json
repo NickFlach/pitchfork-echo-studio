@@ -8,6 +8,13 @@
       "when": 1792876350341,
       "tag": "0000_ai_proposal_history",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792877414981,
+      "tag": "0001_messages_forum",
+      "breakpoints": true
     }
   ]
 }
