@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { useState } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { governanceApi, identityApi } from '@/lib/api';
@@ -29,7 +30,10 @@ import { Proposal, Vote } from '../../shared/schema';
 
 const Governance = () => {
   const { isConnected, account } = useWeb3();
-  const [activeTab, setActiveTab] = useState('proposals');
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const draft = (location.state as { title?: string; description?: string } | null) ?? null;
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'proposals');
   const [showCreateProposal, setShowCreateProposal] = useState(false);
   const [newProposal, setNewProposal] = useState({
     title: '',
@@ -205,8 +209,11 @@ const Governance = () => {
             <TabsTrigger value="ai">AI Assistant</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="ai">
-            <AIProposalAnalyzer />
+          <TabsContent value="ai" className="space-y-4">
+            <div className="flex justify-end">
+              <Button asChild variant="outline" size="sm"><Link to="/proposals/new">Submit new proposal</Link></Button>
+            </div>
+            <AIProposalAnalyzer key={draft?.title ?? 'blank'} initialTitle={draft?.title} initialDescription={draft?.description} />
           </TabsContent>
 
           {/* Active Proposals */}
