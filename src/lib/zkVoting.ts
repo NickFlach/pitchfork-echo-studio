@@ -67,8 +67,11 @@ export async function prepareBallot(contract: Contract, id: string, backup: Ball
   if (group.size < 3 || group.indexOf(identity.commitment) < 0) throw new Error('At least three registered members, including your identity, are required.');
   const scope: bigint = await contract.scope(id);
   const initial = await generateProof(identity, group, 1n, scope);
-  const salt = hexlify(randomBytes(32));
-  const commitment: bigint = await contract.ballotCommitment(id, initial.nullifier, choice, salt);
+  if (String(await contract.commitments(id, initial.nullifier)) !== '0') throw new Error('Ballot already committed. Keep your existing backup for reveal.');
+  // Preserve an existing prepared ballot when a wallet request is rejected or its response is lost.
+  const salt = backup.salt || hexlify(randomBytes(32));
+  const ballotChoice = backup.salt && backup.choice !== undefined ? backup.choice : choice;
+  const commitment: bigint = await contract.ballotCommitment(id, initial.nullifier, ballotChoice, salt);
   const proof = await generateProof(identity, group, commitment, scope);
-  return { proof, backup: { ...backup, choice, salt, nullifier: proof.nullifier, commitment: commitment.toString() } };
+  return { proof, backup: { ...backup, choice: ballotChoice, salt, nullifier: proof.nullifier, commitment: commitment.toString() } };
 }
