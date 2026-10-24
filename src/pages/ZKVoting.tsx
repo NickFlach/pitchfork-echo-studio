@@ -33,7 +33,8 @@ export default function ZKVoting() {
       if (count === 0) return { proposals, proposal: null, members: [], eligible: false, registered: false, timestamp: block?.timestamp || 0 };
       if (!/^\d+$/.test(selectedId) || BigInt(selectedId) < 1n || BigInt(selectedId) > BigInt(count)) throw new Error('Proposal not found.');
       const [p, members, eligible, registered] = await Promise.all([contract.getProposal(selectedId), contract.getMembers(selectedId), wallet.account ? contract.eligible(selectedId, wallet.account) : false, wallet.account ? contract.registered(selectedId, wallet.account) : false]);
-      return { proposals, proposal: p, members, eligible, registered, timestamp: block?.timestamp || 0 };
+      // Ethers Result named properties disappear under query structural sharing; use a plain object.
+      return { proposals, proposal: p.toObject(), members: [...members], eligible, registered, timestamp: block?.timestamp || 0 };
     }
   });
   const p = query.data?.proposal; const now = query.data?.timestamp || 0;

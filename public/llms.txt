@@ -9,6 +9,7 @@ Pitchfork Protocol is an open platform for decentralized autonomous organization
 - [Home](/): Overview of Pitchfork Protocol and its mission.
 - [Whitepaper](/whitepaper): The Fighting Back whitepaper outlining the protocol's vision and design.
 - [Governance](/governance): Participate in proposals and on-chain governance.
+- [ZK Voting](/zk-voting): Deploy or open Neo X voting contracts, register membership, commit secret ballots with Semaphore proofs, reveal, and tally.
 - [Decentralization Dashboard](/decentralization): Real-time metrics on power distribution, concentration, and diffusion.
 - [Funding](/funding): Support developers and fund public-goods work.
 - [Organize](/organize): Tools to coordinate activists and movements.
