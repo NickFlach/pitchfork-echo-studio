@@ -1,15 +1,10 @@
-import type { Config } from 'drizzle-kit';
-import * as dotenv from 'dotenv';
+import { defineConfig } from "drizzle-kit";
 
-dotenv.config();
-
-export default {
-  schema: './db/schema.ts',
-  out: './db/migrations',
-  driver: 'pg',
+export default defineConfig({
+  dialect: "postgresql",
+  schema: "./drizzle/schema.ts",
+  out: "./drizzle/migrations",
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL || 'postgresql://localhost:5432/pitchfork',
+    url: process.env.LOVABLE_DB_MIGRATION_URL ?? "",
   },
-  verbose: true,
-  strict: true,
-} satisfies Config;
+});

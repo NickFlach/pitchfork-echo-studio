@@ -1,0 +1,11 @@
+CREATE TABLE public.ai_proposal_analyses (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), wallet_address text NOT NULL, title text NOT NULL, description text NOT NULL, priority text NOT NULL, risk text NOT NULL, analysis jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+GRANT ALL ON public.ai_proposal_analyses TO service_role;
+ALTER TABLE public.ai_proposal_analyses ENABLE ROW LEVEL SECURITY;
+CREATE INDEX ai_proposal_analyses_wallet_created ON public.ai_proposal_analyses(wallet_address, created_at DESC);
+CREATE TABLE public.ai_proposal_votes (proposal_id uuid PRIMARY KEY REFERENCES public.ai_proposal_analyses(id) ON DELETE CASCADE, wallet_address text NOT NULL, choice text NOT NULL CHECK (choice IN ('for', 'against', 'abstain')), updated_at timestamptz NOT NULL DEFAULT now());
+GRANT ALL ON public.ai_proposal_votes TO service_role;
+ALTER TABLE public.ai_proposal_votes ENABLE ROW LEVEL SECURITY;
+CREATE TABLE public.ai_wallet_challenges (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), wallet_address text NOT NULL, action text NOT NULL, payload_hash text NOT NULL, expires_at timestamptz NOT NULL DEFAULT (now() + interval '5 minutes'));
+GRANT ALL ON public.ai_wallet_challenges TO service_role;
+ALTER TABLE public.ai_wallet_challenges ENABLE ROW LEVEL SECURITY;
+COMMENT ON TABLE public.ai_proposal_votes IS 'Private off-chain advisory votes, authorized by wallet-signature-verified functions. No client access.';

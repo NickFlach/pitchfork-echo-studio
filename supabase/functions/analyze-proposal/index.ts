@@ -1,14 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { z } from "npm:zod@3.23.8";
 import { buildCorsHeaders } from "../_shared/cors.ts";
+import { createClient } from 'npm:@supabase/supabase-js@2';
+import { analysisSchema, walletAddress } from '../_shared/proposal-wallet.ts';
 
-// Public (wallet-based app, no accounts). Inputs are tightly size-limited and
-// CORS restricted to project origins to limit AI budget abuse.
+// Called internally only after a one-use wallet signature is verified.
 const Body = z.object({
   title: z.string().trim().min(3).max(200),
   description: z.string().trim().min(10).max(4000),
   priority: z.enum(["decentralization", "treasury", "community", "balanced"]).default("balanced"),
   risk: z.enum(["low", "medium", "high"]).default("medium"),
+  wallet: walletAddress,
 });
 
 const tool = {
@@ -44,6 +46,11 @@ serve(async (req) => {
     const parsed = Body.safeParse(await req.json().catch(() => ({})));
     if (!parsed.success) return json({ error: parsed.error.flatten().fieldErrors }, 400);
     const { title, description, priority, risk } = parsed.data;
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const storageUrl = Deno.env.get('SUPABASE_URL');
+    if (!serviceKey || !storageUrl || req.headers.get('Authorization') !== `Bearer ${serviceKey}`) {
+      return json({ error: 'Verify your wallet before analyzing a proposal' }, 401);
+    }
 
     const key = Deno.env.get("LOVABLE_API_KEY");
     if (!key) return json({ error: "AI is not configured" }, 500);
@@ -73,7 +80,13 @@ serve(async (req) => {
     const data = await res.json();
     const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
     if (!args) return json({ error: "AI returned no analysis" }, 500);
-    return json(JSON.parse(args));
+    const analysis = analysisSchema.parse(JSON.parse(args));
+    const db = createClient(storageUrl, serviceKey);
+    const { data: proposal, error: saveError } = await db.from('ai_proposal_analyses').insert({
+      wallet_address: parsed.data.wallet, title, description, priority, risk, analysis,
+    }).select().single();
+    if (saveError) return json({ error: 'Analysis could not be saved. Please try again.' }, 500);
+    return json({ proposal: { ...proposal, ai_proposal_votes: null } });
   } catch (e) {
     console.error(e);
     return json({ error: "Unexpected error" }, 500);
