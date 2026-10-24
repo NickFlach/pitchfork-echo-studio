@@ -20,6 +20,7 @@ const Verify = lazy(() => import("./pages/Verify"));
 const Support = lazy(() => import("./pages/Support"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Governance = lazy(() => import("./pages/Governance"));
+const ZKVoting = lazy(() => import("./pages/ZKVoting"));
 const Leadership = lazy(() => import("./pages/Leadership"));
 const EnterpriseLeadership = lazy(() => import("./pages/EnterpriseLeadership"));
 const Funding = lazy(() => import("./pages/Funding"));
@@ -79,6 +80,7 @@ const App = () => (
                     <Route path="/support" element={<><RouteSEO path="/support" /><Support /></>} />
                     <Route path="/messages" element={<><RouteSEO path="/messages" /><Messages /></>} />
                     <Route path="/governance" element={<><RouteSEO path="/governance" /><Governance /></>} />
+                    <Route path="/zk-voting" element={<><RouteSEO path="/zk-voting" /><ZKVoting /></>} />
                     <Route path="/leadership" element={<><RouteSEO path="/leadership" /><Leadership /></>} />
                     <Route path="/enterprise-leadership" element={<><RouteSEO path="/enterprise-leadership" /><EnterpriseLeadership /></>} />
                     <Route path="/consciousness" element={<><RouteSEO path="/consciousness" /><Consciousness /></>} />

@@ -34,6 +34,10 @@ export const ROUTE_SEO: Record<string, SEOMeta> = {
     description:
       "Participate in on-chain governance: review proposals, cast ZK-private votes, and shape protocol direction with the community.",
   },
+  "/zk-voting": {
+    title: "On-chain ZK Voting — Pitchfork Protocol",
+    description: "Register for Neo X proposals, commit Semaphore-verified secret ballots, reveal votes, and finalize transparent on-chain tallies.",
+  },
   "/decentralization": {
     title: "Decentralization Dashboard — Pitchfork Protocol",
     description:

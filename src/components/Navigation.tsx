@@ -34,6 +34,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     { path: '/organize', icon: Users, label: 'Organize', group: 'core' },
     { path: '/messages', icon: MessageCircle, label: 'Messages', group: 'core' },
     { path: '/governance', icon: Scale, label: 'Governance', group: 'core' },
+    { path: '/zk-voting', icon: Shield, label: 'ZK Voting', group: 'core' },
     { path: '/verify', icon: FileCheck, label: 'Verify', group: 'core' },
     { path: '/support', icon: Heart, label: 'Support', group: 'core' },
   ];
