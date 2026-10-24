@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -31,7 +31,7 @@ const NewProposal = () => {
       <main className="container mx-auto max-w-2xl px-4 py-8">
         <Card>
           <CardHeader>
-            <CardTitle as-child="true"><h1 className="text-2xl font-bold">Submit a proposal</h1></CardTitle>
+            <h1 className="text-2xl font-bold">Submit a proposal</h1>
             <CardDescription>Your proposal opens in the AI Assistant for analysis, saving, and advisory voting.</CardDescription>
           </CardHeader>
           <CardContent>
