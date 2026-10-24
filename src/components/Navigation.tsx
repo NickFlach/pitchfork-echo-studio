@@ -40,16 +40,11 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   const consciousnessNavItems: NavigationItem[] = [
     { path: '/whitepaper', icon: BookOpen, label: 'Whitepaper', group: 'consciousness' },
-    { path: '/consciousness', icon: Brain, label: 'Consciousness', group: 'consciousness' },
-    { path: '/leadership', icon: UserCheck, label: 'Leadership', group: 'consciousness' },
-    { path: '/enterprise-leadership', icon: Building, label: 'Enterprise', group: 'consciousness' },
   ];
 
   const systemNavItems: NavigationItem[] = [
     { path: '/funding', icon: DollarSign, label: 'Funding', group: 'system' },
     { path: '/decentralization', icon: BarChart3, label: 'Balance of Power', group: 'system' },
-    { path: '/ai-settings', icon: Settings, label: 'AI Settings', group: 'system' },
-    { path: '/provider-health', icon: Activity, label: 'Provider Health', group: 'system' },
   ];
 
   // Combine all navigation items for backward compatibility
