@@ -20,11 +20,10 @@ import Web3ConnectButton from "@/components/Web3ConnectButton";
 import { useWeb3 } from "@/hooks/useWeb3";
 import { ethers } from "ethers";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export const PitchforkHero = React.memo(() => {
-  const go = (path: string) => {
-    window.location.href = path;
-  };
+  const go = useNavigate();
 
   const { isConnected, account, signer, chainId, switchNetwork } = useWeb3();
   const { toast } = useToast();
@@ -367,12 +366,12 @@ export const PitchforkHero = React.memo(() => {
 
           {/* Main heading with gradient text */}
           <div className="space-y-4">
-            <h1 className="text-6xl md:text-7xl font-bold text-gradient-cosmic tracking-tight">Pitchfork Protocol — Decentralized Tools for Resistance</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-gradient-cosmic max-w-4xl mx-auto">Pitchfork Protocol — Private ZK Voting for DAOs on Neo X</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Decentralized tools for peaceful resistance against corruption and injustice
+              Give DAO members a secret ballot with results anyone can verify. Semaphore membership proofs and commit-reveal voting keep choices sealed until the reveal phase.
             </p>
             <p className="text-sm text-muted-foreground/80 max-w-xl mx-auto mt-2">
-              Organize. Verify. Fund. Fight back legally and safely.
+              Private choices before reveal. Verifiable tallies on Neo X. Community discussion and AI-assisted proposal analysis.
             </p>
           </div>
 
@@ -380,6 +379,15 @@ export const PitchforkHero = React.memo(() => {
           <div className="space-y-6 pt-8">
             {/* Primary Actions - Always accessible */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
+              <Button
+                variant="cosmic"
+                size="lg"
+                onClick={() => go("/zk-voting")}
+                className="min-w-[180px] text-lg font-semibold"
+              >
+                <Shield className="w-5 h-5 mr-2" />
+                ZK Voting
+              </Button>
               <Button
                 variant="cosmicOutline"
                 size="lg"
@@ -464,11 +472,10 @@ export const PitchforkHero = React.memo(() => {
             {/* Introduction text - always visible */}
             <div className="max-w-3xl mx-auto text-center space-y-4">
               <p className="text-muted-foreground">
-                Learn how decentralized tools can help you fight corruption, organize resistance, and build a more just
-                world. Our comprehensive whitepaper explains everything you need to know.
+                Build DAO governance around deliberation, not just token balances. Discuss proposals in the public Messages forum, review AI analyses, and use ZK voting contracts for on-chain commitments, reveals, and final tallies.
               </p>
               <p className="text-sm text-muted-foreground/80">
-                Connect your wallet to access the full platform and start taking action. Use the menu to explore all features.
+                ZK voting requires deployed contracts and an eligible electorate on Neo X. Registration wallets and transaction senders are public; choices become public when revealed. AI votes are advisory, not on-chain governance votes.
               </p>
             </div>
           </div>
