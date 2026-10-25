@@ -13,3 +13,6 @@
 - [x] Persist public threads, replies, and one upvote per wallet through verified signatures.
 - [x] Replace legacy Messages with a searchable forum and thread detail view.
 - [x] Verify persistence, replies, upvotes, and signature protection with tests and the live page.
+
+# Home page search positioning
+- [ ] Rewrite home page and search descriptions around private ZK voting for DAOs on Neo X, remove the incorrect X tag, and verify sitemap coverage.
