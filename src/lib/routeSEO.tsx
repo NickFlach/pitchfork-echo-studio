@@ -9,9 +9,9 @@ interface SEOMeta {
 
 export const ROUTE_SEO: Record<string, SEOMeta> = {
   "/": {
-    title: "Pitchfork Protocol — Decentralized Tools for Justice",
+    title: "Pitchfork Protocol — Private ZK Voting for DAOs on Neo X",
     description:
-      "Build better DAOs with privacy-preserving ZK voting, AI-assisted governance, and tools that diffuse power instead of concentrating it.",
+      "Private ZK voting for DAOs on Neo X. Seal ballots until reveal, verify on-chain tallies, discuss proposals, and review AI-assisted analyses with Pitchfork Protocol.",
   },
   "/whitepaper": {
     title: "Fighting Back Whitepaper — Pitchfork Protocol",
