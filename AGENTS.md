@@ -4,4 +4,5 @@
 - ZK voting uses Semaphore v4 membership proofs with frozen allowlisted electorates and contract-local nullifiers; verifyProof prevents public Semaphore nullifier-burning from denying ballots.
 - Deploy ZK contracts through the connected Neo X wallet using reproducible Paris-targeted artifacts; never embed a deployer key or treat local deployment records as mainnet deployments.
 - Ballot secrets remain device-local with export/import recovery; only on-chain reads determine registration, commitments, reveals, and final results.
+- Governance reads ZK proposals at a consistent Neo X block through the same verified contract as ZK Voting; explicit links and device bookmarks select contracts, while the shared default must only be set after a verified mainnet deployment. Never fall back to legacy governance APIs or advisory votes for on-chain results.
 - Messages is a public forum: read through Lovable Cloud, require single-use wallet signatures for writes, and enforce one upvote per wallet per post in the database; never present forum posts as encrypted messages.

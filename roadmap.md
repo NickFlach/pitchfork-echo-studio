@@ -16,3 +16,8 @@
 
 # Home page search positioning
 - [x] Rewrite home page and search descriptions around private ZK voting for DAOs on Neo X, remove the incorrect X tag, and verify sitemap coverage.
+
+# Live Governance dashboard
+- [x] Replace legacy Governance proposals and votes with verified Neo X ZK contract reads and links.
+- [x] Connect the ZK deployment page to Governance; verify wallet deployment, proposal publication, dashboard readback, reload, and ballot links on an isolated chain. Nine focused tests passed.
+- [ ] Deploy on Neo X and configure a shared address — requires the user's funded wallet approvals.
