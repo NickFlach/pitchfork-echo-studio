@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { isAddress, getAddress } from 'ethers';
 import { useQuery } from '@tanstack/react-query';
 import { ShieldCheck, Vote, Download, Upload, Copy, RefreshCw, Wallet, Plus } from 'lucide-react';
@@ -12,10 +12,11 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { ZK_CHAIN, votingContract, checkVotingContract, deployZKVoting, requireNeoX, vaultKey, readBallot, saveBallot, downloadBallot, prepareBallot, type BallotBackup } from '@/lib/zkVoting';
+import { resolveVotingAddress, ZK_CONTRACT_BOOKMARK } from '@/lib/zkGovernance';
 
 export default function ZKVoting() {
   const wallet = useWeb3(); const [params, setParams] = useSearchParams();
-  const address = params.get('contract') || ''; const selectedId = params.get('proposal') || '1';
+  const address = resolveVotingAddress(params.get('contract'), localStorage.getItem(ZK_CONTRACT_BOOKMARK)); const selectedId = params.get('proposal') || '1';
   const [inputAddress, setInputAddress] = useState(address);
   const [busy, setBusy] = useState(''); const [error, setError] = useState(''); const [status, setStatus] = useState('');
   const [txHash, setTxHash] = useState(''); const [showCreate, setShowCreate] = useState(false);
@@ -24,6 +25,7 @@ export default function ZKVoting() {
   const [choice, setChoice] = useState(0); const [backup, setBackup] = useState<BallotBackup | null>(null);
   const key = address && wallet.account ? vaultKey(address, selectedId, wallet.account) : '';
   useEffect(() => { setBackup(key ? readBallot(key) : null); setTxHash(''); }, [key]);
+  useEffect(() => { if (query.data && address) localStorage.setItem(ZK_CONTRACT_BOOKMARK, address); }, [query.data, address]);
   const query = useQuery({
     queryKey: ['zk-live', address, selectedId, wallet.account], enabled: isAddress(address), refetchInterval: 15000, retry: 1,
     queryFn: async () => {

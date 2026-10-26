@@ -3,6 +3,7 @@ import votingArtifact from '@/contracts/zk/ZKCommitRevealVoting.json';
 import semaphoreArtifact from '@/contracts/zk/Semaphore.json';
 import verifierArtifact from '@/contracts/zk/SemaphoreVerifier.json';
 import poseidonArtifact from '@/contracts/zk/PoseidonT3.json';
+import type { LiveZKProposal } from './zkGovernance';
 
 export const ZK_CHAIN = 47763;
 export const zkReader = new JsonRpcProvider('https://mainnet-1.rpc.banelabs.org', ZK_CHAIN);
@@ -20,6 +21,19 @@ export async function checkVotingContract(address: string, reader = zkReader) {
   if (await contract.CHAIN_ID() !== BigInt(ZK_CHAIN)) throw new Error('Unsupported voting contract.');
   await contract.proposalCount();
   return contract;
+}
+export async function readGovernanceProposals(address: string, page = 0, reader = zkReader) {
+  const contract = await checkVotingContract(address, reader);
+  const block = await reader.getBlock('latest');
+  if (!block) throw new Error('Unable to read the latest Neo X block.');
+  const count = Number(await contract.proposalCount({ blockTag: block.number }));
+  const newest = Math.max(0, count - page * 20);
+  const ids = Array.from({ length: Math.min(newest, 20) }, (_, i) => newest - i);
+  const proposals: LiveZKProposal[] = await Promise.all(ids.map(async id => {
+    const p = await contract.getProposal(id, { blockTag: block.number });
+    return { ...p.toObject(), id: String(id) } as LiveZKProposal;
+  }));
+  return { count, proposals, timestamp: block.timestamp, blockNumber: block.number };
 }
 type Artifact = typeof semaphoreArtifact;
 function linkedBytecode(artifact: Artifact, libraries: Record<string, string>) {
