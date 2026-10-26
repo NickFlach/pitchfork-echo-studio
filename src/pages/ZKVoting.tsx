@@ -19,7 +19,7 @@ export default function ZKVoting() {
   const address = resolveVotingAddress(params.get('contract'), localStorage.getItem(ZK_CONTRACT_BOOKMARK)); const selectedId = params.get('proposal') || '1';
   const [inputAddress, setInputAddress] = useState(address);
   const [busy, setBusy] = useState(''); const [error, setError] = useState(''); const [status, setStatus] = useState('');
-  const [txHash, setTxHash] = useState(''); const [showCreate, setShowCreate] = useState(false);
+  const [txHash, setTxHash] = useState(''); const [showCreate, setShowCreate] = useState(params.get('create') === '1');
   const [title, setTitle] = useState(''); const [description, setDescription] = useState(''); const [voters, setVoters] = useState('');
   const [registrationMinutes, setRegistrationMinutes] = useState(60); const [commitMinutes, setCommitMinutes] = useState(60); const [revealMinutes, setRevealMinutes] = useState(60); const [quorum, setQuorum] = useState(1);
   const [choice, setChoice] = useState(0); const [backup, setBackup] = useState<BallotBackup | null>(null);
