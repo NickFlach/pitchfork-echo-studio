@@ -25,7 +25,6 @@ export default function ZKVoting() {
   const [choice, setChoice] = useState(0); const [backup, setBackup] = useState<BallotBackup | null>(null);
   const key = address && wallet.account ? vaultKey(address, selectedId, wallet.account) : '';
   useEffect(() => { setBackup(key ? readBallot(key) : null); setTxHash(''); }, [key]);
-  useEffect(() => { if (query.data && address) localStorage.setItem(ZK_CONTRACT_BOOKMARK, address); }, [query.data, address]);
   const query = useQuery({
     queryKey: ['zk-live', address, selectedId, wallet.account], enabled: isAddress(address), refetchInterval: 15000, retry: 1,
     queryFn: async () => {
@@ -39,6 +38,7 @@ export default function ZKVoting() {
       return { proposals, proposal: p.toObject(), members: [...members], eligible, registered, timestamp: block?.timestamp || 0 };
     }
   });
+  useEffect(() => { if (query.data && address) localStorage.setItem(ZK_CONTRACT_BOOKMARK, address); }, [query.data, address]);
   const p = query.data?.proposal; const now = query.data?.timestamp || 0;
   const phase = !p ? '' : p.tallied ? 'Final result' : now < Number(p.registrationEnd) ? 'Registration' : now < Number(p.commitEnd) ? 'Commit' : now < Number(p.revealEnd) ? 'Reveal' : 'Ready to tally';
   const ready = wallet.isConnected && wallet.chainId === ZK_CHAIN && !busy;
@@ -90,7 +90,8 @@ export default function ZKVoting() {
     {(busy || status) && <p role="status" className="text-sm text-primary">{busy || status}</p>}
     {txHash && <a className="text-sm text-primary underline break-all" href={`https://xexplorer.neo.org/tx/${txHash}`} target="_blank" rel="noreferrer">View confirmed or pending transaction ↗</a>}
     <section className="space-y-3 border-y py-6"><Label htmlFor="zk-contract">Voting contract</Label><div className="flex flex-col sm:flex-row gap-2"><Input id="zk-contract" placeholder="0x…" value={inputAddress} onChange={e => setInputAddress(e.target.value)} /><Button variant="outline" disabled={!!busy || !isAddress(inputAddress)} onClick={attach}>Open contract</Button></div>
-      {!address && <><p className="text-sm text-muted-foreground">No shared Neo X deployment is configured. Deployment requires four wallet approvals and GAS. Contracts have not been independently audited.</p><Button disabled={!ready} variant="outline" onClick={() => run(async () => { if (!wallet.signer) return; const deployed = await deployZKVoting(wallet.signer, setBusy); setInputAddress(deployed); setParams({ contract: deployed, proposal: '1' }); setShowCreate(true); setStatus('Voting contracts deployed. Create the first proposal.'); })}>Deploy voting contracts</Button></>}
+      {!address && <><p className="text-sm text-muted-foreground">No shared Neo X deployment is configured. Deployment requires four wallet approvals and GAS. Contracts have not been independently audited.</p><Button disabled={!ready} variant="outline" onClick={() => run(async () => { if (!wallet.signer) return; const deployed = await deployZKVoting(wallet.signer, setBusy); await checkVotingContract(deployed); localStorage.setItem(ZK_CONTRACT_BOOKMARK, deployed); setInputAddress(deployed); setParams({ contract: deployed, proposal: '1' }); setShowCreate(true); setStatus('Voting contracts deployed. Create the first proposal.'); })}>Deploy voting contracts</Button></>}
+      {query.data && <Button asChild variant="outline"><Link to={`/governance?contract=${address}`}>Open Governance dashboard</Link></Button>}
     </section>
     {query.isFetching && !query.data && <p className="text-muted-foreground">Reading Neo X…</p>}
     {query.data && <><div className="flex flex-wrap justify-between gap-3"><h2 className="text-xl font-semibold">On-chain proposals</h2><div className="flex gap-2"><Button title="Refresh chain state" aria-label="Refresh chain state" variant="ghost" size="icon" onClick={() => query.refetch()}><RefreshCw className="h-4 w-4" /></Button><Button disabled={!ready} onClick={() => setShowCreate(!showCreate)}><Plus className="mr-2 h-4 w-4" />Create proposal</Button></div></div>
